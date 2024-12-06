@@ -1,0 +1,31 @@
+stages:
+  - build
+  - deploy
+
+.rules: &rules
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+build-fred-website:
+  <<: *rules
+  stage: build
+  image: hugomods/hugo:exts
+  script:
+    - hugo --minify --enableGitInfo
+    - tar czf public.tar.gz public/*
+  artifacts:
+    paths:
+      - public.tar.gz
+    expire_in: 1 minute
+
+deploy-fred-website:
+  <<: *rules
+  stage: deploy
+  image: google/cloud-sdk:502.0.0-stable
+  script:
+    - tar xzf public.tar.gz
+    - gcloud auth activate-service-account --key-file $GCP_SA_KEY
+    - gcloud storage rsync --recursive --delete-unmatched-destination-objects public gs://fred-website
+  dependencies:
+    - build-fred-website
