@@ -1,0 +1,11 @@
+.DS_Store
+.idea
+*.iml
+*.tar
+.vscode
+.DS_Store
+
+public
+resources
+node_modules
+.hugo_build.lock
