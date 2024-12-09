@@ -12,6 +12,7 @@ build-fred-website:
   stage: build
   image: hugomods/hugo:exts
   script:
+    - npm install
     - hugo --minify --enableGitInfo
     - tar czf public.tar.gz public/*
   artifacts:
