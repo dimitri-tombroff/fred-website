@@ -22,11 +22,7 @@ This work is also available as a [report](Fred.pdf).
 
 ## Introduction
 
-Kubernetes is a strategic technology for Thales group and Thales Services Numériques in particular. 
-We maintain, like many, our own distribution (Kubernetes together with a number of key cloud-native technologies) 
-to serve as common platform/sdk for our many data processing use cases. 
-
-As part of an internal innovation project, we decided to tackle the issue of Kubernetes applications operational complexity, with a focus on a particular use case: frugality. How can we efficiently design, maintain, or improve kubernetes applications while ensuring their overall costs are understood and hopefully reduced, without sacrifying the expected functional requirements. These are tough questions. Despite all the well-known benefits of Kubernetes (standardization, declarative orchestration patterns, open communities etc.), mastering the exploding CNCF eco-system requires a multi-domain expertise that is out of reach or expensive for many companies.
+We tackle the issue of Kubernetes applications operational complexity, with a focus on a particular use case: frugality. How can we efficiently design, maintain, or improve kubernetes applications while ensuring their overall costs are understood and hopefully reduced, without sacrifying the expected functional requirements. These are tough questions. Despite all the well-known benefits of Kubernetes (standardization, declarative orchestration patterns, open communities etc.), mastering the exploding CNCF eco-system requires a multi-domain expertise that is out of reach or expensive for many companies.
 Worst, what is smart today is obsolete the year after. Architects are asked to produce frugal, scalable, secured, easy-to-maintain and easy-to-modernize solutions. 
 Needless to say, they need help.
 
@@ -38,6 +34,9 @@ By customizing this architecture, we have created an assistant capable of deep a
 <div style="text-align: center;">
     <img src="fred_role.png" alt="Fred Overview" width="90%">
 </div>
+
+In this picture Fred is used as part of a prototype application called Frugal-IT that provide specific assistance to help users to monitor and ultimately reduce their 
+resource consumption. Fred is, this said, the center piece. 
 
 This article presents an in-depth look at Fred's architecture and details how we have adapted it to meet the specific needs of Kubernetes management. 
 In its current status, Fred provides automatic documentation and explanations of an kubernetes application, 
