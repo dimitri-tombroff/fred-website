@@ -14,6 +14,10 @@ seo:
   robots: "" # custom robot tags (optional)
 ---
 
+<div style="text-align: center; padding: 20px; border: 2px dashed #FFA500; background-color: #FFF9F0; color: #D35400; font-weight: bold; font-size: 1.2em;">
+🚧 This page is <strong>Under Construction</strong>. Stay tuned for updates! 🚧
+</div>
+
 ## Overview
 
 ### Implement a new team expert

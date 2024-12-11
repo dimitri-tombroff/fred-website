@@ -6,7 +6,7 @@ date: 2024-12-07T16:27:22+02:00
 lastmod: 2024-12-097T16:27:22+02:00
 draft: false
 weight: 50
-categories: []
+categories: [guidance]
 tags: []
 contributors: [Lorenzo Gerardi]
 pinned: false

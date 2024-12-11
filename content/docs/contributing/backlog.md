@@ -14,10 +14,6 @@ seo:
   robots: "" # custom robot tags (optional)
 ---
 
-## Ideas
-
-Fred is composed of a python backend, and a react UI.
-
 ## Improvements
 
 * make facts parts of a dedicated tool instead of included in the technical kubernetes expert knowledge model: facts are lost in a too wide context. Having a dedicated tool will improve accuracy
