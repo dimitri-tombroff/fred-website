@@ -48,5 +48,4 @@ For example:
 
 This seamless context switching is what makes Fred’s team so powerful. Watch this video (in French) to see a real example of how a productive exchange works:
 
-
-g
+{{< youtube 7-MYqZdCLUM >}}
