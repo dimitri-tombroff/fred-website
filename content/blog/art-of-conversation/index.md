@@ -1,7 +1,7 @@
 ---
 title: "The Art of Conversation"
 description: "How to chat with Fred's team"
-summary: ""
+summary: "How to chat with Fred's team of expert. A practical introduction."
 date: 2024-12-07T16:27:22+02:00
 lastmod: 2024-12-097T16:27:22+02:00
 draft: false
