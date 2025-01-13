@@ -8,7 +8,7 @@ draft: false
 weight: 50
 categories: [architecture]
 tags: [llm, generative-ai]
-contributors: [ Tanguy Jouannic, Dimitri Tombroff]
+contributors: [ Tanguy Jouannic, Dimitri Tombroff, Dorian Finel-Bacha]
 pinned: false
 homepage: false
 seo:
