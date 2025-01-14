@@ -25,22 +25,22 @@ You need :
 To try out Fred, you simply need to start the python backend:
 
 ```sh
-cd fred-api
+cd backend
 make run
 ```
 
 The equivalent local command is:
 
 ```sh
-python rift/main.py --server.configurationPath ./resources/configuration.yaml --server.baseUrlPath /rift-api
+python fred/main.py --server.configurationPath ./resources/configuration.yaml --server.baseUrlPath /fred
 ```
 
 Fred backend expects a valid OPENAI token in the `OPENAI_API_TOKEN` environment variable, and a kubeconfig. Your kubeconfig can point to any kubernetes cluster including k3d, kind, minikube.
 
-A great starting point is to try it out with kooker.
+A great starting point is to try it out with kooker, or simply with a local minikube.
 
 From there, Fred will start collecting and generating data and save it under
-'~/.frugalit/rift-api' (as set in the resource/configuration-dev.yaml file).
+'~/.fred/fred-backend-cache' (as set in the resource/configuration-dev.yaml file).
 
 If you do not want at all to interact with a remote or development K8 cluster nor perform some openai requests,
 get in touch with contributors to get a ready-to-use zip archive that you can simply unzip in '~/.fred/'. You will then work in offline mode.
