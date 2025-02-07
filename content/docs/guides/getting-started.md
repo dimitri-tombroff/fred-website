@@ -80,30 +80,19 @@ options:
 
 ### Requirements
 
-`make`,  `curl`, `gcc`, `node`, `nvm`, `golang` and  `docker` are required to build and run the  project on your laptop.
+`make`,  `curl`,  `node`, `nvm`, and  `docker` are required to build and run the  project on your laptop.
 
-We recommand installing GoEnv, then use it to install `golang 1.21` read the [installation guide](https://github.com/syndbg/goenv/blob/master/INSTALL.md)
 For `docker` read [installation guide for Ubuntu](<https://docs.docker.com/engine/install/ubuntu/>, <https://docs.docker.com/engine/install/linux-postinstall/>)
 
-First you need to start the golang backend (checkout the reference guide to understand why we have this):
 
 ```shell
-# Run the server
-make server-run
-```
-
-In another terminal.
-
-```shell
-# Run the ui
-make ui-run
+make run
 ```
 
 Which is equivalent to:
 
 ```shell
-cd ui
 npm run dev
 ```
 
-Go to the indicated localhost url and use the UI with the credentials board/board.
+Go to the indicated localhost url and use the UI with the credentials fred/fred.

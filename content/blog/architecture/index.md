@@ -3,7 +3,7 @@ title: "Fred design and architecture"
 description: "How to chat with Fred's team"
 summary: "A state-of-the-art and effective multi-agent Kubernetes assistant"
 date: 2024-10-03T16:27:22+02:00
-lastmod: 2024-12-097T16:27:22+02:00
+lastmod: 2024-10-03T16:27:22+02:00
 draft: false
 weight: 50
 categories: [architecture]
