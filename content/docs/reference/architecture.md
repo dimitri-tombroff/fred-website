@@ -14,10 +14,61 @@ seo:
   robots: "" # custom robot tags (optional)
 ---
 
-Checkout the [architecture blog post](/blog/fred-design-and-architecture)
+Checkout the high level [architecture blog post](/blog/fred-design-and-architecture). This blog discusses the few important 
+design drivers and implementation choice. 
 
-In the rest of this page we highlight the essential UI and backend Fred software architecture. 
+Fred is designed as a stateful multi-agent chatbot that supports both REST API calls and a WebSocket-based session mechanism. This architecture enables:
 
-<div style="text-align: center; padding: 20px; border: 2px dashed #FFA500; background-color: #FFF9F0; color: #D35400; font-weight: bold; font-size: 1.2em;">
-🚧 This page is <strong>Under Construction</strong>. Stay tuned for updates! 🚧
-</div>
+* Stateless interactions (simple API calls for fetching expert lists, deleting sessions, etc.).
+* Stateful conversations (maintaining ongoing chat sessions with real-time responses).
+
+## Web Socket interactions
+
+1️⃣ **The UI connects to the WebSocket** (`/chatbot/query`).
+
+2️⃣ **The client sends a structured JSON request:**
+   ```json
+   {
+     "configuration": {
+       "session_id": "12345",
+       "agentic_flow": {
+         "name": "Fred",
+         "experts": ["GeneralistExpert"]
+       },
+       "cluster_name": "minikube"
+     },
+     "messages": [
+       {
+         "type": "human",
+         "content": "How can I optimize my cluster?",
+         "additional_kwargs": {}
+       }
+     ]
+   }
+   ``
+
+
+
+| Feature              | REST API | WebSocket |
+|----------------------|---------|-----------|
+| Fetch experts list  | ✅      | ❌        |
+| Fetch chat history  | ✅      | ❌        |
+| Delete session      | ✅      | ❌        |
+| Live chat session   | ❌      | ✅        |
+| Multi-step interaction | ❌ | ✅ |
+
+
+## **3️⃣ Why This Architecture?**
+
+✅ **WebSockets for Real-Time Chat**
+   - Keeps a **persistent connection** for stateful conversations.
+   - Avoids **repeated REST API calls**.
+
+✅ **REST API for Managing Sessions**
+   - Fetches chat history without needing an active WebSocket.
+   - Manages available experts dynamically.
+
+✅ **Modular & Scalable Design**
+   - New **experts can be added** without modifying core logic.
+   - Supports **Kubernetes integration** via `KubeService`.
+   - **Fred supervises multi-agent collaboration** when needed.
