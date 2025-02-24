@@ -39,79 +39,17 @@ To implement a new expert:
 2. Define its name, role, and description.
 3. Implement the processing logic, retrieval mechanisms, and response generation.
 
-Here is a sample code snippet:
-```python
-from chatbot.structures.agentic_flow import AgenticFlow
-
-class MyCustomExpert(AgenticFlow):
-    name = "MyCustomExpert"
-    role = "Custom AI Assistant"
-    nickname = "CustomBot"
-    description = "An expert designed to handle specific user queries."
-    icon = "🧠"
-
-    def __init__(self, cluster_fullname=None):
-        super().__init__()
-        self.cluster_fullname = cluster_fullname  # Optional if relevant to Kubernetes
-        self.knowledge_base = []
-
-    def process_request(self, user_input):
-        """
-        Handle user input and generate a response.
-        """
-        return f"Processing request with MyCustomExpert: {user_input}"
-
-```
-
-Then inserting your new expert into Fred's team is straightforward:
-```python
-def _initialize_agents(self):
-    """
-    Initializes all available agentic flows.
-    """
-    agent_classes = {
-        "GeneralistExpert": GeneralistExpert,
-        "DocumentsExpert": DocumentsExpert,
-        "MyCustomExpert": MyCustomExpert  # ✅ Registering the new expert
-    }
-    return agent_classes
-```
-
-## Multi-Agent or not ?
-
-Instead of directly picking an expert, users can choose Fred to supervise the process.
-
-🔹 Why use Fred?
-Fred doesn’t just act as another expert—it coordinates multiple agents in an optimal way. It follows a structured process of:
-
-* Planning – Understanding the user's request.
-* Supervision – Assigning the right experts at the right moment.
-* Validation – Ensuring a high-quality, reviewed result.
-
-🔹 Example Scenarios:
-
-* "Can you audit my Kubernetes cluster?"
-  
-  → Fred determines the relevant experts (e.g., KubernetesExpert, SecurityExpert, FinOpsExpert)
-  
-  → It orchestrates the audit step by step to ensure nothing is missed.
-
-* "How can I optimize my cloud costs?"
-  
-  → Fred plans a multi-expert approach, ensuring both technical (scalability, efficiency) and financial (FinOps) aspects are covered.
-When an incoming event requires MyCustomExpert, the system will automatically instantiate and use it.
-
-A great feature of Fred is that you expert can be queried directly or be part of several experts. Let us have a look at a simple 
-expert. The following piece of code is a generalist expert, that simply forward the user query to an openai service:
-
-## Complete Sample
+Here is a sample code snippet. This code is complete and implement a simple generalist expert that basically will forward all its queries to the configured
+model. 
 
 ```python
 from datetime import datetime
 from langchain_core.messages import SystemMessage
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, MessagesState, StateGraph
+from common.structure import AgentSettings, ConfigurationWithOffline
 from flow import AgentFlow
+from model_factory import get_model
 
 class GeneralistExpert(AgentFlow):
     """
@@ -123,11 +61,15 @@ class GeneralistExpert(AgentFlow):
     # Class-level attributes for metadata
     name: str = "GeneralistExpert"
     role: str = "Generalist Expert"
-    nickname: str = "Alex"
+    nickname: str = "Georges"
     description: str = "Provides guidance on a wide range of topics without deep specialization."
     icon: str = "generalist_agent"
-
-    def __init__(self, cluster_fullname: str):
+    categories: list[str] = []
+    
+    def __init__(self, 
+                 cluster_fullname: str,
+                 agent_settings: AgentSettings, 
+                 ):
         """
         Initializes the Generalist Expert agent.
 
@@ -137,6 +79,9 @@ class GeneralistExpert(AgentFlow):
         """
         self.cluster_fullname = cluster_fullname
         self.current_date = datetime.now().strftime("%Y-%m-%d")
+        self.agent_settings = agent_settings
+        self.categories = agent_settings.categories if agent_settings.categories else ["General"]
+       
 
         super().__init__(
             name=self.name,
@@ -146,6 +91,7 @@ class GeneralistExpert(AgentFlow):
             icon=self.icon,
             graph=self.get_graph(),
             base_prompt=self._generate_prompt(),
+            categories=self.categories,
         )
 
     def _generate_prompt(self) -> str:
@@ -176,12 +122,21 @@ class GeneralistExpert(AgentFlow):
         Returns:
             dict: The updated state with the expert's response.
         """
-        model = ChatOpenAI(model="gpt-4o", temperature=0)
+        model = get_model(self.agent_settings.model)
         prompt = SystemMessage(content=self.base_prompt)
 
         response = await model.ainvoke([prompt] + state["messages"])
         return {"messages": [response]}
 
+    def set_cluster_name(self, cluster_name: str):
+        """
+        Sets the name of the Kubernetes cluster in the current context.
+
+        Args:
+            cluster_name (str): The name of the Kubernetes cluster.
+        """
+        self.cluster_fullname = cluster_name
+        
     def get_graph(self) -> StateGraph:
         """
         Defines the agentic flow graph for the expert.
@@ -195,18 +150,73 @@ class GeneralistExpert(AgentFlow):
         builder.add_edge("expert", END)
         return builder
 
+
 ```
 
-{{< highlight python >}}
-# Your Python code here
-def hello():
-    print("Hello, Fred!")
-{{< /highlight >}}
+To insert your new expert into Fred's team is straightforward, on simply need to add yours somewhere (the 'agent' folder is of course the right place).
+Then simply edit the 'fred/decision.py' class and add there your new class. As of nw it looks like this:
+```python
+from typing import Literal
+
+from pydantic import BaseModel
+
+
+class PlanDecision(BaseModel):
+    """Decision after evaluation."""
+
+    action: Literal["planning", "respond"]
+
+
+class ExecuteDecision(BaseModel):
+    """
+    Decision before expert execution.
+    """
+
+    # Add your custom expert flows here to include them in Fred
+    expert: Literal[
+        "GeneralistExpert", 
+        "DocumentsExpert",
+        "TechnicalKubernetesExpert", 
+        "TheoreticalKubernetesExpert", 
+        "KedaExpert",
+        "MonitoringExpert"]
+
+```
+This class is used to validate the multi-agent selection process and ensure the chosen expert is available and known. 
+
+## Multi-Agent or not ?
+
+Instead of directly picking an expert, users can choose Fred to supervise the process.
+
+🔹 Why use Fred?
+Fred doesn’t just act as another expert—it coordinates multiple agents in an optimal way. It follows a structured process of:
+
+* Planning – Understanding the user's request.
+* Supervision – Assigning the right experts at the right moment.
+* Validation – Ensuring a high-quality, reviewed result.
+
+🔹 Example Scenarios:
+
+* "Can you audit my Kubernetes cluster?"
+  
+  → Fred determines the relevant experts (e.g., KubernetesExpert, SecurityExpert, FinOpsExpert)
+  
+  → It orchestrates the audit step by step to ensure nothing is missed.
+
+* "How can I optimize my cloud costs?"
+  
+  → Fred plans a multi-expert approach, ensuring both technical (scalability, efficiency) and financial (FinOps) aspects are covered.
+When an incoming event requires MyCustomExpert, the system will automatically instantiate and use it.
+
+A great feature of Fred is that you expert can be queried directly or be part of several experts. Let us have a look at a simple 
+expert. The generalist expert shown above is a great example. 
 
 
 ## Add you expert to Fred's team 
 
+Last have a look at the configuration file. You can there enable or disable some expert, and set the model you want. As of today
+Fred supports openai and azure open ai models. We will add more soon. 
 
-## Checkout the UI
+
 
 
