@@ -8,7 +8,7 @@ draft: false
 weight: 50
 categories: [guidance]
 tags: []
-contributors: [Emanuel-Todor Hascau Dumitrelea, Dimitri Tombroff]
+contributors: [Emanuel-Todor Hascau-Dumitrelea, Dimitri Tombroff]
 pinned: false
 homepage: false
 seo:
@@ -18,11 +18,11 @@ seo:
   robots: ""
 ---
 
-This short post shows how to run **Fred** and its agents on a local [Ollama](https://ollama.com) server. Ollama makes it easy to run large language models like `llama2`, `mistral`, or `gemma` locally — without needing any API key.
+This short post explains how to run **Fred** and its agents on a local [Ollama](https://ollama.com) server. Ollama makes it easy to run large language models like `llama2`, `mistral`, or `gemma` locally — without needing any API key.
 
 It’s straightforward and great for testing or offline setups.
 
-## 🛠️ Step 1: Install and Run Ollama
+## Step 1: Install and Run Ollama
 
 On macOS, simply run:
 
@@ -63,7 +63,7 @@ ollama  56805 dimi    3u  IPv4 0xa591e9eac9b75a54      0t0  TCP localhost:11434 
 
 The steps are very similar on Linux desktops.
 
-## 🧠 Step 2: Configure Fred to Use Ollama
+## Step 2: Configure Fred to Use Ollama
 
 Fred supports multiple backends per agent. To make an agent (like the `GeneralistExpert`) use your local Ollama model, simply update the config:
 
@@ -82,9 +82,9 @@ ai:
         temperature: 0
 ```
 
-> ✅ No credentials are needed when using Ollama locally — it's fast and self-contained.
+> No credentials are needed when using Ollama locally — it's fast and self-contained.
 
-## 🚀 Step 3: Restart Fred and Enjoy
+## Step 3: Restart Fred 
 
 Once configured, just restart Fred. Your agent is now using a local LLM to process prompts!
 
