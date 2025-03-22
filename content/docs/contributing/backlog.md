@@ -16,15 +16,8 @@ seo:
 
 ## Improvements
 
-* make facts parts of a dedicated tool instead of included in the technical kubernetes expert knowledge model: facts are lost in a too wide context. Having a dedicated tool will improve accuracy
-* improve the fact related UIs
-* pass the UI to nextJs
-* improve the source listing of dominic like experts in the UI
-* Suppress unused sessions
-* use human text fields to name the sessions
-* improve the temporary informartion returns using cards instead of the three dots.
-* when talking to  single expert better show the reasoning steps that are not like Fred thoughts.
+Fred is in active development and used to bootstrap various different use cases. 
+Issues and ideas are currently tracked on our mirror gitlab and will soon appear on the public github repository. 
 
-## Github Issues
+Stay tuned !
 
-* fix the rag experts first question loss

@@ -1,5 +1,5 @@
 ---
-title: "Evaluating LLM Applications in the Enterprise: A Major Challenge"
+title: "EEvaluating LLM Applications in the Enterprise: A Major Challenge"
 description: "Large Language Models (LLMs) are revolutionizing enterprise automation and decision-making, but evaluating their effectiveness with proprietary data poses unique challenges. This post explores these complexities and their critical importance for successful enterprise adoption."
 summary: "Large Language Models (LLMs) are revolutionizing enterprise automation and decision-making, but evaluating their effectiveness with proprietary data poses unique challenges. This post explores these complexities and their critical importance for successful enterprise adoption."
 date: 2025-01-12T16:27:22+02:00
