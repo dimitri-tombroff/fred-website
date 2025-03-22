@@ -8,7 +8,7 @@ draft: false
 weight: 50
 categories: [guidance]
 tags: []
-contributors: [Dimitri Tombroff]
+contributors: [Emanuel-Todor Hascau Dumitrelea, Dimitri Tombroff]
 pinned: false
 homepage: false
 seo:
