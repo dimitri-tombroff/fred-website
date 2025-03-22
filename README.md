@@ -10,5 +10,5 @@ npm install
 Then :
 
 ```sh
-npn run dev
+npm run dev
 ```
