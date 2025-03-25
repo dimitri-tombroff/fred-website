@@ -1,0 +1,17 @@
+<div class="mermaid-wrapper" style="position: relative; border: 1px solid #ddd; border-radius: 6px; padding: 1rem; margin-top: 1rem;">
+  <button onclick="toggleFullDiagram()" style="
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 10;
+    padding: 0.3rem 0.6rem;
+    background-color: #444;
+    color: white;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  ">🔍 Focus</button>
+
+  <pre class="mermaid">{{ .Inner | safeHTML }}</pre>
+</div>

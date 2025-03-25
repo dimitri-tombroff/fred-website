@@ -1,4 +1,43 @@
 {{/* Put your custom <script></script> tags here */}}
+<script>
+function toggleFullDiagram() {
+  const wrapper = event.target.closest('.mermaid-wrapper');
+  const body = document.body;
+  const diagram = wrapper.querySelector('.mermaid');
+
+  if (!wrapper.classList.contains('focused')) {
+    wrapper.classList.add('focused');
+    wrapper.style.position = 'fixed';
+    wrapper.style.top = '0';
+    wrapper.style.left = '0';
+    wrapper.style.width = '100vw';
+    wrapper.style.height = '100vh';
+    wrapper.style.backgroundColor = 'white';
+    wrapper.style.zIndex = '1000';
+    wrapper.style.padding = '2rem';
+    wrapper.style.overflow = 'auto';
+    wrapper.style.display = 'flex';
+    wrapper.style.alignItems = 'center';
+    wrapper.style.justifyContent = 'center';
+    body.style.overflow = 'hidden';
+
+    if (diagram) {
+      diagram.style.width = '100%';
+      diagram.style.height = 'auto';
+      diagram.style.maxWidth = '1200px';
+    }
+
+  } else {
+    wrapper.classList.remove('focused');
+    wrapper.removeAttribute('style');
+    body.style.overflow = '';
+
+    if (diagram) {
+      diagram.removeAttribute('style');
+    }
+  }
+}
+</script>
 
 {{/* EXAMPLE - only load script for production
 {{ if eq (hugo.Environment) "production" -}}
