@@ -10,7 +10,7 @@ stages:
 build-fred-website:
   <<: *rules
   stage: build
-  image: hugomods/hugo:exts
+  image: hugomods/hugo:exts-0.142.0
   script:
     - npm install
     - hugo --minify --enableGitInfo
