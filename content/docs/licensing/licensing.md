@@ -119,17 +119,17 @@ flowchart TD
     - Common patterns and misconfigurations
 
 - **Inner source** components are **only available to Thales teams**, or externally through licensing agreements. These include:
-  - The **document store backend**
+  - The **knowledge flow backend**: in charge of uploading and managing source documents and triggering the adequate *processor*
   - Specialized **custom agents** (e.g., Kast Agent)
     - Kast is a Kubernetes distribution maintained by Thales Services Numériques, tailored for secure, data-centric applications. It includes opinionated defaults and pre-integrated components for authentication, data flow, monitoring, and storage.
-  - A family of **Document Extractors**, tailored to use-case-specific needs
+  - A family of **Document Processors**, tailored to use-case-specific needs
 
 Kast is a Kubernetes distribution maintained by Thales Services Numériques, tailored for secure, data-centric applications. It includes opinionated defaults and pre-integrated components for authentication, data flow, monitoring, and storage.
 The Kast Agent is a specialized extension of the generic Kubernetes agent. It understands the specific architecture and conventions of Kast environments.
 
-## What Are Document Extractors?
+## What Are Document Processors?
 
-The "Document Extractors" shown in the diagram are **use case-specific extensions**, designed to process domain-relevant documents (PDF, Excel, DOCX, etc.) that are uploaded to the system.
+The "Document Processors" shown in the diagram are **use case-specific extensions**, designed to process domain-relevant documents (PDF, Excel, DOCX, etc.) that are uploaded to the system.
 
 They are:
 
@@ -141,16 +141,16 @@ Their role is to:
 
 - Extract relevant content
 - Structure it
-- Inject it into the **OpenSearch vector store**
-- Make it available for **RAG-based** (Retrieval-Augmented Generation) workflows
+- Inject it into the **vector store** or any other required store (most likely SQL)
+- Make it available for **RAG-based** (Retrieval-Augmented Generation) workflows or to agentic tools
 
-These extractors are **not generic** and cannot be provided as part of the open source foundation — because they depend on:
+These processors are **not generic** and cannot be provided as part of the open source foundation — because they depend on:
 
 - The target business domain
 - The type of documents
 - The structure of the information you want to extract
 
-The Fred framework, however, **makes it easy to plug them in**, configure them, and trigger them based on document uploads — allowing rapid customization.
+The Knowledge Flow backend, however, **makes it easy to plug them in**, configure them, and trigger them based on document uploads — allowing rapid customization. As for Fred, it makes it easy to plug the corresponding agents.
 
 ## What Can You Do with Open versus Inner Source
 
@@ -168,7 +168,7 @@ Fred is especially useful for innovation teams and researchers who want to proto
 
 If you're within Thales or have access to the inner source components, Fred becomes a ready-to-deploy platform for secure, intelligent, data-centric applications:
 
-- Enable document ingestion and processing, with custom extractors and RAG pipelines
+- Enable document ingestion and processing, with custom processors and RAG pipelines
 - Leverage Kast-specific capabilities, including secure defaults and integration with trusted components
 - Deploy fully to Kubernetes using Helm charts and preconfigured pipelines
 - Build complete, production-grade applications that combine chat agents, LLMs, Kubernetes insights, and secure document handling
