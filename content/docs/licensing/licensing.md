@@ -35,11 +35,15 @@ flowchart TD
     end
 
     subgraph InnerSource["Inner Source"]
-        DOC[Document Store]
+        DOC[Knowledge Flow]
         KAST[Kast Agent]
-        CLEAR1[Document Extractor 1]
-        CLEAR2[Document Extractor 2]
-        CLEAR3[Document Extractor n]
+        KAST[Kast Agent]
+        AGENT1[Agent 1]
+        AGENT2[Agent 2]
+        AGENTN[Agent n]
+        CLEAR1[Document Processor 1]
+        CLEAR2[Document Processor 2]
+        CLEAR3[Document Processor n]
     end
 
     FE -->|REST API| BE
@@ -53,7 +57,55 @@ flowchart TD
     classDef opensource fill:#d0e1ff,stroke:#333,stroke-width:1.5px;
     classDef innersource fill:#fff5cc,stroke:#333,stroke-width:1.5px;
     class FE,BE,Kubernetes opensource;
-    class DOC,KAST,CLEAR1,CLEAR2,CLEAR3 innersource;
+    class DOC,KAST,CLEAR1,CLEAR2,CLEAR3,AGENT1,AGENT2,AGENTN innersource;
+{{< /mermaiddiagram >}}
+
+The following diagram highlights a typical production deployment with, at play, runtime services like S3, SQL or Document stores.
+For simplicity security is not shown here.
+
+{{< mermaiddiagram >}}
+flowchart TD
+    subgraph OpenSource["Open Source"]
+        FE[Frontend]
+        BE[Agentic Backend]
+        Kubernetes[K8 Agent]
+    end
+
+    subgraph InnerSource["Inner Source"]
+        DOC[Knowledge Flow]
+        AGENT[Agent]
+        CLEAR[Document Processor]
+        KAST[Kast Agent]
+    end
+
+    subgraph Infra[Services]
+        OS[Doc Store]
+        PG[SQL Store]
+        MINIO[S3 Store]
+    end
+
+    FE -->|REST API| BE
+    BE -->|REST/Local API| Kubernetes
+    BE -->|REST/Local API| KAST
+    FE -->|REST API| DOC
+    DOC -->|Triggers| CLEAR
+
+    OS --> AGENT
+    PG --> AGENT
+
+    PG --> KAST
+
+    CLEAR --> OS
+    CLEAR --> PG
+    CLEAR --> MINIO
+
+    classDef opensource fill:#d0e1ff,stroke:#333,stroke-width:1.5px;
+    classDef innersource fill:#fff5cc,stroke:#333,stroke-width:1.5px;
+    classDef infra fill:#e2ffe2,stroke:#333,stroke-width:1.5px;
+    class FE,BE,Kubernetes opensource;
+    class DOC,KAST,CLEAR,AGENT innersource;
+    class OS,PG,MINIO infra;
+
 {{< /mermaiddiagram >}}
 
 ## Open Source vs Inner Source
