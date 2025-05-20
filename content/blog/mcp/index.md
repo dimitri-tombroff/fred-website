@@ -1,7 +1,7 @@
 ---
 title: "Expanding Fred with MCP: A Playground for Next-Gen Agentic Architectures"
-description: "Fred and knowledge-flow now support Multi-Component Protocol (MCP) interactions. Learn how this elevates modular AI orchestration, and why Fred is the ideal lab for building and testing state-of-the-art LLM agents."
-summary: "Fred is now capable of serving and consuming components over the Multi-Component Protocol (MCP). Discover how this unlocks new architectures and makes Fred a live testbed for building interoperable AI agents."
+description: "Fred and knowledge-flow now support Model Context Protocol (MCP) interactions. Learn how this elevates modular AI orchestration, and why Fred is the ideal lab for building and testing state-of-the-art LLM agents."
+summary: "Fred is now capable of serving and consuming components over the Model Context Protocol (MCP). Discover how this unlocks new architectures and makes Fred a live testbed for building interoperable AI agents."
 date: 2025-05-19T12:00:00+02:00
 lastmod: 2025-05-19T12:00:00+02:00
 draft: false
@@ -21,12 +21,12 @@ pinned: false
 homepage: false
 seo:
   title: "Fred x MCP: The Open Playground for Agentic AI"
-  description: "Fred and knowledge-flow now talk MCP — exposing and consuming modular agent components over the Multi-Component Protocol. See how we're exploring real-world agent orchestration at scale."
+  description: "Fred and knowledge-flow now talk MCP — exposing and consuming modular agent components over the Model Context Protocol. See how we're exploring real-world agent orchestration at scale."
   canonical: "https://fredk8.dev/blog/fred-mcp-architecture"
   robots: "index, follow"
 ---
 
-The Fred project has always aimed to stay ahead of the curve in agentic design — and this week, we've added another key building block to our architecture: **support for the Multi-Component Protocol (MCP)**.
+The Fred project has always aimed to stay ahead of the curve in agentic design — and this week, we've added another key building block to our architecture: **support for the Model Context Protocol (MCP)**.
 
 In this post, we’ll walk through:
 
@@ -39,7 +39,7 @@ In this post, we’ll walk through:
 
 ## What is MCP?
 
-The **Multi-Component Protocol (MCP)** is a standard for communication between independent agentic services. It allows different components — like retrieval systems, planners, tools, or reasoning engines — to **talk to each other over HTTP or other transports**, while respecting a common contract (message-passing, streaming, etc.).
+The **Model Context Protocol (MCP)** is a standard for communication between independent agentic services. It allows different components — like retrieval systems, planners, tools, or reasoning engines — to **talk to each other over HTTP or other transports**, while respecting a common contract (message-passing, streaming, etc.).
 
 In simpler terms: MCP lets you wire up agent brains and tools like LEGO bricks, even across different codebases or servers.
 
@@ -47,7 +47,7 @@ To better understand how this works, let’s look at a first diagram showing a b
 
 ### Architecture: Fred and MCP-Aware Components
 
-The diagram below illustrates a typical flow where the Fred agentic backend connects to multiple MCP-enabled services. The React UI communicates with the Fred backend via WebSocket or REST, and Fred, in turn, reaches out to components like `knowledge-flow` and a Kubernetes MCP server using the MCP protocol.
+The diagram below illustrates a typical flow where the Fred agentic backend connects to multiple MCP-enabled services. The React UI communicates with the Fred backend via WebSocket or REST, and Fred, in turn, reaches out to components like `knowledge-flow` and a Kubernetes MCP server using the MCP.
 
 {{< mermaiddiagram >}}
 flowchart TD
