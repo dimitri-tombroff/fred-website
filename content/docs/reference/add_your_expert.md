@@ -39,7 +39,7 @@ To implement a new expert:
 2. Define its name, role, and description.
 3. Implement the processing logic, retrieval mechanisms, and response generation.
 
-Here is a sample code snippet. This code is complete and implement a simple generalist expert that basically will forward all its queries to the configured
+Here is a sample code snippet. This code is complete and implements a simple generalist expert that basically will forward all its queries to the configured
 model. 
 
 ```python
@@ -185,6 +185,85 @@ class ExecuteDecision(BaseModel):
 
 ```
 This class is used to validate the multi-agent selection process and ensure the chosen expert is available and known. 
+
+### Configure MCP Servers
+
+MCP (Model Context Protocol) servers are used to enable real-time communication between Fred’s agents and external systems. These servers act as endpoints where agents can access tools.
+
+#### Add your MCP servers to your agent via Fred Configuration
+
+In your configuration file (e.g., `config/configuration.yaml`), MCP servers are **listed** under each agent that supports communication via MCP.
+For example in an agent that can perform an analysis of a Kubernetes cluster using MCP server tools:
+
+```yaml {hl_lines=["5-9"]}
+agents:
+  - name: K8SOperatorExpert
+    class_path: "agents.kubernetes_monitoring.k8s_operator_expert.K8SOperatorExpert"
+    enabled: true
+    mcp_servers:
+      - name: k8s-mcp-server
+        transport: sse
+        url: http://localhost:8081/sse
+        sse_read_timeout: 600 # 5mins by default and can be overridden here (in this case 10min)
+    model: {}
+```
+
+**Note:** `mcp_servers` is an Array so you can add multiple MCP servers to a single Agent.
+
+#### Create an agent that uses the MCP servers
+
+```python {hl_lines=["27-28"]}
+from datetime import datetime
+
+from flow import AgentFlow
+from langgraph.graph import MessagesState, StateGraph
+from langgraph.constants import START
+from langgraph.prebuilt import ToolNode, tools_condition
+
+from fred.application_context import get_agent_settings, get_model_for_agent, get_mcp_client_for_agent
+
+class K8SOperatorExpert(AgentFlow):
+    """
+    Expert to execute actions on a Kubernetes cluster.
+    """
+    # Class-level attributes for metadata
+    name: str = "K8SOperatorExpert"
+    role: str = "Kubernetes Operator Expert"
+    nickname: str = "Kimberley"
+    description: str = (
+        "A Kubernetes monitoring & operator expert that can perform various actions on a Kubernetes cluster "
+        "to provide insights on cluster performance, state of the current installed resources, "
+        "pod status, container information, logs, and many more. This expert performs the relevant "
+        "kubectl and helm commands in order to fulfill its mission and generate meaningful "
+        "and aggregated results for the user."
+    )
+    icon: str = "k8s_operator_agent"
+    categories: list[str] = []
+    tag: str = "k8s operator"
+    
+    def __init__(self, 
+                 cluster_fullname: str
+                 ):
+        self.current_date = datetime.now().strftime("%Y-%m-%d")
+        self.cluster_fullname = cluster_fullname
+        self.agent_settings = get_agent_settings(self.name)
+        self.model = get_model_for_agent(self.name)
+        self.mcp_client = get_mcp_client_for_agent(self.name)
+        self.model_with_tools = self.model.bind_tools(self.mcp_client.get_tools())
+        self.llm = self.model_with_tools
+        self.categories = self.agent_settings.categories if self.agent_settings.categories else ["Operator"]
+        if self.agent_settings.tag:
+            self.tag = self.agent_settings.tag
+
+```
+
+The MCP magic happens in the following lines:
+```python
+self.mcp_client = get_mcp_client_for_agent(self.name)
+self.model_with_tools = self.model.bind_tools(self.mcp_client.get_tools())
+```
+
+Where we connect to the MCP server(s) from the `configuration.yaml` file and bind its/their tools to the Agent.
 
 ## Multi-Agent or not ?
 

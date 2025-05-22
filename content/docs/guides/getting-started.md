@@ -32,7 +32,7 @@ make run
 The equivalent local command is:
 
 ```sh
-python fred/main.py --server.configurationPath ./resources/configuration.yaml --server.baseUrlPath /fred
+python fred/main.py --server.configurationPath ./config/configuration.yaml --server.baseUrlPath /fred
 ```
 
 Fred backend expects a valid OPENAI token in the `OPENAI_API_TOKEN` environment variable, and a kubeconfig. Your kubeconfig can point to any kubernetes cluster including k3d, kind, minikube. Using OpenAi is not mandatory, you can use a local ollama server or AzureOpenAi as well. 
@@ -40,15 +40,15 @@ Fred backend expects a valid OPENAI token in the `OPENAI_API_TOKEN` environment 
 A great starting point is to try it out with kooker, or simply with a local minikube.
 
 From there, Fred will start collecting and generating data and save it under
-'~/.fred/fred-backend-cache' (as set in the resource/configuration-dev.yaml file).
+`~/.fred/fred-backend-cache` (as set in the `resource/configuration-dev.yaml` file).
 
 If you do not want at all to interact with a remote or development K8 cluster nor perform some openai requests,
-get in touch with contributors to get a ready-to-use zip archive that you can simply unzip in '~/.fred/'. You will then work in offline mode.
+get in touch with contributors to get a ready-to-use zip archive that you can simply unzip in `~/.fred/`. You will then work in offline mode.
 
 You can use the LOG_LEVEL environment variable.
 
 ```sh
-LOG_LEVEL=DEBUG python fred/main.py --server.configurationPath ./resources/configuration.yaml --server.baseUrlPath /fred
+LOG_LEVEL=DEBUG python fred/main.py --server.configurationPath ./config/configuration.yaml --server.baseUrlPath /fred
 ```
 
 The Swagger UI is accessible at `http://<host>:<port>/docs`. **Follow the host and port of your configuration file**.
@@ -72,20 +72,6 @@ database:
     energy_footprint: './services/cluster_consumption/data/simulated_cluster_consumption_wh_sep_to_feb.csv'
     financial_footprint: './services/cluster_consumption/data/simulated_cluster_consumption_usd_sep_to_feb.csv'
 
-    #type: elasticsearch
-    #host: hostname
-    #port: 80
-    #scheme: http
-    #username: elastic
-    #password: elastic
-    # Index prefix where to read the data
-    #index_prefix:
-      #energy_mix: 'energy_mix'
-      #carbon_footprint: 'carbon_footprint'
-      #energy_footprint: 'energy_footprint'
-      #financial_footprint: 'financial_footprint'
-
-# Tell Fred whow to connect to your Kubernetes clusters
 kubernetes:
   kube_config: '~/.kube/config'
   aws_config: '~/.aws/config' # Optional, needed for aws EKS clusters.
@@ -94,83 +80,86 @@ kubernetes:
     connect: 5  # Time to wait for a connection in seconds
     read: 15    # Time to wait for a response in seconds
 
-# The AI section lets you select the agent(s) at play, provide some context information
-# to make them better identified by the Fred leader. 
 ai:
   # Timeout settings for the client
   timeout:
     connect: 5  # Time to wait for a connection in seconds
     read: 15    # Time to wait for a response in seconds
-  # Most often the same model is used by all agents. You can however associate each agent with
-  # a different model.
   default_model:
     #provider: "ollama"
-    #model: "llama2"
+    #name: "llama2"
     provider: "openai"
     name: "gpt-4o"
-    temperature: 0
+    #provider: "azure"
+    #name: "fred-gpt-4o"
+    api_version: "2024-05-01-preview"
+    temperature: 0.0
   leader:
+    name: "Fred"
+    class_path: "leader.leader.Leader"
+    enabled: true
+    model: {}
+  services:
+    - name: "kubernetes"
       enabled: true
       model: {}
   agents:
-    GeneralistExpert:
+    - name: K8SOperatorExpert
+      class_path: "agents.kubernetes_monitoring.k8s_operator_expert.K8SOperatorExpert"
+      enabled: true
+      mcp_servers:
+        - name: k8s-mcp-server
+          transport: sse
+          url: http://localhost:8081/sse
+          sse_read_timeout: 600 # 10 minutes. It is 5 minutes by default but it is too short.
+      model: {}
+    - name: "GeneralistExpert"
+      class_path: "agents.generalist.generalist_expert.GeneralistExpert"
       enabled: true
       model: {}
-    DocumentsExpert:
+    - name: "DocumentsExpert"
+      class_path: "agents.documents.documents_expert.DocumentsExpert"
       enabled: true
       categories:
         - "eco-conception"
       settings:
-        document_directory: "./resources/knowledge/imported"
         chunk_size: 512
         chunk_overlap: 64
+        knowledge_flow_url: "http://localhost:8111/knowledge/v1" 
       model: {}
-    TechnicalKubernetesExpert:
-      enabled: true
-      categories:
-        - "kubernetes"
-        - "namespaces"
-        - "workloads"
-        - "architecture"
-        - "security"
-        - "networking"
-        - "storage"
-        - "configuration"
-        - "scaling"
-        - "deployment"
-      model: {}
-    MonitoringExpert:
-      enabled: true
-      categories:
-        - "monitoring"
-        - "observability"
-        - "logging"
-        - "metrics"
-        - "electricity"
-        - "resources"
-        - "consumption"
-      model: {}
-
+      
 # Where to save fred produced resources like Essentials or Score
 # and external resources like Kubernetes Workload descriptions
 dao:
   type: "file"  # Currently the only one supported
-  base_path: "~/.fred/fred-backend-cache"
-  max_cached_delay_seconds: 10  # Cache delay in seconds. Use 0 for no cache or a negative value for limitless cache.
+  base_path: "~/.fred/dao-cache"
+  max_cached_delay_seconds: 300  # Cache delay in seconds. Use 0 for no cache or a negative value for limitless cache.
 
 # Where to store user feedback
 feedback:
-  type: postgres
-  db_host: fred-postgres
-  db_port: 5432
-  db_name: fred_db
-  user: admin
-  password: Azerty123_
+   type: postgres
+#  db_host: fred-postgres
+#  db_port: 5432
+#  db_name: fred_db
+#  user: admin
+#  password: Azerty123_
 
 # Enable or disable the security layer
 security:
   enabled: false
   keycloak_url: "http://fred-keycloak:8080/realms/fred"
+
+# KEYCLOAK
+keycloak:
+  server_url: "https://localhost:8080"
+  realm_name: "fred"
+  client_id: "fred"
+
+# CONTEXT STORAGE CONFIGURATION
+context_storage:
+  type: "local"
+  options:
+    path: "~/.fred/context-store"
 ```
 
 ### Online Parameter
