@@ -45,11 +45,10 @@ model.
 ```python
 from datetime import datetime
 from langchain_core.messages import SystemMessage
-from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, MessagesState, StateGraph
-from common.structure import AgentSettings, ConfigurationWithOffline
+from common.structure import AgentSettings, Configuration
 from flow import AgentFlow
-from model_factory import get_model
+from fred.application_context import get_agent_settings, get_model_for_agent
 
 class GeneralistExpert(AgentFlow):
     """
@@ -65,11 +64,9 @@ class GeneralistExpert(AgentFlow):
     description: str = "Provides guidance on a wide range of topics without deep specialization."
     icon: str = "generalist_agent"
     categories: list[str] = []
+    tag: str = ""  # Tag défini directement ici
     
-    def __init__(self, 
-                 cluster_fullname: str,
-                 agent_settings: AgentSettings, 
-                 ):
+    def __init__(self, cluster_fullname: str):
         """
         Initializes the Generalist Expert agent.
 
@@ -77,12 +74,17 @@ class GeneralistExpert(AgentFlow):
             cluster_fullname (str): The full name of the Kubernetes cluster 
                                     in the current context.
         """
+        # Set basic properties
         self.cluster_fullname = cluster_fullname
         self.current_date = datetime.now().strftime("%Y-%m-%d")
-        self.agent_settings = agent_settings
+        
+        # Get agent settings
+        agent_settings = get_agent_settings(self.name)
+        
+        # Extract categories
         self.categories = agent_settings.categories if agent_settings.categories else ["General"]
-       
-
+        
+        # Initialize parent class
         super().__init__(
             name=self.name,
             role=self.role,
@@ -92,6 +94,7 @@ class GeneralistExpert(AgentFlow):
             graph=self.get_graph(),
             base_prompt=self._generate_prompt(),
             categories=self.categories,
+            tag=self.tag
         )
 
     def _generate_prompt(self) -> str:
@@ -122,9 +125,8 @@ class GeneralistExpert(AgentFlow):
         Returns:
             dict: The updated state with the expert's response.
         """
-        model = get_model(self.agent_settings.model)
+        model = get_model_for_agent(self.name)
         prompt = SystemMessage(content=self.base_prompt)
-
         response = await model.ainvoke([prompt] + state["messages"])
         return {"messages": [response]}
 
@@ -150,11 +152,11 @@ class GeneralistExpert(AgentFlow):
         builder.add_edge("expert", END)
         return builder
 
-
 ```
 
 To insert your new expert into Fred's team is straightforward, on simply need to add yours somewhere (the 'agent' folder is of course the right place).
-Then simply edit the 'fred/decision.py' class and add there your new class. As of nw it looks like this:
+Then simply edit the `fred/decision.py` class and add there your new class. As of now it looks like this:
+
 ```python
 from typing import Literal
 
