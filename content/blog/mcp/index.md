@@ -47,43 +47,50 @@ To better understand how this works, let’s look at a first diagram showing a b
 
 ### Architecture: Fred and MCP-Aware Components
 
-The diagram below illustrates a typical flow where the Fred agentic backend connects to multiple MCP-enabled services. The React UI communicates with the Fred backend via WebSocket or REST, and Fred, in turn, reaches out to components like `knowledge-flow` and a Kubernetes MCP server using the MCP.
+The diagram below illustrates a typical flow where the Fred agentic backend connects to multiple MCP-enabled services. The React UI communicates with the Fred backend via WebSocket or REST, and Fred, in turn, reaches out to components like `knowledge-flow` and a Kubernetes MCP server using MCP.
 
 {{< mermaiddiagram >}}
-flowchart TD
-    subgraph UI [User_Interface]
-        ChatUI[Chat UI]
+    flowchart TD
+    %% Section: User Interface
+    subgraph UI [🧑‍💻 User Interface]
+        ChatUI["💬 Chat UI"]
     end
 
-    subgraph FredBackend [Fred_Agentic_Backend]
-        LangGraph[LangGraph Agent]
+    %% Section: Fred Agentic Backend
+    subgraph FredBackend [🧠 Fred Agentic Backend]
+        subgraph LangGraph [🤖 LangGraph Agents]
+            DocumentExpert["📄 Document Expert"]
+            K8SExpert["📦 K8s Expert"]
+        end
     end
 
-    subgraph KnowledgeFlow [Knowledge_Flow_MCP_Server]
-        DocAPI[Vector & Document API]
+    %% Section: Knowledge Flow (Internal)
+    subgraph KnowledgeFlowMCP ["📚 Knowledge Flow MCP Server"]
+        DocAPI["🗂️ Vector & Document API"]
     end
 
-    subgraph K8Expert [Kubernetes_Expert_MCP_Client]
-        K8Agent[K8s Analyzer Agent]
+    %% Section: External Infrastructure (External MCP)
+    subgraph ExternalMCP [☁️ External MCP Server]
+        K8Server["🔧 K8s Cluster"]
     end
 
-    subgraph ExternalMCP [External_MCP_Server]
-        K8Server[K8s MCP Server]
-    end
+    %% Interactions
+    ChatUI -->|🔌 WebSocket / REST| FredBackend
+    DocumentExpert -->|"🔍 Vector Search (MCP)"| KnowledgeFlowMCP
+    K8SExpert -->|"📡 Analysis Request (MCP)"| ExternalMCP
 
-    ChatUI -->|WebSocket / REST| LangGraph
-    LangGraph -->|MCP: vector search| DocAPI
-    LangGraph -->|MCP: analysis request| K8Server
-    K8Agent -->|MCP call| K8Server
-
+    %% Styles
     style ChatUI fill:#d0e1ff,stroke:#333,stroke-width:1.5px
-    style LangGraph fill:#ffe5cc,stroke:#333,stroke-width:1.5px
-    style DocAPI fill:#e2ffe2,stroke:#333,stroke-width:1.5px
-    style K8Agent fill:#fff3d9,stroke:#333,stroke-width:1.5px
+    style LangGraph fill:#fff0cc,stroke:#333,stroke-width:1.5px
+    style DocAPI fill:#dcffe4,stroke:#333,stroke-width:1.5px
     style K8Server fill:#f4e2ff,stroke:#333,stroke-width:1.5px
+    style FredBackend stroke:#333,stroke-width:2px
+    style KnowledgeFlowMCP stroke:#333,stroke-width:2px
+    style ExternalMCP stroke:#333,stroke-width:2px
+    style KnowledgeFlowMCP font-size:14px
 {{< /mermaiddiagram >}}
 
-This layout showcases the **decoupling** of logic: the core agent can talk to external tools over MCP, enabling scalability and composability.
+This layout showcases the **decoupling** of logic: the core agents can talk to external tools over MCP, enabling scalability and composability.
 
 ---
 
@@ -93,7 +100,7 @@ This week, we made two big strides:
 
 1. **`knowledge-flow-app` now exposes an MCP server endpoint**, making its document and vector APIs accessible to any external MCP client (like agents).  
    - This makes it a **modular, standalone retrieval system** in the ecosystem.  
-   - The agent `Dominic`, for example, now queries `knowledge-flow` via MCP — cleanly separating agent logic from data logic.
+   - The "Document expert" agent (a.k.a. `Dominic`), for example, now queries `knowledge-flow` via MCP — cleanly separating agent logic from data logic.
 
 2. **We integrated with an open-source Kubernetes MCP server**, and updated our expert Kubernetes agent to use it.  
    - This allowed us to **plug in a live Kubernetes explainability component**, fully decoupled from the core Fred backend.  
