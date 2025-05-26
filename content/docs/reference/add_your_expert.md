@@ -212,7 +212,7 @@ agents:
 
 #### Create an agent that uses the MCP servers
 
-```python {hl_lines=["27-28"]}
+```python {hl_lines=["36-37"]}
 from datetime import datetime
 
 from flow import AgentFlow
