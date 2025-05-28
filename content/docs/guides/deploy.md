@@ -95,12 +95,13 @@ vector databases, S3-compatible storage, etc.
 
 ## Configuration Overview
 
-### `backend/resource/configuration.yaml`
+### `./config/configuration.yaml`
 
-This file defines which internal services of Fred are active. Particularly important is the ài`section where you can
+This file defines which internal services of Fred are active. Particularly important is the `ai`section where you can
 define your agents team.
 
 ```yaml
+# In development mode it is handy to work with data files instead of connecting to remote databases.
 database:
   type: csv
   csv_files:
@@ -125,63 +126,79 @@ ai:
     read: 15    # Time to wait for a response in seconds
   default_model:
     #provider: "ollama"
-    #model: "llama2"
+    #name: "llama2"
     provider: "openai"
     name: "gpt-4o"
-    temperature: 0
+    #provider: "azure"
+    #name: "fred-gpt-4o"
+    api_version: "2024-05-01-preview"
+    temperature: 0.0
   leader:
+    name: "Fred"
+    class_path: "leader.leader.Leader"
+    enabled: true
+    model: {}
+  services:
+    - name: "kubernetes"
       enabled: true
       model: {}
   agents:
-    GeneralistExpert:
+    - name: K8SOperatorExpert
+      class_path: "agents.kubernetes_monitoring.k8s_operator_expert.K8SOperatorExpert"
+      enabled: true
+      mcp_servers:
+        - name: k8s-mcp-server
+          transport: sse
+          url: http://localhost:8081/sse
+          sse_read_timeout: 600 # 10 minutes. It is 5 minutes by default but it is too short.
+      model: {}
+    - name: "GeneralistExpert"
+      class_path: "agents.generalist.generalist_expert.GeneralistExpert"
       enabled: true
       model: {}
-    DocumentsExpert:
+    - name: "DocumentsExpert"
+      class_path: "agents.documents.documents_expert.DocumentsExpert"
       enabled: true
       categories:
         - "eco-conception"
       settings:
-        document_directory: "./resources/knowledge/imported"
         chunk_size: 512
         chunk_overlap: 64
+        knowledge_flow_url: "http://localhost:8111/knowledge/v1" 
       model: {}
-    TechnicalKubernetesExpert:
-      enabled: true
-      categories:
-        - "kubernetes"
-        - "namespaces"
-        - "workloads"
-        - "architecture"
-        - "security"
-        - "networking"
-        - "storage"
-        - "configuration"
-        - "scaling"
-        - "deployment"
-      model: {}
-    MonitoringExpert:
-      enabled: true
-      categories:
-        - "monitoring"
-        - "observability"
-        - "logging"
-        - "metrics"
-        - "electricity"
-        - "resources"
-        - "consumption"
-      model: {}
-
+      
 # Where to save fred produced resources like Essentials or Score
 # and external resources like Kubernetes Workload descriptions
 dao:
   type: "file"  # Currently the only one supported
-  base_path: "~/.fred/fred-backend-cache"
-  max_cached_delay_seconds: 10  # Cache delay in seconds. Use 0 for no cache or a negative value for limitless cache.
+  base_path: "~/.fred/dao-cache"
+  max_cached_delay_seconds: 300  # Cache delay in seconds. Use 0 for no cache or a negative value for limitless cache.
+
+# Where to store user feedback
+feedback:
+   type: postgres
+#  db_host: fred-postgres
+#  db_port: 5432
+#  db_name: fred_db
+#  user: admin
+#  password: Azerty123_
 
 # Enable or disable the security layer
 security:
   enabled: false
   keycloak_url: "http://fred-keycloak:8080/realms/fred"
+
+# KEYCLOAK
+keycloak:
+  server_url: "https://localhost:8080"
+  realm_name: "fred"
+  client_id: "fred"
+
+# CONTEXT STORAGE CONFIGURATION
+context_storage:
+  type: "local"
+  options:
+    path: "~/.fred/context-store"
 ```
 
 Adjust according to your needs.
