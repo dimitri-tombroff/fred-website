@@ -60,8 +60,8 @@ The diagram below illustrates a typical flow where the Fred agentic backend conn
     %% Section: Fred Agentic Backend
     subgraph FredBackend [🧠 Fred Agentic Backend]
         subgraph LangGraph [🤖 LangGraph Agents]
-            subgraph Coordinator [🧭 Coordinator Agent]
-                LeaderAgent["🧭 Leader Agent"]
+            subgraph Coordinator [🥭 Coordinator Agent]
+                LeaderAgent["🥭 Leader Agent"]
             end
             subgraph Specialized [🎯 Specialized Agents]
                 DocumentExpert["📄 Document Expert"]
@@ -89,18 +89,22 @@ The diagram below illustrates a typical flow where the Fred agentic backend conn
     ChatUI -->|"🔌 mono-agent"| GeneralistExpert
     KnowledgeUI -->|"🔍 Ingestion"| DocAPI
     DocumentExpert -->|"🔍 Vector Search (MCP)"| KnowledgeFlowMCP
-    K8SExpert -->|"📡 Analysis Request (MCP)"| ExternalMCP
+    K8SExpert -->|"🛁 Analysis Request (MCP)"| ExternalMCP
 
     %% Styles
-    style ChatUI fill:#dcffe4,stroke:#333,stroke-width:1.5px
-    style KnowledgeUI fill:#dcffe4,stroke:#333,stroke-width:1.5px
-    style LangGraph fill:#dcffe4,stroke:#333,stroke-width:1.5px
-    style DocAPI fill:#dcffe4,stroke:#333,stroke-width:1.5px
-    style K8Server fill:#f4e2ff,stroke:#333,stroke-width:1.5px
-    style FredBackend stroke:#333,stroke-width:2px
-    style KnowledgeFlowMCP stroke:#333,stroke-width:2px
-    style ExternalMCP stroke:#333,stroke-width:2px
-    style KnowledgeFlowMCP font-size:14px
+    style ChatUI fill:#c6f6d5,stroke:#333,stroke-width:1.5px
+    style KnowledgeUI fill:#c6f6d5,stroke:#333,stroke-width:1.5px
+
+    style LeaderAgent fill:#c6f6d5,stroke:#333,stroke-width:1.5px
+
+    style DocumentExpert fill:#c6f6d5,stroke:#333,stroke-width:1.5px
+    style K8SExpert fill:#c6f6d5,stroke:#333,stroke-width:1.5px
+    style GeneralistExpert fill:#c6f6d5,stroke:#333,stroke-width:1.5px
+
+    style DocAPI fill:#c6f6d5,stroke:#333,stroke-width:1.5px
+
+    style KnowledgeFlowMCP font-size:14px, fill:#c6f6d5,stroke:#333,stroke-width:1.5px 
+    style ExternalMCP fill:#fdebc8,stroke:#333,stroke-width:1.5px 
 {{< /mermaiddiagram >}}
 
 This layout showcases the **decoupling** of logic: the core agents can talk to external tools over MCP, enabling scalability and composability.
