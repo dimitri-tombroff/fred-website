@@ -115,9 +115,17 @@ This week, we made two big strides:
    - This makes it a **modular, standalone retrieval system** in the ecosystem.  
    - The "Document expert" agent (a.k.a. `Dominic`), for example, now queries `knowledge-flow` via MCP — cleanly separating agent logic from data logic.
 
+This brings not only simplicity but also genericity as explained in the following blog:
+> *“.. an AI agent could, for instance, call a vector_search tool via MCP to find related information in a vector DB, achieving retrieval-augmented generation (RAG) in a standardized way.”*
+>
+> — [Cohorte: Comparing MCP vs A2A](https://www.cohorte.co/blog/comparing-anthropics-model-context-protocol-mcp-vs-googles-agent-to-agent-a2a-for-ai-agents-in-business-automation)
+
 2. **We integrated with an open-source Kubernetes MCP server**, and updated our expert Kubernetes agent to use it.  
    - This allowed us to **plug in a live Kubernetes explainability component**, fully decoupled from the core Fred backend.  
    - It demonstrates how domain-specific tools (like K8 analyzers or forecasting engines) can be **plugged in** as peers — not hardcoded logic.
+
+
+
 
 ---
 

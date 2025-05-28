@@ -1,11 +1,11 @@
 ---
 title: "Fred vs. Spring AI"
-description: "Why Fred and knowledge-flow stand out"
+description: "Understanding the Spring AI versus Fred offers"
 summary: "Understanding the Spring AI versus Fred offers"
 date: 2025-05-22T18:00:00+02:00
 lastmod: 2025-05-19T18:00:00+02:00
-draft: true
-weight: 810
+draft: false
+weight: 910
 toc: true
 seo:
   title: "Fred + knowledge-flow: Value Proposition"
