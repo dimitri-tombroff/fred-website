@@ -49,6 +49,10 @@ ai:
   timeout:
     connect: 5  # Time to wait for a connection in seconds
     read: 15    # Time to wait for a response in seconds
+  recursion:
+    recursion_limit: 40
+  leader:
+    max_steps: 5
   agents:
     GeneralistExpert:
       enabled: true
@@ -124,6 +128,10 @@ Key Configuration Settings
   * model: Specifies the AI model type, model name, and parameters (e.g., temperature).
   * categories: (Optional) Lists the expert’s domain or areas of specialization.
   * settings: (For certain experts, such as DocumentsExpert) Includes additional parameters like document_directory, chunk_size, and chunk_overlap.
+* Recursion Settings:
+  * recursion_limit: Sets the maximum recursion depth in Python, to prevent stack overflows during agent initialization.
+* Leader Settings:
+  * max_steps: Limits how many steps the leader can execute before stopping and returning a final answer.
 
 ## Developer Guide
 
