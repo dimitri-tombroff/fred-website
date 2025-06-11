@@ -88,6 +88,38 @@ self.model_with_tools = self.model.bind_tools(self.toolkit.get_tools())
 self.llm = self.model_with_tools
 ```
 
+Which gets its configuration via:
+
+```yaml
+    - name: K8SOperatorExpert
+      class_path: "agents.kubernetes_monitoring.k8s_operator_expert.K8SOperatorExpert"
+      enabled: false
+      mcp_servers:
+        - name: k8s-mcp-server
+          transport: sse
+          url: http://localhost:8081/sse # Run the k8s mcp server via docker compose
+          sse_read_timeout: 600 # 10 minutes. It is 5 minutes by default but it is too short.
+        #######################################
+        #### Example using STDIO transport ####
+        #######################################
+  agents:
+    - name: K8SOperatorExpert
+      class_path: "agents.kubernetes_monitoring.k8s_operator_expert.K8SOperatorExpert"
+      enabled: false
+      mcp_servers:
+        - name: prometheus-mcp-server
+          transport: stdio
+          command: uv
+          args:
+            - "--directory"
+            - "/home/xxx/Documents/github_repos/prometheus-mcp-server"
+            -  "run"
+            -  "src/prometheus_mcp_server/main.py"
+          env: 
+            PROMETHEUS_URL: "http://localhost:9091"
+      model: {}
+```
+
 With the Toolkit being the list of tools published via the MCP server.
 
 This allows the agent to run tools like:
@@ -95,7 +127,7 @@ This allows the agent to run tools like:
 - Aggregating energy per namespace
 - Returning summaries like "This deployment consumes energy equivalent to 3 electric kettles."
 
-By combining LangGraph’s structured control flow with real-time MCP metrics, Kimberley becomes a true observability expert for Kubernetes environments.
+By combining LangGraph’s structured control flow with real-time Prometheus metrics, Kimberley becomes a true observability expert for Kubernetes environments.
 
 ---
 
