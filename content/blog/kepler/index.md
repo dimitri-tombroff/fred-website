@@ -30,12 +30,12 @@ We’ve come a long way since our first [FrugalIT Inspector](https://paradox-inn
 
 Today, things are much simpler — and far more powerful — thanks to two major evolutions:
 
-1. The arrival of the first open-source **Kubernetes MCP (Metrics Collector Plugin)** server that standardizes metrics exposure.
+1. The arrival of the first open-source **Prometheus MCP (Model Context Protocol)** server that standardizes metrics exposure.
 2. The rapid progress of the [**Fred** open-source project](https://fredk8.dev), which now offers agentic observability out of the box.
 
 This post showcases how these two ingredients combine to make Kubernetes power analytics both accessible and intelligent. Our setup is quite simple:
 
-- An open-source **Kubernetes MCP (Metrics Collector Plugin)** server
+- An open-source **Prometheus MCP server**
 - Kepler](https://github.com/sustainable-computing-io/kepler) for energy usage estimation
 - Prometheus for metrics exposure
 
@@ -51,8 +51,7 @@ With this setup, Fred can now **observe and analyze energy and power consumption
 
 ## What We Did
 
-We deployed a lightweight MCP server to expose Kubernetes metrics in a clean, extensible way. We then deployed
-a kepler probe to our cluster.
+We deployed a lightweight MCP server to expose Kubernetes metrics in a clean, extensible way. We then deployed a kepler probe to our cluster.
 Kepler estimates power usage by reading performance counters and cgroups, and **publishes metrics to Prometheus**.
 
 These include:
@@ -88,6 +87,8 @@ self.toolkit = K8SOperatorToolkit(self.mcp_client)
 self.model_with_tools = self.model.bind_tools(self.toolkit.get_tools())
 self.llm = self.model_with_tools
 ```
+
+With the Toolkit being the list of tools published via the MCP server.
 
 This allows the agent to run tools like:
 - Fetching container or pod-level kepler_container_joules_total

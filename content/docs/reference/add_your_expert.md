@@ -195,6 +195,10 @@ MCP (Model Context Protocol) servers are used to enable real-time communication 
 In your configuration file (e.g., `config/configuration.yaml`), MCP servers are **listed** under each agent that supports communication via MCP.
 For example in an agent that can perform an analysis of a Kubernetes cluster using MCP server tools:
 
+We support various transports, matching the industry standards (`stdio`, `sse`, `streamble_http` and `websocket`)
+
+Here is an example of MCP servers using the `sse` and `stdio` transports:
+
 ```yaml {hl_lines=["5-9"]}
 agents:
   - name: K8SOperatorExpert
@@ -205,6 +209,16 @@ agents:
         transport: sse
         url: http://localhost:8081/sse
         sse_read_timeout: 600 # 5mins by default and can be overridden here (in this case 10min)
+      - name: prometheus-mcp-server
+        transport: stdio
+        command: uv
+        args:
+          - "--directory"
+          - "/home/xxx/Documents/github_repos/prometheus-mcp-server"
+          -  "run"
+          -  "src/prometheus_mcp_server/main.py"
+        env: 
+        PROMETHEUS_URL: "http://localhost:9091"
     model: {}
 ```
 
