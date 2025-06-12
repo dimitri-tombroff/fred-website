@@ -30,12 +30,12 @@ We’ve come a long way since our first [FrugalIT Inspector](https://paradox-inn
 
 Today, things are much simpler — and far more powerful — thanks to two major evolutions:
 
-1. The arrival of the first open-source **Kubernetes MCP (Metrics Collector Plugin)** server that standardizes metrics exposure.
+1. The arrival of the first open-source **Prometheus MCP (Model Context Protocol)** server that standardizes metrics exposure.
 2. The rapid progress of the [**Fred** open-source project](https://fredk8.dev), which now offers agentic observability out of the box.
 
 This post showcases how these two ingredients combine to make Kubernetes power analytics both accessible and intelligent. Our setup is quite simple:
 
-- An open-source **Kubernetes MCP (Metrics Collector Plugin)** server
+- An open-source **Prometheus MCP server**
 - Kepler](https://github.com/sustainable-computing-io/kepler) for energy usage estimation
 - Prometheus for metrics exposure
 
@@ -51,8 +51,7 @@ With this setup, Fred can now **observe and analyze energy and power consumption
 
 ## What We Did
 
-We deployed a lightweight MCP server to expose Kubernetes metrics in a clean, extensible way. We then deployed
-a kepler probe to our cluster.
+We deployed a lightweight MCP server to expose Kubernetes metrics in a clean, extensible way. We then deployed a kepler probe to our cluster.
 Kepler estimates power usage by reading performance counters and cgroups, and **publishes metrics to Prometheus**.
 
 These include:
@@ -89,12 +88,46 @@ self.model_with_tools = self.model.bind_tools(self.toolkit.get_tools())
 self.llm = self.model_with_tools
 ```
 
+Which gets its configuration via:
+
+```yaml
+    - name: K8SOperatorExpert
+      class_path: "agents.kubernetes_monitoring.k8s_operator_expert.K8SOperatorExpert"
+      enabled: false
+      mcp_servers:
+        - name: k8s-mcp-server
+          transport: sse
+          url: http://localhost:8081/sse # Run the k8s mcp server via docker compose
+          sse_read_timeout: 600 # 10 minutes. It is 5 minutes by default but it is too short.
+        #######################################
+        #### Example using STDIO transport ####
+        #######################################
+  agents:
+    - name: K8SOperatorExpert
+      class_path: "agents.kubernetes_monitoring.k8s_operator_expert.K8SOperatorExpert"
+      enabled: false
+      mcp_servers:
+        - name: prometheus-mcp-server
+          transport: stdio
+          command: uv
+          args:
+            - "--directory"
+            - "/home/xxx/Documents/github_repos/prometheus-mcp-server"
+            -  "run"
+            -  "src/prometheus_mcp_server/main.py"
+          env: 
+            PROMETHEUS_URL: "http://localhost:9091"
+      model: {}
+```
+
+With the Toolkit being the list of tools published via the MCP server.
+
 This allows the agent to run tools like:
 - Fetching container or pod-level kepler_container_joules_total
 - Aggregating energy per namespace
 - Returning summaries like "This deployment consumes energy equivalent to 3 electric kettles."
 
-By combining LangGraph’s structured control flow with real-time MCP metrics, Kimberley becomes a true observability expert for Kubernetes environments.
+By combining LangGraph’s structured control flow with real-time Prometheus metrics, Kimberley becomes a true observability expert for Kubernetes environments.
 
 ---
 
