@@ -91,17 +91,6 @@ self.llm = self.model_with_tools
 Which gets its configuration via:
 
 ```yaml
-    - name: K8SOperatorExpert
-      class_path: "agents.kubernetes_monitoring.k8s_operator_expert.K8SOperatorExpert"
-      enabled: false
-      mcp_servers:
-        - name: k8s-mcp-server
-          transport: sse
-          url: http://localhost:8081/sse # Run the k8s mcp server via docker compose
-          sse_read_timeout: 600 # 10 minutes. It is 5 minutes by default but it is too short.
-        #######################################
-        #### Example using STDIO transport ####
-        #######################################
   agents:
     - name: K8SOperatorExpert
       class_path: "agents.kubernetes_monitoring.k8s_operator_expert.K8SOperatorExpert"
@@ -123,7 +112,7 @@ Which gets its configuration via:
 With the Toolkit being the list of tools published via the MCP server.
 
 This allows the agent to run tools like:
-- Fetching container or pod-level kepler_container_joules_total
+- Fetching container or pod-level `kepler_container_joules_total`
 - Aggregating energy per namespace
 - Returning summaries like "This deployment consumes energy equivalent to 3 electric kettles."
 
