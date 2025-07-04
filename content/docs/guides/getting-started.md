@@ -31,7 +31,7 @@ git clone https://github.com/ThalesGroup/knowledge-flow.git   # optional RAG bac
 ```bash
 # backend secrets
 cd fred
-cp env.template config/.env
+cp config/env.template config/.env
 echo 'OPENAI_API_KEY=sk-...' >> config/.env
 ```
 
@@ -44,14 +44,12 @@ echo 'OPENAI_API_KEY=sk-...' >> config/.env
 ```bash
 # terminal 1 – backend
 cd fred/backend
-make build
 make run
 ```
 
 ```bash
 # terminal 2 – frontend
 cd fred/frontend
-make build
 make run
 ```
 
@@ -61,7 +59,6 @@ Need document RAG? Start Knowledge-Flow in a third terminal:
 
 ```bash
 cd knowledge-flow
-make dev
 make run         # Swagger: http://localhost:8111/knowledge/v1/docs
 ```
 
