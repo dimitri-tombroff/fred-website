@@ -125,6 +125,54 @@ And the agent replies as illustrated below:
 
 ---
 
+## Architecture
+
+Here is a recap schema to see the various parts in action: 
+
+{{< mermaiddiagram >}}
+flowchart TD
+    subgraph UI["🧑 User Interface (React UI)"]
+        ChatUI[Chat Interface]
+    end
+
+    subgraph AgenticBackend["🧠 Fred Agentic Backend"]
+        Fred[Main Agent: Fred]
+        Prompting[Prompt Engineering and Tools]
+        Tessa[Tabular Expert: Tessa]
+        Tessa --> Prompting
+        Fred -->|delegates tabular tasks| Tessa
+        Tessa -->|uses MCP tools| MCP
+    end
+
+    subgraph KnowledgeFlow["📚 Knowledge Flow Backend"]
+        API[Document and Data API]
+        DuckDB[DuckDB Tabular Store]
+        Formats[CSV / Parquet / Iceberg]
+        MCP[MCP Protocol Exposure]
+
+        API --> DuckDB
+        DuckDB --> Formats
+        DuckDB --> MCP
+    end
+
+    ChatUI -->|WebSocket + REST| Fred
+    ChatUI -->|REST| API
+
+    style ChatUI fill:#d0e1ff,stroke:#333,stroke-width:1.5px
+    style Fred fill:#ffe5cc,stroke:#333,stroke-width:1.5px
+    style Prompting fill:#ffd4aa,stroke:#333,stroke-dasharray: 3,3
+    style Tessa fill:#fff2cc,stroke:#333,stroke-width:1.5px
+    style API fill:#e2ffe2,stroke:#333,stroke-width:1.5px
+    style DuckDB fill:#ccf2cc,stroke:#333,stroke-width:1.5px
+    style MCP fill:#e6f7ff,stroke:#333,stroke-width:1.5px
+    style Formats fill:#f8f8f8,stroke:#888,stroke-dasharray: 5,5
+{{< /mermaiddiagram >}}
+
+
+
+
+> *Fred’s architecture shines here — open source, fast and modular. It lets teams deploy, experiment, and most importantly, explore with us a wide range of agentic topics. One promising direction: helping Tessa better understand and discriminate between datasets — not just by name, but by structure, semantics, and potential value.*
+
 ## Why This Matters
 
 With this feature:
