@@ -5,7 +5,7 @@ summary: "We use GPT-4 internally to automate Python code reviews and ensure com
 date: 2025-06-20T16:27:22+02:00
 lastmod: 2025-06-20T16:27:23+02:00
 draft: false
-weight: 1
+weight: 5
 categories: [tooling, backend, quality]
 tags:
   - openai
