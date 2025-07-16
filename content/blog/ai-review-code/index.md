@@ -6,14 +6,12 @@ date: 2025-06-20T16:27:22+02:00
 lastmod: 2025-06-20T16:27:23+02:00
 draft: false
 weight: 5
-categories: [tooling, backend, quality]
+categories: [devops, configuration-management, ai-review]
 tags:
-  - openai
   - code-quality
   - agentic
   - fastapi
   - devtools
-  - fred
   - backend
 contributors: [Dimitri Tombroff]
 pinned: false
