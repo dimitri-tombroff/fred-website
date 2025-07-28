@@ -6,77 +6,25 @@ draft: false
 weight: 810
 ---
 
-## What You Need
+## Quick Start for Fred
 
-| Tool | Why |
-|------|-----|
-| `make` | Drives common tasks |
-| `Python 3.12.8` + [`uv`](https://github.com/astral-sh/uv) | Backend deps |
-| `Node 22.13.0` + `npm`/`nvm` | Frontend deps |
-| *(optional)* Docker + VS Code Dev-Containers | Zero-install workflow |
+To get started with local development, follow the up-to-date instructions in the main repository:
 
----
+👉 **[https://github.com/ThalesGroup/fred](https://github.com/ThalesGroup/fred#readme)**
 
-## 1 · Clone the repos
+There you'll find:
 
-```bash
-git clone https://github.com/ThalesGroup/fred.git
-git clone https://github.com/ThalesGroup/knowledge-flow.git   # optional RAG backend
-```
+- Prerequisites (Python, Node, uv, make, etc.)
+- How to launch the **frontend and backend** with `make run`
+- Optional setup for **document RAG** with the [`knowledge-flow`](https://github.com/ThalesGroup/fred/tree/main/knowledge_flow_backend) backend.
+- Dev-container support with Docker and VS Code
+- Links to component-specific READMEs and production deployment tools
 
 ---
 
-## 2 · Add your OpenAI key
+For RAG and document capabilities, check out:
 
-```bash
-# backend secrets
-cd fred
-cp config/env.template config/.env
-echo 'OPENAI_API_KEY=sk-...' >> config/.env
-```
+👉 **[https://github.com/ThalesGroup/fred/knowledge_flow_backend](hhttps://github.com/ThalesGroup/fred/tree/main/knowledge_flow_backend)**
 
-*(Azure / Ollama keys follow the same pattern; see the linked READMEs.)*
-
----
-
-## 3 · Run Fred locally
-
-```bash
-# terminal 1 – backend
-cd fred/backend
-make run
-```
-
-```bash
-# terminal 2 – frontend
-cd fred/frontend
-make run
-```
-
-Open <http://localhost:5173> and log in with the mock `admin / admin` user.
-
-Need document RAG? Start Knowledge-Flow in a third terminal:
-
-```bash
-cd knowledge-flow
-make run         # Swagger: http://localhost:8111/knowledge/v1/docs
-```
-
----
-
-## 4 · Prefer Docker + VS Code?
-
-Both repos include Dev-Container setups that launch the whole stack (Fred, Knowledge-Flow, OpenSearch, MinIO, etc.) in one click.  
-See **fred/docs/DEV_CONTAINER.md** and **knowledge-flow/docs/DEV_CONTAINER.md** for details.
-
----
-
-## More Detail
-
-| Component | Deep-dive README |
-|-----------|------------------|
-| Fred backend | <https://github.com/ThalesGroup/fred/blob/main/backend/README.md> |
-| Fred frontend | <https://github.com/ThalesGroup/fred/blob/main/frontend/README.md> |
-| Knowledge-Flow backend | <https://github.com/ThalesGroup/knowledge-flow/blob/main/README.md> |
-
-For production-grade deployment (Keycloak, OpenSearch, MinIO, Postgres) use **fred-deployment-factory**: <https://github.com/ThalesGroup/fred-deployment-factory>
+Fred is evolving fast — always refer to the main README for the latest usage and setup instructions.
+This keeps your site simple, evergreen, and correctly directs users to the official entry point for installation, while preserving links to RAG functionality. Let me know if you want to preserve a short inline make run demo as a teaser.
