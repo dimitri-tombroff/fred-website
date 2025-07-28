@@ -14,7 +14,7 @@ seo:
   robots: ""
 ---
 
-## 🤖 Who is Fred?
+## Who is Fred?
 
 Fred is an open-source, agentic flow chatbot designed to coordinate a **team of expert agents**. It supports complex user queries by dynamically planning and routing tasks to specialized sub-agents.
 
@@ -77,7 +77,7 @@ ai:
 
 ---
 
-## 🚀 Trying Fred
+## Trying Fred
 
 1. **Enable experts** in the YAML config.
 2. **Set your API key** (`OPENAI_API_KEY=...` in `.env`).
@@ -89,7 +89,7 @@ See the [Getting Started guide](https://github.com/ThalesGroup/fred#readme) for 
 
 ---
 
-## 🧪 Experiment & Extend
+## Experiment & Extend
 
 - Try asking Fred complex questions to observe multi-agent collaboration.
 - Ask experts like `TabularExpert` or `DocumentsExpert` directly for focused queries.
@@ -97,7 +97,7 @@ See the [Getting Started guide](https://github.com/ThalesGroup/fred#readme) for 
 
 ---
 
-## 🧱 Want to Create Your Own Expert?
+## Want to Create Your Own Expert?
 
 - Create a class extending `AgentFlow`.
 - Implement `async_init()` with:

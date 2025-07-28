@@ -27,4 +27,3 @@ For RAG and document capabilities, check out:
 👉 **[https://github.com/ThalesGroup/fred/knowledge_flow_backend](hhttps://github.com/ThalesGroup/fred/tree/main/knowledge_flow_backend)**
 
 Fred is evolving fast — always refer to the main README for the latest usage and setup instructions.
-This keeps your site simple, evergreen, and correctly directs users to the official entry point for installation, while preserving links to RAG functionality. Let me know if you want to preserve a short inline make run demo as a teaser.
