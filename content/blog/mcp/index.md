@@ -5,7 +5,7 @@ summary: "Fred is now capable of serving and consuming components over the Model
 date: 2025-05-19T12:00:00+02:00
 lastmod: 2025-05-19T12:00:00+02:00
 draft: false
-weight: 40
+weight: 50
 categories: [architecture, mcp, open-source]
 tags:
   - agents

@@ -5,7 +5,7 @@ summary: "Fred can now observe power and energy usage in Kubernetes via MCP and 
 date: 2025-06-02T16:30:00+02:00
 lastmod: 2025-06-03T16:30:00+02:00
 draft: false
-weight: 6
+weight: 50
 categories: [kubernetes, observability]
 tags:
   - prometheus

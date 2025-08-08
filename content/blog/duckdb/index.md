@@ -5,7 +5,7 @@ summary: "Fred now supports agentic access to tabular data like CSV and Excel th
 date: 2025-07-11T14:00:00+02:00
 lastmod: 2025-07-11T14:00:00+02:00
 draft: false
-weight: 5
+weight: 50
 categories: [data, agents]
 tags:
   - duckdb

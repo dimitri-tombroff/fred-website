@@ -5,7 +5,7 @@ summary: "Rico, the document expert agent in Fred, now leverages Self-RAG-inspir
 date: 2025-08-05T17:00:00+02:00
 lastmod: 2025-08-03T17:00:00+02:00
 draft: false
-weight: 45
+weight: 48
 categories: [agents, update]
 tags:
   - langgraph

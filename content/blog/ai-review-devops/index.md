@@ -5,7 +5,7 @@ summary: "Instead of relying on fragile regex scripts or complex linters, Fred u
 date: 2025-07-14T19:00:00+02:00
 lastmod: 2025-07-14T19:00:00+02:00
 draft: false
-weight: 4
+weight: 50
 categories: [devops, configuration-management, ai-review]
 tags:
   - deployment

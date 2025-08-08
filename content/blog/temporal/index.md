@@ -5,7 +5,7 @@ summary: "Thanks to Temporal, Fred makes document ingestion as reliable as micro
 date: 2025-07-20T19:00:00+02:00
 lastmod: 2025-07-20T19:00:00+02:00
 draft: false
-weight: 4
+weight: 49
 categories: [architecture, ops, orchestration]
 tags:
   - temporal
