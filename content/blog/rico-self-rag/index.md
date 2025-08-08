@@ -1,10 +1,10 @@
 ---
 title: "Rico Learns to Reflect: Smarter Document Q&A with Self-RAG Techniques"
-description: "Our RagsExpert agent, Rico, just got an upgrade. Inspired by Self-RAG, Rico can now grade documents, rephrase questions, and retry intelligently to produce better answers."
+description: "Our RagsExpert agent, Rico, just got an upgrade. Inspired by Self-RAG, Rico now grade documents, rephrase questions, and retry intelligently to produce better answers."
 summary: "Rico, the document expert agent in Fred, now leverages Self-RAG-inspired strategies to assess document quality, retry with smarter queries, and generate more accurate answers. This post explains the improvements."
 date: 2025-08-05T17:00:00+02:00
 lastmod: 2025-08-03T17:00:00+02:00
-draft: true
+draft: false
 weight: 45
 categories: [agents, update]
 tags:
@@ -72,6 +72,7 @@ graph TD
   class F,G finalize;
 {{< /mermaiddiagram >}}
 
+This design echoes the principles of the ReAct framework, where agents iteratively reason and act based on observations — except Rico’s actions are internal: filtering documents, retrying queries, and improving his own responses.
 ---
 
 ## What’s New?
@@ -86,7 +87,7 @@ After generating a draft, Rico uses a second grader to determine whether the ans
 
 > Query Rewriting
 
-Rico now rewrites underperforming questions to improve retrieval, using a prompt engineered for semantic optimization. The language is preserved, but the structure is optimized for your vector database.
+Rico rewrites underperforming questions to improve retrieval, using a prompt optimized for semantic meaning. The language is preserved, but the structure is optimized for your vector database.
 
 ---
 
@@ -97,15 +98,17 @@ All of this is implemented as a clean LangGraph state machine, where:
 - Each node (e.g. `retrieve`, `grade_documents`, `generate`, etc.) is a typed async function.
 - Transitions are governed by simple decisions: should we generate, retry, or abort?
 - Document and answer grading use LLM-structured output (e.g. `GradeDocumentsOutput`, `GradeAnswerOutput`).
+- Rico's reasoning and retry loop is inspired by [ReAct](https://arxiv.org/abs/2210.03629), where agents observe and reflect before deciding to continue or stop.
 
-This makes Rico easy to extend, explainable, and testable — a key goal of the Fred platform. 
+
+This makes Rico easy to extend, explainable, and testable — a key goal of the Fred platform. LangGraph enables this by making agent flows declarative, modular, and observable — ideal for capturing the kind of structured reflection introduced in [Self-RAG](https://arxiv.org/abs/2308.03286).
 
 Rico now:
 - *Better answers*: Self-filtering removes noise and retries when needed.
 - *is more reliable*: Less likely to hallucinate from irrelevant data.
-- *is Closer to human-like reasoning*: Not just responding, but thinking before answering.
+- *is closer to human-like reasoning*: Not just responding, but thinking before answering.
 
-This update brings Rico closer to the vision behind Self-RAG: building agents that reflect, not just retrieve.
+This update brings Rico closer to the vision behind Self-RAG: building agents that reflect, not just retrieve. ---
 
 ---
 
@@ -129,8 +132,12 @@ Coming soon:
 - Explainability metadata (why did Rico rephrase?)
 - Integration with structured datasets, not just documents
 
----
-
-Curious to build your own Self-RAG-inspired agent? Join us at [fredk8.dev](https://fredk8.dev) — we’re building the future of explainable, agentic AI.
+Curious to build your own Self-RAG-inspired agent? Join us at [fredk8.dev](https://fredk8.dev).
 
 ---
+
+## References
+
+1. Shinn, N., Wang, J., Sanh, V., & Rush, A. M. (2023). Self-RAG: Learning to Retrieve, Generate, and Evaluate from Scratch. [arXiv:2308.03286](https://arxiv.org/abs/2308.03286)
+2. Yao, S., Zhao, J., et al. (2022). ReAct: Synergizing reasoning and acting in language models. [arXiv:2210.03629](https://arxiv.org/abs/2210.03629)
+3. LangGraph: A state-machine library for multi-step LLM flows. [GitHub](https://github.com/langchain-ai/langgraph)
