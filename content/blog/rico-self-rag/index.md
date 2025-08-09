@@ -72,7 +72,10 @@ graph TD
   class F,G finalize;
 {{< /mermaiddiagram >}}
 
+
+
 This design echoes the principles of the ReAct framework, where agents iteratively reason and act based on observations — except Rico’s actions are internal: filtering documents, retrying queries, and improving his own responses.
+
 ---
 
 ## What’s New?
