@@ -29,15 +29,11 @@ Brontë is designed to help users create and manage structured resources such as
 
 ---
 
-## Why It Matters
+## Impact for Users
 
-Traditionally, building technical templates involves complex **UI forms**, endless validation rules, and plenty of opportunities for user frustration. Brontë changes the game:
+Traditionally, building technical templates involves complex **UI forms**, endless validation rules, and plenty of opportunities for user frustration. Brontë changes the game. It offers an interactive conversational interface that guides the user step by step, validates key rules like variable usage, unique identifiers, and library association, and allows users to refine prompts and templates progressively through chat. Once approved, Brontë saves the resource directly into Fred’s knowledge base using a LangGraph MCP tool.  
 
-- It offers an **interactive conversational interface** that guides the user step by step.
-- It ensures resources follow the **mandatory YAML + body format** with `---` separators.
-- It validates key rules like variable usage for templates, unique identifiers, and library association.
-- Users can **iterate via chat** to refine prompts and templates, improving them progressively.
-- Once approved, Brontë persists the resource in Fred’s knowledge base using **a LangGraph MCP tool**.
+This is more than a simplification: it shows how an agent can act as a **co-designer of knowledge assets**, turning what used to be a technical chore into a collaborative experience.
 
 ---
 
@@ -50,72 +46,93 @@ Brontë relies on a synergy of orchestration, toolkits, and conditional MCP call
 - A **conditional MCP tool** that Brontë invokes only when it needs to call the Knowledge Flow backend.  
 - A **base system prompt** that enforces strict content rules.  
 
-Through conversation, the user explains what they want. Brontë then:
-1. Suggests a correctly formatted template or prompt.
-2. Verifies details like `id`, `kind`, and placeholders.
-3. Seeks user approval before finalizing.
-4. Executes the **MCP tool**, which calls the appropriate Knowledge Flow backend endpoints to persist or update the resource.
+Through conversation, the user explains what they want. Brontë then:  
+1. Suggests a correctly formatted template or prompt.  
+2. Verifies details like `id`, `kind`, and placeholders.  
+3. Seeks user approval before finalizing.  
+4. Executes the **MCP tool**, which calls the appropriate Knowledge Flow backend endpoints to persist or update the resource.  
 
-Here’s a high-level diagram of the workflow:
+---
+
+### High-level Workflow
+
+The first diagram shows the overall flow from the user, through Brontë, to the Knowledge Flow backend:
+
+<div style="text-align:center;">
+{{< mermaiddiagram >}}
+flowchart TB
+  %% --- UI ---
+  subgraph UI["🧑 User Interface (React Chat UI)"]
+    User[User]
+    ChatUI[Chat UI]
+    User --> ChatUI
+  end
+
+  %% --- Agentic Backend ---
+  subgraph AgenticBackend["🧠 Agentic Backend"]
+    subgraph Bronte["Brontë – Content Generator Expert"]
+      Reasoner[LangGraph Reasoner]
+      Toolkit[Content Generator Toolkit]
+      MCP[Conditional MCP Tool]
+      Reasoner --> Toolkit --> MCP
+    end
+  end
+
+  %% --- Knowledge Flow (abstract) ---
+  subgraph KnowledgeFlow["📚 Knowledge Flow Backend"]
+    ResourceAPI["Resources API"]
+    KB[("(Knowledge Base)")]
+    ResourceAPI --> KB
+  end
+
+  ChatUI -->|Conversational prompts| Reasoner
+  MCP -->|Persist / Update| ResourceAPI
+
+  %% --- Styles (Standard Pro palette) ---
+  style UI fill:#e3f2fd,stroke:#1565c0,stroke-width:1.5px,color:#000
+  style AgenticBackend fill:#fff3e0,stroke:#ef6c00,stroke-width:1.5px,color:#000
+  style Bronte fill:#90caf9,stroke:#1565c0,stroke-width:1.5px,color:#000
+  style KnowledgeFlow fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#000
+  style KB fill:#f5f5f5,stroke:#9e9e9e,stroke-dasharray: 5,5,color:#000
+  style ResourceAPI fill:#ffffff,stroke:#2e7d32,stroke-dasharray: 3,3,color:#000
+{{< /mermaiddiagram >}}
+</div>
+
+---
+
+### Backend Details
+
+The second diagram focuses specifically on the **Knowledge Flow backend** and the API surface it provides to Brontë:
 
 {{< mermaiddiagram >}}
-flowchart TD
-    subgraph UI["🧑 User Interface (React Chat UI)"]
-        User[User]
-        ChatUI[Chat UI]
-        User --> ChatUI
-    end
+flowchart TB
+  subgraph KnowledgeFlow["📚 Knowledge Flow Backend"]
+    Controller["ResourceController"]
+    Service["ResourceService"]
+    Store[("(Knowledge Base: Resources)")]
+    Controller --> Service --> Store
 
-    subgraph AgenticBackend["🧠 Agentic Backend"]
-        subgraph Bronte["Brontë - Content Generator Expert"]
-            Reasoner[LangGraph Reasoner]
-            Toolkit[Content Generator Toolkit]
-            MCP[Conditional MCP Tool]
-            Reasoner --> Toolkit --> MCP
-        end
-    end
+    API["Resources API
+    ───────────────
+    • GET /resources/schema
+    • POST /resources
+    • PUT /resources/{id}
+    • GET /resources/{id}
+    • GET /resources
+    • DELETE /resources/{id}"]
 
-    subgraph KnowledgeFlow["📚 Knowledge Flow Backend"]
-        note1["Manages resources (prompts & templates)"]
-        Controller["ResourceController"]
-        Service["ResourceService"]
-        Store[("(Knowledge Base: Resources)")]
+    Controller -. interacts with .-> API
+  end
 
-        Controller --> Service --> Store
-
-        Schema["GET /resources/schema"]
-        CreateRes["POST /resources"]
-        UpdateRes["PUT /resources/{id}"]
-        GetRes["GET /resources/{id}"]
-        ListRes["GET /resources"]
-        DeleteRes["DELETE /resources/{id}"]
-
-        Controller -.-> Schema
-        Controller -.-> CreateRes
-        Controller -.-> UpdateRes
-        Controller -.-> GetRes
-        Controller -.-> ListRes
-        Controller -.-> DeleteRes
-    end
-
-    ChatUI -->|Conversational prompts & iterative editing| Reasoner
-    MCP -->|Calls Knowledge Flow endpoints when needed| Controller
-
-    %% Styles
-    style UI fill:#cce5ff,stroke:#339,stroke-width:1.5px
-    style AgenticBackend fill:#ffddb3,stroke:#b35400,stroke-width:1.5px
-    style KnowledgeFlow fill:#d8f8d8,stroke:#2d7a2d,stroke-width:1.5px
-    style Store fill:#f0f0f0,stroke:#888,stroke-dasharray: 5,5
-    style note1 fill:#e6ffe6,stroke:#2d7a2d,stroke-width:1px,font-style:italic
-    style Schema fill:#ffffff,stroke:#888,stroke-dasharray: 3,3
-    style CreateRes fill:#ffffff,stroke:#888,stroke-dasharray: 3,3
-    style UpdateRes fill:#ffffff,stroke:#888,stroke-dasharray: 3,3
-    style GetRes fill:#ffffff,stroke:#888,stroke-dasharray: 3,3
-    style ListRes fill:#ffffff,stroke:#888,stroke-dasharray: 3,3
-    style DeleteRes fill:#ffffff,stroke:#888,stroke-dasharray: 3,3
+  %% --- Styles (Standard Pro palette) ---
+  style KnowledgeFlow fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#000
+  style Controller fill:#e3f2fd,stroke:#1565c0,stroke-width:1.5px,color:#000
+  style Service fill:#fff3e0,stroke:#ef6c00,stroke-width:1.5px,color:#000
+  style Store fill:#f5f5f5,stroke:#9e9e9e,stroke-dasharray: 5,5,color:#000
+  style API fill:#ffffff,stroke:#2e7d32,stroke-dasharray: 3,3,color:#000
 {{< /mermaiddiagram >}}
 
-**Step-by-step flow:**
+**Step-by-step flow:**  
 1. The **user** chats with Brontë through the React Chat UI.  
 2. The **LangGraph Reasoner** interprets the request and decides whether tools are needed.  
 3. The **Content Generator Toolkit** proposes validated templates/prompts.  
@@ -125,14 +142,10 @@ flowchart TD
 
 ---
 
-## Why It’s Astonishing
+## The Impact
 
-Instead of **burdening users with static forms**, Brontë delivers a **fluid, conversational experience**:
-- Users can ask for examples, corrections, or variations.
-- Iterative chat allows **progressive improvement of prompts and templates**.
-- The agent ensures compliance without requiring the user to memorize format rules.
-- The end result is **higher productivity and fewer errors**, with a UI that feels natural instead of bureaucratic.
+Brontë shifts the way users interact with complex resources. Instead of wrestling with rigid forms and validation rules, they can refine prompts and templates through a natural conversation. Examples, corrections, and variations emerge step by step until the resource is ready to be stored. The process is lighter, less error-prone, and feels more like collaboration than bureaucracy.  
 
----
+It is also a tangible example of Fred’s architecture at work: open source, packaged under Apache 2.0, and deployable on a laptop, a single server with Docker Compose, or Kubernetes. Brontë shows what can be built by a small team focusing on transparency and practicality, and why openness matters. By running on-premise as easily as in the cloud, Fred makes space for experimentation, adaptation, and innovation without locking anyone in.  
 
-👉 With Brontë, Fred demonstrates how **agentic UIs** can replace traditional, rigid form-driven workflows. It’s a leap forward in usability, turning complexity into guided collaboration.
+Brontë is not about grand claims. It is about showing that agentic UIs can already bring real value today, in a way that is accessible, reproducible, and collaborative.
