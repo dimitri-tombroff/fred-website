@@ -1,0 +1,17 @@
+{{/* Simple responsive gallery that loops over page images */}}
+{{ $cols := .Get "cols" | default 3 }}
+<style>
+  .fred-gallery { display:grid; grid-template-columns: repeat({{ $cols }}, minmax(0,1fr)); gap: 12px; }
+  .fred-gallery a { display:block; border-radius:8px; overflow:hidden; }
+  .fred-gallery img { width:100%; height:auto; display:block; }
+  @media (max-width: 900px) { .fred-gallery { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (max-width: 600px) { .fred-gallery { grid-template-columns: 1fr; } }
+</style>
+<div class="fred-gallery">
+  {{ range .Page.Resources.ByType "image" }}
+    {{ $thumb := .Fit "900x900" }} {{/* cheap, fast resize for grid */}}
+    <a href="{{ .RelPermalink }}" title="{{ .Title }}">
+      <img src="{{ $thumb.RelPermalink }}" alt="{{ .Title }}">
+    </a>
+  {{ end }}
+</div>
