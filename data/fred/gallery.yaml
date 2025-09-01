@@ -1,0 +1,19 @@
+items:
+  - src: /images/fred-oss.png
+    alt: "Fred OSS overview"
+    caption: "Fred OSS overview"
+  - src: /images/rico-pro.png
+    alt: "Rico Pro answering with sources"
+    caption: "Rico Pro"
+  - src: /images/sentinel.png
+    alt: "Sentinel: tool traces and steps"
+    caption: "Sentinel"
+  - src: /images/library-selection.png
+    alt: "Per conversation library selection"
+    caption: "Library selection"
+  - src: /images/knowledge-base.png
+    alt: "Document and libraries"
+    caption: "Libraries"
+  - src: /images/thoughts.png
+    alt: "Chain of thoughts"
+    caption: "Thoughts"
