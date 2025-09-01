@@ -1,26 +1,20 @@
 {{ define "main" }}
-<section class="section container-fluid home-compact py-3">
-  <div class="row align-items-center justify-content-center gx-1"> <!-- tighter gutter -->
-    <!-- LEFT: fully centered logo + title + lead + CTA -->
-    <div class="col-lg-7 text-center home-hero">
-      <img src="/images/fred.svg" alt="Fred Logo"
-           style="width:80px; height:auto; margin-bottom:10px;" class="img-fluid">
-      <h1 class="mb-2">{{ .Title }}</h1>
-      <p class="lead mb-3">{{ .Params.lead | safeHTML }}</p>
-      <a class="btn btn-primary btn-cta rounded-pill btn-lg my-2"
-         href="/docs/{{ if site.Params.doks.docsVersioning }}{{ site.Params.doks.docsVersion }}/{{ end }}guides/getting-started/"
-         role="button">Get Started</a>
-      {{ .Content }}
+<section class="section container-fluid mt-n3 pb-3">
+  <div class="text-center">
+    <img src="/images/fred.svg" alt="Fred Logo" style="width: 100px; margin-bottom: 20px;" class="img-fluid">
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-lg-12 text-center">
+      <h1>{{ .Title }}</h1>
     </div>
-
-    <!-- RIGHT: slim preview -->
-    <div class="col-lg-5 home-mini">
-      {{ partial "fred/mini-gallery.html" (dict "ctx" . "limit" 3) }}
+    <div class="col-lg-9 col-xl-8 text-center">
+      <p class="lead">{{ .Params.lead | safeHTML }}</p>
+      <a class="btn btn-primary btn-cta rounded-pill btn-lg my-3" href="/docs/{{ if site.Params.doks.docsVersioning }}{{ site.Params.doks.docsVersion }}/{{ end }}guides/getting-started/" role="button">Get Started</a>
+      {{ .Content }}
     </div>
   </div>
 </section>
 {{ end }}
-
 
 {{ define "sidebar-prefooter" }}
   {{ if site.Params.doks.backgroundDots -}}
