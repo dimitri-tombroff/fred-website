@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="{{ .Site.Language.Lang | default "en" }}">
+  <head>
+    {{- if templates.Exists "partials/head.html" -}}
+      {{ partial "head.html" . }}
+    {{- else -}}
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>{{ with .Title }}{{ . }} – {{ end }}{{ .Site.Title }}</title>
+      {{ range .Site.Params.customCSS }}<link rel="stylesheet" href="{{ . }}">{{ end }}
+    {{- end -}}
+  </head>
+  <body>
+    {{- if templates.Exists "partials/header.html" -}}
+      {{ partial "header.html" . }}
+    {{- end -}}
+
+    <main id="content">
+      {{ block "main" . }}{{ end }}
+    </main>
+
+    {{ block "sidebar-prefooter" . }}{{ end }}
+    {{ block "sidebar-footer" . }}{{ end }}
+
+    {{- if templates.Exists "partials/footer.html" -}}
+      {{ partial "footer.html" . }}
+    {{- end -}}
+
+    {{ range .Site.Params.customJS }}<script src="{{ . }}"></script>{{ end }}
+  </body>
+</html>
