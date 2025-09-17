@@ -1,31 +1,48 @@
 <!doctype html>
-<html lang="{{ .Site.Language.Lang | default "en" }}">
-  <head>
-    {{- if templates.Exists "partials/head.html" -}}
-      {{ partial "head.html" . }}
-    {{- else -}}
+<html lang="{{ .Site.LanguageCode | default (.Site.Language.Lang | default "en") }}" data-bs-theme="{{ site.Params.doks.colorMode | default "auto" }}">
+  {{ if templates.Exists "partials/head/head.html" -}}
+    {{ partial "head/head" . }}
+  {{- else if templates.Exists "partials/head.html" -}}
+    {{ partial "head.html" . }}
+  {{- else -}}
+    <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>{{ with .Title }}{{ . }} – {{ end }}{{ .Site.Title }}</title>
       {{ range .Site.Params.customCSS }}<link rel="stylesheet" href="{{ . }}">{{ end }}
-    {{- end -}}
-  </head>
-  <body>
-    {{- if templates.Exists "partials/header.html" -}}
+    </head>
+  {{- end }}
+  {{- if templates.Exists "partials/head/body-class.html" -}}
+    {{ partial "head/body-class" . }}
+  {{- end }}
+  {{- $classes := .Scratch.Get "class" -}}
+  <body class="{{ with $classes }}{{ delimit . " " }}{{ end }}"{{ if eq site.Params.doks.scrollSpy true }} data-bs-spy="scroll" data-bs-target="#toc" data-bs-root-margin="0px 0px -60%" data-bs-smooth-scroll="true" tabindex="0"{{ end }}>
+    {{- if templates.Exists "partials/header/header.html" -}}
+      {{ partial "header/header" . }}
+    {{- else if templates.Exists "partials/header.html" -}}
       {{ partial "header.html" . }}
-    {{- end -}}
-
-    <main id="content">
-      {{ block "main" . }}{{ end }}
-    </main>
-
+    {{- end }}
+    <div class="wrap container-{{ site.Params.doks.containerBreakpoint | default "lg" }}" role="document">
+      <div class="content">
+        {{- $isFluid := and (eq site.Params.doks.containerBreakpoint "fluid") (or (not (in .Site.Params.mainSections .Type)) (.IsNode)) -}}
+        {{- if $isFluid }}<div class="container p-0">{{ end -}}
+        {{ block "main" . }}{{ end }}
+        {{- if $isFluid }}</div>{{ end -}}
+      </div>
+    </div>
     {{ block "sidebar-prefooter" . }}{{ end }}
     {{ block "sidebar-footer" . }}{{ end }}
-
-    {{- if templates.Exists "partials/footer.html" -}}
+    {{- if templates.Exists "partials/footer/footer.html" -}}
+      {{ partial "footer/footer" . }}
+      {{ if templates.Exists "partials/footer/script-footer.html" -}}
+        {{ partial "footer/script-footer" . }}
+      {{- end }}
+      {{- if and (eq site.Params.doks.toTopButton true) (templates.Exists "partials/footer/to-top.html") -}}
+        {{ partial "footer/to-top" . }}
+      {{- end }}
+    {{- else if templates.Exists "partials/footer.html" -}}
       {{ partial "footer.html" . }}
-    {{- end -}}
-
+    {{- end }}
     {{ range .Site.Params.customJS }}<script src="{{ . }}"></script>{{ end }}
   </body>
 </html>
