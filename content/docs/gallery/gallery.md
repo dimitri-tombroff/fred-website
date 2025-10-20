@@ -8,7 +8,6 @@ weight: 820
 
 Below are real screenshots of the Fred chatbot UI: streaming replies, sources preview, and tool call traces.
 
-<!-- 👇 Compact, elegant thumbnails + built-in lightbox (no external libs) -->
 <style>
   /* Thumbnails — more vertical air + cleaner layout */
   .fred-thumbs {
@@ -90,46 +89,116 @@ Below are real screenshots of the Fred chatbot UI: streaming replies, sources pr
 </style>
 
 <div class="fred-thumbs" id="fredGallery">
+  
   <div>
-    <a class="fred-thumb" href="/images/fred-oss.png" data-caption="Fred OSS overview">
+    <a class="fred-thumb" href="/images/01-conversation-start.png" data-caption="Starting a new conversation in the UI.">
+      <img src="/images/01-conversation-start.png" alt="Starting a new conversation" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Starting a new conversation</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/library-selection.png" data-caption="Selecting relevant document libraries for a conversation.">
+      <img src="/images/library-selection.png" alt="Per conversation library selection" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Per-conversation library selection</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/06-document-summary.png" data-caption="Generating a summary of a document using a dedicated agent.">
+      <img src="/images/06-document-summary.png" alt="Document summary generation" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Document summary generation</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/09-document-source-citation.png" data-caption="Citations and source links included in the final answer.">
+      <img src="/images/09-document-source-citation.png" alt="Citations and source links" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Source citation in replies</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/07-document-preview.png" data-caption="Previewing the referenced source document without leaving the chat.">
+      <img src="/images/07-document-preview.png" alt="In-chat document preview" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">In-chat document preview</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/thoughts.png" data-caption="The optional 'Thoughts' panel showing the LLM's step-by-step reasoning.">
+      <img src="/images/thoughts.png" alt="Chain of thoughts" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Chain of thoughts panel</div>
+  </div>
+
+  <div>
+    <a class="fred-thumb" href="/images/04-document-libraries.png" data-caption="Organizing documents into distinct knowledge libraries.">
+      <img src="/images/04-document-libraries.png" alt="Document libraries management" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Document library overview</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/03-add-document.png" data-caption="Uploading new documents to a knowledge library.">
+      <img src="/images/03-add-document.png" alt="Uploading new documents" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Adding a new document</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/05-document-labels.png" data-caption="Applying labels (tags) to documents for better filtering and context.">
+      <img src="/images/05-document-labels.png" alt="Applying document labels" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Document labeling and metadata</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/08-document-agent-search.png" data-caption="Searching through documents using an Agent's retrieval capabilities.">
+      <img src="/images/08-document-agent-search.png" alt="Agent-driven document search" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Agent-driven document search</div>
+  </div>
+  
+  <div>
+    <a class="fred-thumb" href="/images/02-agent-hub.png" data-caption="The Agent Hub for managing all available agents.">
+      <img src="/images/02-agent-hub.png" alt="Agent Hub management page" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Agent Hub overview</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/010-agents-crew.png" data-caption="Configuring the crew membership for a Leader agent.">
+      <img src="/images/10-agents-crew.png" alt="Agent crew editor" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Crew membership editor</div>
+  </div>
+  
+  <div>
+    <a class="fred-thumb" href="/images/20-ops-logs.png" data-caption="The operational logs console for monitoring requests and traces.">
+      <img src="/images/20-ops-logs.png" alt="Operational logs console" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Operational logs console</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/21-ops-kpis.png" data-caption="The KPI dashboard showing performance metrics (latency, usage, cost).">
+      <img src="/images/21-ops-kpis.png" alt="KPI monitoring dashboard" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">KPI monitoring dashboard</div>
+  </div>
+
+  <div>
+    <a class="fred-thumb" href="/images/fred-oss.png" data-caption="The original Fred open-source chat interface.">
       <img src="/images/fred-oss.png" alt="Fred OSS overview" loading="lazy" decoding="async">
     </a>
     <div class="fred-caption">Fred OSS overview</div>
   </div>
   <div>
-    <a class="fred-thumb" href="/images/rico-pro.png" data-caption="Rico Pro answering with sources">
+    <a class="fred-thumb" href="/images/rico-pro.png" data-caption="An example of a powerful, specialized agent.">
       <img src="/images/rico-pro.png" alt="Rico Pro answering with sources" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">Rico Pro</div>
+    <div class="fred-caption">Specialized agent in action (Rico Pro)</div>
   </div>
   <div>
-    <a class="fred-thumb" href="/images/sentinel.png" data-caption="Sentinel: tool traces and steps">
+    <a class="fred-thumb" href="/images/sentinel.png" data-caption="Detailed tool call traces for transparency and debugging.">
       <img src="/images/sentinel.png" alt="Sentinel: tool traces and steps" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">Sentinel</div>
-  </div>
-  <div>
-    <a class="fred-thumb" href="/images/library-selection.png" data-caption="Library selection">
-      <img src="/images/library-selection.png" alt="Per conversation library selection" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Library selection</div>
-  </div>
-  <div>
-    <a class="fred-thumb" href="/images/knowledge-base.png" data-caption="Knowledge base">
-      <img src="/images/knowledge-base.png" alt="Document and libraries" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Libraries</div>
-  </div>
-  <div>
-    <a class="fred-thumb" href="/images/thoughts.png" data-caption="Thoughts">
-      <img src="/images/thoughts.png" alt="Chain of thoughts" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Thoughts</div>
+    <div class="fred-caption">Sentinel tool traces</div>
   </div>
 </div>
 
 
-<!-- Lightbox markup -->
 <div class="fred-lightbox" id="fredLightbox" aria-hidden="true">
   <button class="ctrl close" id="lbClose" aria-label="Close"><span>✕</span></button>
   <button class="ctrl prev" id="lbPrev" aria-label="Previous"><span>‹</span></button>
@@ -139,6 +208,7 @@ Below are real screenshots of the Fred chatbot UI: streaming replies, sources pr
 </div>
 
 <script>
+// (Unchanged JavaScript code to run the lightbox)
 (function() {
   const thumbs = Array.from(document.querySelectorAll('#fredGallery a'));
   const box = document.getElementById('fredLightbox');
