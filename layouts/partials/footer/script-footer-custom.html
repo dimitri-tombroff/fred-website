@@ -1,42 +1,126 @@
 {{/* Put your custom <script></script> tags here */}}
 <script>
-function toggleFullDiagram() {
-  const wrapper = event.target.closest('.mermaid-wrapper');
+let focusedMermaidWrapper = null;
+
+const MERMAID_FOCUS_LABEL = '🔍 Focus';
+const MERMAID_CLOSE_LABEL = '✕ Close';
+
+function setMermaidButtonState(wrapper, isFocused) {
+  const button = wrapper.querySelector('.mermaid-focus-toggle');
+  if (!button) {
+    return;
+  }
+
+  button.textContent = isFocused ? MERMAID_CLOSE_LABEL : MERMAID_FOCUS_LABEL;
+  button.setAttribute('aria-expanded', isFocused ? 'true' : 'false');
+  button.setAttribute('aria-label', isFocused ? 'Close diagram' : 'Focus diagram');
+}
+
+function applyMermaidFocusStyles(wrapper) {
+  if (!wrapper.dataset.baseStyle) {
+    wrapper.dataset.baseStyle = wrapper.getAttribute('style') || '';
+  }
+
+  const baseStyle = wrapper.dataset.baseStyle.trim();
+  const basePrefix = baseStyle ? `${baseStyle}; ` : '';
+
+  wrapper.classList.add('focused');
+  wrapper.style.cssText = `${basePrefix}position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: white; z-index: 1000; padding: 2rem; overflow: auto; display: flex; align-items: center; justify-content: center;`;
+}
+
+function clearMermaidFocusStyles(wrapper) {
+  wrapper.classList.remove('focused');
+
+  const baseStyle = wrapper.dataset.baseStyle || '';
+  if (baseStyle) {
+    wrapper.setAttribute('style', baseStyle);
+  } else {
+    wrapper.removeAttribute('style');
+  }
+}
+
+function pushMermaidFocusHistory() {
+  if (history.state && history.state.mermaidFocus) {
+    return;
+  }
+
+  const nextState = Object.assign({}, history.state || {}, { mermaidFocus: true });
+  history.pushState(nextState, '', window.location.href);
+}
+
+function openMermaidDiagram(wrapper) {
   const body = document.body;
   const diagram = wrapper.querySelector('.mermaid');
 
-  if (!wrapper.classList.contains('focused')) {
-    wrapper.classList.add('focused');
-    wrapper.style.position = 'fixed';
-    wrapper.style.top = '0';
-    wrapper.style.left = '0';
-    wrapper.style.width = '100vw';
-    wrapper.style.height = '100vh';
-    wrapper.style.backgroundColor = 'white';
-    wrapper.style.zIndex = '1000';
-    wrapper.style.padding = '2rem';
-    wrapper.style.overflow = 'auto';
-    wrapper.style.display = 'flex';
-    wrapper.style.alignItems = 'center';
-    wrapper.style.justifyContent = 'center';
-    body.style.overflow = 'hidden';
+  if (focusedMermaidWrapper && focusedMermaidWrapper !== wrapper) {
+    closeMermaidDiagram(focusedMermaidWrapper, { popHistory: false });
+  }
 
-    if (diagram) {
-      diagram.style.width = '100%';
-      diagram.style.height = 'auto';
-      diagram.style.maxWidth = '1200px';
-    }
+  focusedMermaidWrapper = wrapper;
+  applyMermaidFocusStyles(wrapper);
+  setMermaidButtonState(wrapper, true);
+  body.style.overflow = 'hidden';
 
-  } else {
-    wrapper.classList.remove('focused');
-    wrapper.removeAttribute('style');
-    body.style.overflow = '';
+  if (diagram) {
+    diagram.style.width = '100%';
+    diagram.style.height = 'auto';
+    diagram.style.maxWidth = '1200px';
+  }
 
-    if (diagram) {
-      diagram.removeAttribute('style');
-    }
+  pushMermaidFocusHistory();
+}
+
+function closeMermaidDiagram(wrapper, options = {}) {
+  if (!wrapper) {
+    return;
+  }
+
+  const body = document.body;
+  const diagram = wrapper.querySelector('.mermaid');
+
+  clearMermaidFocusStyles(wrapper);
+  setMermaidButtonState(wrapper, false);
+  body.style.overflow = '';
+
+  if (diagram) {
+    diagram.removeAttribute('style');
+  }
+
+  if (focusedMermaidWrapper === wrapper) {
+    focusedMermaidWrapper = null;
+  }
+
+  if (options.popHistory && history.state && history.state.mermaidFocus) {
+    history.back();
   }
 }
+
+function toggleFullDiagram(event) {
+  const target = event && event.target ? event.target : document.activeElement;
+  const wrapper = target ? target.closest('.mermaid-wrapper') : null;
+
+  if (!wrapper) {
+    return;
+  }
+
+  if (!wrapper.classList.contains('focused')) {
+    openMermaidDiagram(wrapper);
+  } else {
+    closeMermaidDiagram(wrapper, { popHistory: true });
+  }
+}
+
+window.addEventListener('popstate', () => {
+  if (focusedMermaidWrapper) {
+    closeMermaidDiagram(focusedMermaidWrapper, { popHistory: false });
+  }
+});
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && focusedMermaidWrapper) {
+    closeMermaidDiagram(focusedMermaidWrapper, { popHistory: true });
+  }
+});
 </script>
 
 {{/* EXAMPLE - only load script for production
