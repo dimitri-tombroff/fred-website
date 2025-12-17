@@ -35,7 +35,7 @@ This release changes that boundary. Fred now supports **A2A-standard agents as f
 
 Agent frameworks have matured quickly, but most remain optimized for Python-only development, single-process execution, and experimental or exploratory use cases. That is adequate for research, but less so when latency, memory determinism, and security isolation matter, or when teams need to use established stacks such as Spring Boot, Rust async runtimes, and Go services. In short, industrial agents need industrial architecture. 
 
-Fred agentic backend is a python-centric application leveraging langchain/langraph. It scales by adding more instances (pods) but is not yet fully ready for large scal Here is a look at its current architecture:
+Fred’s agentic backend is a Python-centric application leveraging LangChain/LangGraph. It already does its best with async execution and scales horizontally, but it is expected to scale even better with A2A agents running as standalone services. Here is a look at its current architecture:
 
 {{< mermaiddiagram >}}
 %%{init: {"themeVariables": {"fontSize": "16px"}}}%%
