@@ -117,6 +117,8 @@ Centralizing authorization through relationship graphs provides a high degree of
 
 By shifting to a ReBAC model, Fred ensures that its security infrastructure is as dynamic as the agentic workflows it supports, providing a robust, scalable, and mathematically sound foundation for resource management.    
 
+# ReBAC in action
+
 Here is a typical scenario. Each user has a profile and set of roles defined in Keycloak. For example, here is a view of Bob's profile:
 
 <figure style="text-align: center; margin-bottom: 2.5rem;"> <div onclick="openImageFullscreen(event)" style="cursor: zoom-in; display: inline-block; position: relative;" class="image-focus-wrapper"> <img src="./user-profile.png" alt="User profile" style="max-width: 100%; height: auto; width: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">  </div> <figcaption style="margin-top: 0.8rem; font-style: italic; color: #666; font-size: 0.9em;"> Figure 1: Bob's identity and group memberships managed within Keycloak. </figcaption> </figure>
@@ -141,4 +143,4 @@ For those interested in exploring the underlying technologies and the "Zanzibar"
 * [Google’s Zanzibar Paper](https://research.google/pubs/pub48190/): The foundational research paper describing the global, scalable authorization system that inspired OpenFGA.
 * [Keycloak Authorization Services](https://www.keycloak.org/docs/latest/authorization_services/): Documentation on managing identities and how Fred leverages Keycloak as the source of truth for group memberships.
 * [FGA Relationship Modeling Lab](https://openfga.dev/docs/modeling): A practical playground to test and visualize relationship-based models like the one used in Fred.
-* [CNCF Cloud Native Security](https://www.cncf.io/blog/2023/07/11/expanding-the-horizons-of-cloud-native-security-with-openfga/): An overview of why OpenFGA was accepted into the Cloud Native Computing Foundation and its role in modern security.
+* [CNCF Cloud Native Security](https://www.cncf.io/blog/2025/11/11/openfga-becomes-a-cncf-incubating-project/): An overview of why OpenFGA was accepted into the Cloud Native Computing Foundation and its role in modern security.
