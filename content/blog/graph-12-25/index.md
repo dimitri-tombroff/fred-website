@@ -1,7 +1,7 @@
 ---
-title: "Richard vs Rico — Agentic Duel in Fred"
+title: "Comparing Graph-Centric and Reflective RAG Agents in Fred"
 description: "Richard (GraphRAG) and Rico (reflective RAG) compared in Fred’s agentic backend, including faithfulness and relevancy results."
-summary: "A comparison of Richard’s graph-centric RAG and Rico’s reflective RAG in Fred, including architecture and evaluation metrics."
+summary: "A comparison of Fred’s graph-centric RAG agent (Richard) and reflective RAG agent (Rico), including architecture and evaluation metrics."
 date: 2025-12-17T12:07:05+01:00
 lastmod: 2025-12-17T12:07:05+01:00
 draft: false
@@ -17,7 +17,7 @@ contributors: [Thomas Hedan]
 pinned: false
 homepage: false
 seo:
-  title: "Richard vs Rico — Agentic Duel in Fred"
+  title: "Comparing Graph-Centric and Reflective RAG Agents in Fred"
   description: "Richard (GraphRAG) and Rico (reflective RAG) compared in Fred’s agentic backend, including faithfulness and relevancy results."
   canonical: "https://fredk8.dev/blog/richard-vs-rico-agentic-duel"
   robots: "index, follow"

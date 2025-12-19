@@ -5,7 +5,7 @@ summary: "Instead of relying on traditional form-based UIs, Brontë guides users
 date: 2025-08-18T10:00:00+02:00
 lastmod: 2025-08-18T10:00:00+02:00
 draft: false
-weight: 30
+weight: 50
 categories: [agents, content, automation]
 tags:
   - brontë

@@ -1,11 +1,11 @@
 ---
-title: "From Experiments to Industrial Agents: Fred’s A2A Bridge Enters the Stack"
+title: "Integrating External A2A Agents into Fred’s Backend"
 description: "How Fred’s agentic backend now bridges A2A-standard agents—written in Java, Rust, Go, or Python—into the UI, security model, and streaming experience."
 summary: "Fred now supports A2A agents alongside MCP agents. Developers can deploy standalone, language-agnostic agents and register them in Fred as first-class citizens. A new agentic bridge handles protocol translation, streaming adaptation, UI rendering, and security integration—unlocking industrial-grade agent development."
 date: 2025-12-12T10:00:00+02:00
 lastmod: 2025-12-12T10:00:00+02:00
 draft: false
-weight: 6
+weight: 50
 categories: [platform, architecture]
 tags:
   - agents
@@ -17,7 +17,7 @@ contributors: ["Nicolas Payneau, Dimitri Tombroff"]
 pinned: false
 homepage: false
 seo:
-  title: "From Experiments to Industrial Agents: Fred’s A2A Bridge Enters the Stack"
+  title: "Integrating External A2A Agents into Fred’s Backend"
   description: "Fred now bridges A2A-standard agents into its agentic backend—enabling language-agnostic, secure, and scalable agent development beyond Python-only stacks."
   canonical: "https://fredk8.dev/blog/fred-a2a-bridge"
   robots: "index, follow"

@@ -5,7 +5,7 @@ summary: "What started with CSV ingestion has grown into full SQL integration. W
 date: 2025-08-20T10:00:00+02:00
 lastmod: 2025-08-20T10:00:00+02:00
 draft: false
-weight: 10
+weight: 50
 categories: [agents, data, sql]
 tags:
   - sql

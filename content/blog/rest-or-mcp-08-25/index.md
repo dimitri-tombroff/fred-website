@@ -5,7 +5,7 @@ summary: "Fred uses REST for graph-driven RAG (Rico, Rico Pro) and MCP for tool-
 date: 2025-08-17T10:00:00+02:00
 lastmod: 2025-08-17T10:00:00+02:00
 draft: false
-weight: 42
+weight: 50
 categories: [architecture, agents, rag]
 tags:
   - rag

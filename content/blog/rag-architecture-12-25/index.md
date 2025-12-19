@@ -5,7 +5,7 @@ summary: "Fred’s latest release strengthens retrieval: Lucene HNSW with cosine
 date: 2025-12-11T17:00:00+02:00
 lastmod: 2025-12-11T17:00:00+02:00
 draft: false
-weight: 5
+weight: 50
 categories: [platform, update]
 tags:
   - rag
