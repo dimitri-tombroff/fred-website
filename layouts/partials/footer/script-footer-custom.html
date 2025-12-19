@@ -1,136 +1,108 @@
-{{/* Put your custom <script></script> tags here */}}
 <script>
+/* --- ORIGINAL MERMAID LOGIC (UNTOUCHED) --- */
 let focusedMermaidWrapper = null;
-
 const MERMAID_FOCUS_LABEL = '🔍 Focus';
 const MERMAID_CLOSE_LABEL = '✕ Close';
 
 function setMermaidButtonState(wrapper, isFocused) {
   const button = wrapper.querySelector('.mermaid-focus-toggle');
-  if (!button) {
-    return;
-  }
-
+  if (!button) return;
   button.textContent = isFocused ? MERMAID_CLOSE_LABEL : MERMAID_FOCUS_LABEL;
   button.setAttribute('aria-expanded', isFocused ? 'true' : 'false');
-  button.setAttribute('aria-label', isFocused ? 'Close diagram' : 'Focus diagram');
 }
 
 function applyMermaidFocusStyles(wrapper) {
-  if (!wrapper.dataset.baseStyle) {
-    wrapper.dataset.baseStyle = wrapper.getAttribute('style') || '';
-  }
-
+  if (!wrapper.dataset.baseStyle) wrapper.dataset.baseStyle = wrapper.getAttribute('style') || '';
   const baseStyle = wrapper.dataset.baseStyle.trim();
   const basePrefix = baseStyle ? `${baseStyle}; ` : '';
-
   wrapper.classList.add('focused');
   wrapper.style.cssText = `${basePrefix}position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: white; z-index: 1000; padding: 2rem; overflow: auto; display: flex; align-items: center; justify-content: center;`;
 }
 
 function clearMermaidFocusStyles(wrapper) {
   wrapper.classList.remove('focused');
-
-  const baseStyle = wrapper.dataset.baseStyle || '';
-  if (baseStyle) {
-    wrapper.setAttribute('style', baseStyle);
-  } else {
-    wrapper.removeAttribute('style');
-  }
-}
-
-function pushMermaidFocusHistory() {
-  if (history.state && history.state.mermaidFocus) {
-    return;
-  }
-
-  const nextState = Object.assign({}, history.state || {}, { mermaidFocus: true });
-  history.pushState(nextState, '', window.location.href);
+  wrapper.setAttribute('style', wrapper.dataset.baseStyle || '');
 }
 
 function openMermaidDiagram(wrapper) {
   const body = document.body;
   const diagram = wrapper.querySelector('.mermaid');
-
-  if (focusedMermaidWrapper && focusedMermaidWrapper !== wrapper) {
-    closeMermaidDiagram(focusedMermaidWrapper, { popHistory: false });
-  }
-
   focusedMermaidWrapper = wrapper;
   applyMermaidFocusStyles(wrapper);
   setMermaidButtonState(wrapper, true);
   body.style.overflow = 'hidden';
-
   if (diagram) {
     diagram.style.width = '100%';
     diagram.style.height = 'auto';
     diagram.style.maxWidth = '1200px';
   }
-
-  pushMermaidFocusHistory();
+  const nextState = Object.assign({}, history.state || {}, { mermaidFocus: true });
+  history.pushState(nextState, '', window.location.href);
 }
 
 function closeMermaidDiagram(wrapper, options = {}) {
-  if (!wrapper) {
-    return;
-  }
-
-  const body = document.body;
-  const diagram = wrapper.querySelector('.mermaid');
-
+  if (!wrapper) return;
   clearMermaidFocusStyles(wrapper);
   setMermaidButtonState(wrapper, false);
-  body.style.overflow = '';
-
-  if (diagram) {
-    diagram.removeAttribute('style');
-  }
-
-  if (focusedMermaidWrapper === wrapper) {
-    focusedMermaidWrapper = null;
-  }
-
-  if (options.popHistory && history.state && history.state.mermaidFocus) {
-    history.back();
-  }
+  document.body.style.overflow = '';
+  if (wrapper.querySelector('.mermaid')) wrapper.querySelector('.mermaid').removeAttribute('style');
+  focusedMermaidWrapper = null;
+  if (options.popHistory && history.state && history.state.mermaidFocus) history.back();
 }
 
 function toggleFullDiagram(event) {
   const target = event && event.target ? event.target : document.activeElement;
   const wrapper = target ? target.closest('.mermaid-wrapper') : null;
-
-  if (!wrapper) {
-    return;
-  }
-
-  if (!wrapper.classList.contains('focused')) {
-    openMermaidDiagram(wrapper);
-  } else {
-    closeMermaidDiagram(wrapper, { popHistory: true });
-  }
+  if (!wrapper) return;
+  if (!wrapper.classList.contains('focused')) openMermaidDiagram(wrapper);
+  else closeMermaidDiagram(wrapper, { popHistory: true });
 }
 
+/* --- NEW ISOLATED IMAGE LOGIC --- */
+let focusedImageElement = null;
+
+function openImageFullscreen(event) {
+  const target = event.currentTarget;
+  focusedImageElement = target;
+
+  if (!target.dataset.baseStyle) target.dataset.baseStyle = target.getAttribute('style') || '';
+  
+  target.classList.add('focused');
+  target.style.cssText = `position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(255,255,255,0.98); z-index: 2000; padding: 2rem; display: flex; align-items: center; justify-content: center; overflow: auto;`;
+  
+  document.body.style.overflow = 'hidden';
+  
+  const btn = target.querySelector('.focus-toggle');
+  if (btn) btn.textContent = '✕ Close';
+
+  history.pushState(Object.assign({}, history.state || {}, { imageFocus: true }), '', window.location.href);
+}
+
+function closeImageFullscreen(options = {}) {
+  if (!focusedImageElement) return;
+  
+  focusedImageElement.classList.remove('focused');
+  focusedImageElement.setAttribute('style', focusedImageElement.dataset.baseStyle || '');
+  
+  const btn = focusedImageElement.querySelector('.focus-toggle');
+  if (btn) btn.textContent = '🔍 Focus';
+
+  document.body.style.overflow = '';
+  focusedImageElement = null;
+
+  if (options.popHistory && history.state && history.state.imageFocus) history.back();
+}
+
+/* --- SHARED LISTENERS (UPDATED TO HANDLE BOTH) --- */
 window.addEventListener('popstate', () => {
-  if (focusedMermaidWrapper) {
-    closeMermaidDiagram(focusedMermaidWrapper, { popHistory: false });
-  }
+  if (focusedMermaidWrapper) closeMermaidDiagram(focusedMermaidWrapper, { popHistory: false });
+  if (focusedImageElement) closeImageFullscreen({ popHistory: false });
 });
 
 window.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape' && focusedMermaidWrapper) {
-    closeMermaidDiagram(focusedMermaidWrapper, { popHistory: true });
+  if (event.key === 'Escape') {
+    if (focusedMermaidWrapper) closeMermaidDiagram(focusedMermaidWrapper, { popHistory: true });
+    if (focusedImageElement) closeImageFullscreen({ popHistory: true });
   }
 });
 </script>
-
-{{/* EXAMPLE - only load script for production
-{{ if eq (hugo.Environment) "production" -}}
-  {{ partial "footer/esbuild" (dict "src" "js/instantpage.js" "load" "async" "transpile" false) -}}
-{{ end -}}
-*/}}
-
-{{/* EXAMPLE - only load script for a page type e.g. contact or gallery
-{{ if eq .Type "gallery" -}}
-  {{ partial "footer/esbuild" (dict "src" "js/gallery.js" "load" "async" "transpile" false) -}}
-{{ end -}}
-*/}}

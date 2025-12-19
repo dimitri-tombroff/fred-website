@@ -32,7 +32,7 @@ In traditional authorization systems, Role-Based Access Control (RBAC) often pro
 ReBAC offers a more scientific approach by modeling authorization as a directed graph. In this model, access is determined by the existence of a relationship path between a subject and an object. For Fred, this means that if a user has an "owner" relationship with a parent tag, the system automatically resolves their access to any documents linked to that tag via a "parent" relationship. This approach mirrors the familiar semantics of file system sharing while maintaining the performance required for agentic workflows.
 
 {{< mermaiddiagram >}}
-flowchart TD
+flowchart LR
   User["👤 User / Subject"]
   Group["👥 Keycloak Group"]
   TagP["📂 Parent Tag (Folder)"]
@@ -117,6 +117,21 @@ Centralizing authorization through relationship graphs provides a high degree of
 
 By shifting to a ReBAC model, Fred ensures that its security infrastructure is as dynamic as the agentic workflows it supports, providing a robust, scalable, and mathematically sound foundation for resource management.    
 
+Here is a typical scenario. Each user has a profile and set of roles defined in Keycloak. For example, here is a view of Bob's profile:
+
+<figure style="text-align: center; margin-bottom: 2.5rem;"> <div onclick="openImageFullscreen(event)" style="cursor: zoom-in; display: inline-block; position: relative;" class="image-focus-wrapper"> <img src="./user-profile.png" alt="User profile" style="max-width: 100%; height: auto; width: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">  </div> <figcaption style="margin-top: 0.8rem; font-style: italic; color: #666; font-size: 0.9em;"> Figure 1: Bob's identity and group memberships managed within Keycloak. </figcaption> </figure>
+
+Another user, Alice, shared her 'shared' folder with Bob:
+
+<figure style="text-align: center; margin-bottom: 2.5rem;"> <div onclick="openImageFullscreen(event)" style="cursor: zoom-in; display: inline-block; position: relative;" class="image-focus-wrapper"> <img src="./alice-shares.png" alt="Alice shares" style="max-width: 100%; height: auto; width: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">  </div> <figcaption style="margin-top: 0.8rem; font-style: italic; color: #666; font-size: 0.9em;"> Figure 2: Alice granting access permissions to Bob through the Fred UI. </figcaption> </figure>
+
+As a result, Bob now sees the corresponding folder in his UI. Notice the owner identity indicated on the right side of each folder; this helps users track resource ownership at a glance:
+
+<figure style="text-align: center; margin-bottom: 2.5rem;"> <div onclick="openImageFullscreen(event)" style="cursor: zoom-in; display: inline-block; position: relative;" class="image-focus-wrapper"> <img src="./bob-has-shared.png" alt="Bob has shared" style="max-width: 100%; height: auto; width: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">  </div> <figcaption style="margin-top: 0.8rem; font-style: italic; color: #666; font-size: 0.9em;"> Figure 3: Bob’s resource view showing inherited access from Alice. </figcaption> </figure>
+
+With this sharing in place, if Bob utilizes a RAG agent to query the shared library, the agent is authorized to retrieve the relevant context:
+
+<figure style="text-align: center; margin-bottom: 2.5rem;"> <div onclick="openImageFullscreen(event)" style="cursor: zoom-in; display: inline-block; position: relative;" class="image-focus-wrapper"> <img src="./bob-search.png" alt="Bob search" style="max-width: 100%; height: auto; width: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">   </div> <figcaption style="margin-top: 0.8rem; font-style: italic; color: #666; font-size: 0.9em;"> Figure 4: A RAG agent successfully questioning the shared document library. </figcaption> </figure>
 
 ## References & Further Reading
 
