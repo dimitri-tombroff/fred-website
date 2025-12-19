@@ -2,10 +2,10 @@
 title: "Comparing Graph-Centric and Reflective RAG Agents in Fred"
 description: "Richard (GraphRAG) and Rico (reflective RAG) compared in Fred’s agentic backend, including faithfulness and relevancy results."
 summary: "A comparison of Fred’s graph-centric RAG agent (Richard) and reflective RAG agent (Rico), including architecture and evaluation metrics."
-date: 2025-12-17T12:07:05+01:00
-lastmod: 2025-12-17T12:07:05+01:00
+date: 2025-12-16T12:07:05+01:00
+lastmod: 2025-12-16T12:07:05+01:00
 draft: false
-weight: 6
+weight: 50
 categories: [agents, architecture]
 tags:
   - rag

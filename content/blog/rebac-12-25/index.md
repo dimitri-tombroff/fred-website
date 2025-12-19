@@ -2,8 +2,8 @@
 title: "Relationship-Based Access Control in Fred with OpenFGA"
 description: "How Fred now applies relationship-based access control with OpenFGA so teams can share prompts, documents, and libraries with inheritance—just like Drive."
 summary: "Fred’s backend now ships a ReBAC model powered by OpenFGA. Tags, documents, and resource libraries inherit permissions, groups are first-class, and every check flows through centralized authorization—bringing Drive-like sharing semantics to agentic workflows."
-date: 2025-12-10T10:00:00+02:00
-lastmod: 2025-12-10T10:00:00+02:00
+date: 2025-12-18T10:00:00+02:00
+lastmod: 2025-12-18T10:00:00+02:00
 draft: false
 weight: 50
 categories: [security, platform]
@@ -95,7 +95,7 @@ The architectural flow demonstrates the separation of concerns between state man
 The integration between the Python `RebacEngine` and the OpenFGA schema introduces three specific mechanisms that ensure the system is both reactive and strictly consistent.
 
 ### 1. Contextual Tuples and Identity Decoupling
-Rather than synchronizing every Keycloak group membership change into the OpenFGA database—which can lead to race conditions—Fred uses **Contextual Tuples**. When a permission check is performed, the engine retrieves the user's current group list from Keycloak and sends it as part of the request payload. These "in-flight" relations exist only for the duration of that specific check, ensuring that authorization decisions are always based on the most up-to-date identity state.
+Rather than synchronizing every Keycloak group membership change into the OpenFGA database—which can lead to race conditions—Fred uses **Contextual Tuples**. When a   permission check is performed, the engine retrieves the user's current group list from Keycloak and sends it as part of the request payload. These "in-flight" relations exist only for the duration of that specific check, ensuring that authorization decisions are always based on the most up-to-date identity state.
 
 ### 2. Group Path Recursion
 Organizational groups are often hierarchical (e.g., `/engineering/dev/backend`). The engine's `_iterate_on_parent_child_path` logic decomposes these paths into individual parent-child relationship edges. This allows the OpenFGA schema to resolve access for a user in a sub-group by traversing upward to a parent group that was granted access to a resource, effectively mirroring the organizational structure within the authorization graph.
