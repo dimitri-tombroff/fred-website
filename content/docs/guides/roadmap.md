@@ -1,7 +1,7 @@
 ---
 title: "Roadmap"
 description: "Fred platform priorities for March to May 2026."
-summary: "Benchmarking and observability, Temporal + ClickHouse adoption, ReAct/Graph runtime convergence, multimodal config management, MCP gateway prototyping, and validation apps for model quality."
+summary: "Benchmarking and observability, UI revamp, Temporal + ClickHouse adoption, ReAct/Graph runtime convergence, multimodal config management, MCP gateway prototyping, validation apps, and prompt governance."
 slug: "roadmap"
 aliases:
   - "/docs/roadmap-next-3-months/"
@@ -12,7 +12,7 @@ weight: 840
 toc: true
 seo:
   title: "Fred Roadmap - March to May 2026"
-  description: "Roadmap for Fred: observability, runtime evolution, configuration management, MCP gateways, and model quality validation."
+  description: "Roadmap for Fred: observability, UI revamp, runtime evolution, configuration and prompt governance, MCP gateways, and model quality validation."
   canonical: ""
   robots: "index, follow"
 ---
@@ -44,6 +44,12 @@ For terminology used below (Temporal, ClickHouse, KPI, MCP, and more), see the [
 5. **MCP gateways and validation apps**
    Prototype gateway-based MCP integration (obot-like approach) and enable team admins to deploy validation apps for model drift and embedding quality monitoring.
 
+6. **UI revamp and collaboration UX**
+   Deliver a major UI revamp to reduce technical debt and, more importantly, revisit the full team experience across libraries, corpus usage, agents, and prompts.
+
+7. **Prompt management governance**
+   Build cleaner prompt management to support safe governance, reuse, versioning, and validation workflows.
+
 ---
 
 ## Timeline
@@ -53,12 +59,14 @@ For terminology used below (Temporal, ClickHouse, KPI, MCP, and more), see the [
 ### Focus
 - Observability and benchmark foundations
 - Configuration baseline hardening
+- UI revamp foundations
 
 ### Planned outcomes
 - Benchmark tool: expand repeatable scenarios (latency, throughput, tool-call heavy flows).
 - KPI layer: improve metric consistency (runtime, model, tool, storage, and queue dimensions).
 - Dashboard baseline: define a small "must-watch" operational view for daily tracking.
 - Configuration: stabilize catalog patterns (`agents`, `models`, `mcp`) and validate schema strictness for future multimodal support.
+- UI revamp: launch the first redesign wave to improve UX for team collaboration across libraries, corpus, agents, and prompts while reducing frontend technical debt.
 
 ### Success criteria
 - Teams can run the same benchmark suite and compare results across builds.
@@ -90,6 +98,7 @@ For terminology used below (Temporal, ClickHouse, KPI, MCP, and more), see the [
 ### Focus
 - Validation and production-readiness loop
 - Admin tooling and gateway prototype validation
+- Prompt governance completion
 
 ### Planned outcomes
 - Validation apps: allow team administrators to deploy validation workflows on Fred.
@@ -97,11 +106,13 @@ For terminology used below (Temporal, ClickHouse, KPI, MCP, and more), see the [
   - Embedding quality monitoring
 - MCP gateways: deliver a concrete prototype and document operational patterns.
 - End-to-end quality pass: benchmark + KPI + runtime stability review before next release cycle.
+- Prompt management: deliver a cleaner governance-ready model with reusable prompt assets, versioning, and safe validation before rollout.
 
 ### Success criteria
 - Admin teams can run periodic validation checks without custom scripts.
 - Gateway prototype is usable for real integration testing.
 - Release decisions are backed by measurable benchmark and quality signals.
+- Teams can govern prompt changes with traceable versions and validation gates.
 
 ---
 
