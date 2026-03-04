@@ -3,7 +3,7 @@ title: "Licensing"
 description: "Fred's architecture combines open and inner source components. This page clarifies what’s public and what’s private."
 summary: "Understand which parts of Fred are open source, which are internal, and how to extend both through agents and processors."
 date: 2023-09-07T16:13:18+02:00
-lastmod: 2025-05-13T09:00:00+02:00
+lastmod: 2026-03-04T10:00:00+02:00
 draft: false
 weight: 910
 toc: true
@@ -16,7 +16,7 @@ seo:
 
 Check out the new [architecture blog post](/blog/introducing-the-new-fred-architecture-modular-agentic-and-knowledge-aware/) for a full overview of Fred’s modular design. This page focuses on **licensing boundaries** and the distinction between *open source* and *inner source* components.
 
-Fred is an open source initiative that fosters multi-agent experimentation and development.
+Fred is an open source initiative focused on production-grade, tool-using agent systems.
 
 While not originally intended for production use, Fred can be deployed and extended to serve real-world needs — especially in secure, regulated environments. Its modularity allows you to plug in your own **agents** and **document processors**, many of which are use-case specific and remain internal — what we call *inner source*.
 
@@ -70,8 +70,8 @@ The following components are fully open and available under the `fred-agent` Git
 
 - **Frontend**: A React-based chat UI
 - **Fred Backend**:
-  - FastAPI service for session, streaming, and agent orchestration
-  - LangGraph-based agents (e.g. `Leader`, `Dominic`)
+  - FastAPI service for session, streaming, and agent runtime orchestration
+  - LangGraph-based agents (v1 compatibility + v2 definitions)
 - **Knowledge Flow**:
   - Document upload, ingestion, processing, and vector search APIs
   - Includes basic document processors (e.g. text extract, vectorize)
@@ -120,9 +120,9 @@ Inner source processors include richer, domain-tuned pipelines.
 
 You can:
 - Run a working local system with UI + agents + document ingestion
-- Upload documents and chat with agents like `Leader` or `Dominic`
+- Upload documents and chat with built-in agents (for example ReActV2, Rico, Archie)
 - Extend the system with your own:
-  - 🧠 Agents or Leaders
+  - 🧠 Agents
   - 📄 Document processors
 - Use it as a base for research, demos, or internal tooling
 
@@ -139,4 +139,4 @@ You can:
 Fred gives you the foundation to build what you need — whether you’re a research team, product group, or infrastructure developer.
 
 💡 Curious how to get started?  
-Check out the [documentation](/guidance/overview) or explore the [source on GitHub](https://github.com/fred-agent).
+Check out the [documentation](/docs/guides/getting-started/) or explore the [source on GitHub](https://github.com/ThalesGroup/fred).

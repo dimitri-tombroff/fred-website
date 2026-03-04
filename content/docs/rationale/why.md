@@ -1,9 +1,9 @@
 ---
 title: "Why Fred - A Developer Manifesto"
 description: "Fred is the missing layer between LangChain and real-world agentic applications. Learn why it's built for developers — not just demos."
-summary: "Fred makes it easy to build, test, and run tool-using, multi-agent systems. If you're a developer tired of redoing orchestration, async, or tool plumbing — start here."
+summary: "Fred makes it practical to build tool-using agents with strong models, clean runtime boundaries, and production-grade operations."
 date: 2025-05-22T18:00:00+02:00
-lastmod: 2025-05-19T18:00:00+02:00
+lastmod: 2026-03-04T10:00:00+02:00
 draft: false
 weight: 910
 toc: true
@@ -17,88 +17,65 @@ seo:
 You want to build an agent that does more than answer questions.
 
 You want it to:
+
 - Use tools
-- Coordinate with others
+- Stay predictable
 - Run in production
-- And not fight with lifecycle, async bugs, or YAML spaghetti.
+- And avoid infrastructure glue code.
 
 ## Fred is for you.
 
-Fred is an **agentic framework built by practitioners**, not just to demo ideas — but to run real agents, securely and repeatedly.
+Fred is an **agentic framework built by practitioners** to run real systems in production, not just demos.
 
 ---
 
-## 🔍 What Fred gives you (that’s surprisingly rare)
+## What Fred gives you
 
-- ✅ **LangGraph-powered agents**, with multi-step flows, conditionals, and state.
-- ✅ **Tools + Experts** — like `TabularExpert`, `DocumentsExpert`, `RagsExpert` — that actually work out of the box.
-- ✅ **Leader agents** that plan, delegate, and summarize results across experts.
-- ✅ **Built-in support** for OpenAI, Azure, Ollama, and real backend integration (RAG, vector search, SQL).
-- ✅ **Full lifecycle support**: from dev notebooks to Docker to Kubernetes.
+- LangGraph-powered agents with clear state and structured execution.
+- Tool-first runtime: builtin tools, MCP tools, and custom Python tools.
+- Catalog-driven model selection and routing (`models_catalog.yaml`).
+- Production scaffolding: auth, observability, storage, deployment.
+- End-to-end stack: frontend, agentic backend, knowledge-flow backend.
 
 ---
 
-## 🚀 Agents are easy to build
+## Agents are easy to build
 
-Define a new agent in seconds:
+You can author a minimal v2 ReAct agent with local tools:
 
 ```python
-class MyAgent(AgentFlow):
-    def __init__(self, settings: AgentSettings):
-        self.model = get_model(settings.model)
-        self._graph = self._build_graph()
-        super().__init__(..., model=self.model, graph=self._graph)
+from agentic_backend.core.agents.v2.authoring import ReActAgent, ToolContext, ToolOutput, tool
 
-    def _build_graph(self): ...
+@tool(tool_ref="sample.math.add", description="Add two numbers.")
+def add_numbers(ctx: ToolContext, left: float, right: float) -> ToolOutput:
+    return ctx.json({"total": left + right}, text=f"{left} + {right} = {left + right}")
+
+class Definition(ReActAgent):
+    agent_id = "sample.tutorial.tools.v2"
+    role = "Tutorial Tools Sample"
+    tools = (add_numbers,)
 ```
 
-Need tools? Add `toolkit`, bind tools, and use `ToolNode`.  
-Need async? Just implement `async_init()` — it's all wired for you.
-
-Fred abstracts the *hard parts* — async FastAPI, stateful memory, WebSocket streaming — so you can focus on logic.
+This keeps business logic close to the agent code and avoids low-level runtime plumbing.
 
 ---
 
-## 🧩 Static or Dynamic
+## Configuration that stays manageable
 
 Fred supports:
-- ✅ Declarative YAML-based agent loading
-- ✅ Dynamic runtime creation (via API or code)
-- ✅ Integration with MCP services (toolchains, databases, clusters, etc.)
 
-Everything is typed, clean, and minimal.
+- YAML agent catalog (`agents_catalog.yaml`)
+- YAML model catalog (`models_catalog.yaml`)
+- Rule-based model routing for capability and operation scopes
 
----
-
-## What takes time without Fred
-
-- Getting async + tool + graph orchestration to *not break*
-- Reusing models and toolkits across sessions without bugs
-- Hooking LangGraph + WebSockets + FastAPI the right way
-- Explaining to others what’s happening
-
-You’ll spend hours or days debugging what Fred gives you in minutes.
-
----
-
-## For data scientists too
-
-Want to test your toolchain in a notebook? Easy.
-
-```python
-agent = TabularExpert(agent_settings)
-await agent.async_init()
-await agent.compiled_graph.ainvoke({"messages": [HumanMessage(...)]})
-```
-
-Fred works with LangChain and LangGraph directly.  
-No lock-in. No code generation. Just Python.
+You can start local with YAML and later move to DB-backed configuration without rewriting runtime logic.
 
 ---
 
 ## TL;DR
 
-Fred is the **missing layer** between LangChain experiments and real agentic applications.  
-It’s built to help you create serious, tool-using, multi-agent systems **without getting lost in infra**.
+Fred is the layer between LLM experiments and production agent systems.
+
+It helps you ship tool-using agents with strong models, explicit runtime behavior, and operational discipline.
 
 Try it.

@@ -16,7 +16,7 @@ There you'll find:
 
 - Prerequisites (Python, Node, uv, make, etc.)
 - How to launch the **frontend and backend** with `make run`
-- Optional setup for **document RAG** with the [`knowledge-flow`](https://github.com/ThalesGroup/fred/tree/main/knowledge_flow_backend) backend.
+- Optional setup for **document RAG** with the [`knowledge-flow`](https://github.com/ThalesGroup/fred/tree/main/knowledge-flow-backend) backend.
 - Dev-container support with Docker and VS Code
 - Links to component-specific READMEs and production deployment tools
 
@@ -24,6 +24,6 @@ There you'll find:
 
 For RAG and document capabilities, check out:
 
-👉 **[https://github.com/ThalesGroup/fred/knowledge_flow_backend](hhttps://github.com/ThalesGroup/fred/tree/main/knowledge_flow_backend)**
+👉 **[https://github.com/ThalesGroup/fred/tree/main/knowledge-flow-backend](https://github.com/ThalesGroup/fred/tree/main/knowledge-flow-backend)**
 
 Fred is evolving fast — always refer to the main README for the latest usage and setup instructions.

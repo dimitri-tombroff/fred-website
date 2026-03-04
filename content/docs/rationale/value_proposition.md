@@ -3,7 +3,7 @@ title: "Value Proposition"
 description: "Why Fred and knowledge-flow stand out"
 summary: "Fred and knowledge-flow offer a production-ready, open, and modular foundation for building real-world, agentic applications — beyond demos and UIs."
 date: 2025-07-25T19:00:00+02:00
-lastmod: 2025-07-25T19:00:00+02:00
+lastmod: 2026-03-04T10:00:00+02:00
 draft: false
 weight: 960
 toc: true
@@ -29,22 +29,22 @@ Fred and knowledge-flow are more than just a wrapper around an LLM or a UI for c
 
 ### Full agentic backend
 
-Fred uses [LangGraph](https://github.com/langchain-ai/langgraph) to model complex workflows across multiple agents:
+Fred uses [LangGraph](https://github.com/langchain-ai/langgraph) to model robust workflows in a tool-first architecture:
 
-- Delegation to domain-specific agents (`Dominic`, `Tessa`, `Rico`, etc.)
+- Structured state transitions and deterministic runtime paths
 - Streaming responses and tool integration
 - WebSocket + REST APIs for real-time interactivity
-- Agents subclass `AgentFlow`, with clean `async_init()` lifecycles
+- v2 agent definitions and catalog-driven loading
 
 ### Tool-augmented experts
 
-Fred makes tool-using agents a first-class citizen. Each expert can bind to:
+Fred makes tool-using agents a first-class citizen. Each agent can bind to:
 
 - External tools via MCP (e.g., SQL over tabular data, vector search)
 - Custom LangChain-compatible tools
 - Prebuilt LangGraph nodes (e.g., `ToolNode`) for seamless execution
 
-Agents like `TabularExpert` and `RagsExpert` show how external capabilities are integrated with reasoning and planning — all declaratively.
+This aligns with the current direction: **strong model + explicit tools + observable runtime**, without requiring a coordinator agent pattern.
 
 ### Document-aware reasoning
 
@@ -56,7 +56,7 @@ The `knowledge-flow` backend handles ingestion, parsing, chunking, vectorization
 
 ### Modular, composable, and decoupled
 
-Fred and knowledge-flow communicate via **clean APIs** and support **MCP (Multi-Component Protocol)** to connect to:
+Fred and knowledge-flow communicate via **clean APIs** and support **MCP (Model Context Protocol)** to connect to:
 
 - External toolchains (like a Kubernetes analyzer)
 - Custom vector or tabular backends
@@ -69,7 +69,7 @@ You can plug in new components — or replace existing ones — without rewritin
 Fred is production-minded:
 
 - Authentication and access control
-- Configurable via YAML + `.env`
+- Configurable via YAML catalogs + `.env`
 - On-prem and cloud-ready
 - Clean React UI backed by RTK Query and WebSockets
 - Compatible with Docker, Dev Containers, Kubernetes
@@ -78,15 +78,14 @@ Fred is production-minded:
 
 ## Compared to typical OSS agent frameworks
 
-| Feature / Goal                  | Fred + knowledge-flow        | OpenWebUI / Flowise / etc.     |
-|-------------------------------|------------------------------|--------------------------------|
-| Multi-agent orchestration     | ✅ LangGraph workflows         | ❌ Often single-agent logic     |
-| Secure document lifecycle     | ✅ Full content + metadata mgmt | ❌ Basic file upload only       |
-| Tool-augmented experts        | ✅ MCP + bindable LangChain tools | ❌ Minimal or static tools      |
-| Async agent lifecycle         | ✅ `async_init()` with tools + graph | ❌ Often blocking / static     |
-| Modular components (MCP)      | ✅ Plug in custom tools/agents | ❌ Tooling often hardcoded      |
-| Real-time streaming & UI      | ✅ WebSocket + RTK Query       | ⚠️ Often polling or static      |
-| Co-innovation and governance  | ✅ Designed for partnerships   | ❌ Lacks clear extension model  |
+| Feature / Goal | Fred + knowledge-flow | OpenWebUI / Flowise / etc. |
+|----------------|------------------------|-----------------------------|
+| Tool-first runtime | ✅ Explicit tools + typed flows | ⚠️ Varies by plugin |
+| Model routing by policy | ✅ YAML catalog + rules | ❌ Usually per-agent static |
+| Secure document lifecycle | ✅ Full content + metadata mgmt | ❌ Basic file upload only |
+| Modular components (MCP) | ✅ Plug custom tools/services | ❌ Tooling often hardcoded |
+| Real-time streaming & UI | ✅ WebSocket + RTK Query | ⚠️ Often polling or static |
+| Co-innovation and governance | ✅ Designed for partnerships | ❌ Lacks clear extension model |
 
 ---
 
@@ -103,8 +102,8 @@ Fred is open source not to reinvent frameworks, but to:
 ## Learn More
 
 - 👉 [Fred on GitHub](https://github.com/ThalesGroup/fred)
-- 👉 [agentic_backend README](https://github.com/ThalesGroup/fred/tree/main/backend/agentic_backend)
-- 👉 [knowledge-flow](https://github.com/ThalesGroup/knowledge-flow)
+- 👉 [agentic-backend README](https://github.com/ThalesGroup/fred/tree/main/agentic-backend)
+- 👉 [knowledge-flow-backend README](https://github.com/ThalesGroup/fred/tree/main/knowledge-flow-backend)
 
 ---
 

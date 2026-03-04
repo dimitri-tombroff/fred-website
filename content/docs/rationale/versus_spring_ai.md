@@ -3,7 +3,7 @@ title: "Fred vs. Spring AI"
 description: "Understanding the Spring AI versus Fred offers"
 summary: "Understanding the Spring AI versus Fred offers"
 date: 2025-05-22T18:00:00+02:00
-lastmod: 2025-05-19T18:00:00+02:00
+lastmod: 2026-03-04T10:00:00+02:00
 draft: false
 weight: 910
 toc: true
@@ -18,7 +18,7 @@ seo:
 
 ## Overview
 
-Fred is an open-source platform for deploying intelligent assistants that **plan**, **use tools**, **cite sources**, and **explain their reasoning** — powered by modular knowledge flows and agentic orchestration.
+Fred is an open-source platform for deploying intelligent assistants that **use tools**, **cite sources**, and **run with observable runtime behavior** — powered by modular knowledge flows and an agentic backend.
 
 In contrast, [Spring AI](https://spring.io/projects/spring-ai) is a developer-focused Java library designed to simplify access to LLMs and AI tooling in Spring Boot applications.
 
@@ -32,7 +32,7 @@ Spring AI is a rapidly evolving library that provides:
 - Easy integration with LLMs (OpenAI, Ollama, etc.)
 - Embedding and vector store support
 - Declarative chat templates, tool use, and memory
-- **Model Composition and Prompting (MCP)**: an orchestration framework for chaining models, prompts, tools, and routing logic
+- **Model Context Protocol (MCP)** integrations for tool connectivity
 
 It is ideal for **Java developers building AI-enhanced backend services**.
 
@@ -42,21 +42,20 @@ It is ideal for **Java developers building AI-enhanced backend services**.
 
 Fred provides a **higher-level agentic architecture** designed for both developers **and end users**. It’s composed of:
 
-### 1. Multi-Agent Planning and Execution
+### 1. Tool-first agent runtime
 
 Fred uses:
-- A planning → execution → validation loop
 - LangGraph for structured, stateful agent flows
-- Experts ("agentic flows") dynamically selected per step
-- Step-wise execution with metadata, supervision, and replanning
+- Explicit tool invocation with typed payloads
+- Model routing policies for selecting model profiles per capability/operation
 
-> 🟢 Spring AI MCP supports similar graph-based orchestration, but Fred integrates planning and validation logic with tool selection and reflection out-of-the-box.
+> Fred focuses on runtime clarity for agent execution, while Spring AI focuses on framework integration inside Java services.
 
 ---
 
 ### 2. Modular Knowledge Flow Layer
 
-Fred includes a separate `knowledge_flow_app` backend with:
+Fred includes a separate `knowledge-flow-backend` with:
 - Document ingestion and metadata management
 - Markdown previews and file attribution
 - Vectorization, storage, and retrieval decoupled from agent logic
@@ -92,7 +91,7 @@ Fred is Python-native and built around:
 | Feature | **Fred (Knowledge Flow + Agentic Backend)** | **Spring AI** |
 |--------|----------------------------------------------|----------------|
 | Purpose | Deploy intelligent assistants | Integrate LLMs in Java apps |
-| Agents | LangGraph planning + tool use + validation | MCP orchestration of tools and prompts |
+| Agents | LangGraph runtime + tool use + model routing | Framework APIs for model/tool integration |
 | Knowledge ingestion | Modular: metadata, vectorization, markdown preview | Basic RAG (EmbeddingRetriever) |
 | Target audience | Product teams, end users, AI builders | Java backend developers |
 | Stack | Python (LangGraph, FastAPI, React) | Java (Spring Boot) |

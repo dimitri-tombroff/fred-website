@@ -29,6 +29,205 @@ That model works well for experimentation—but it limits how far teams can go w
 
 This release changes that boundary. Fred now supports **A2A-standard agents as first-class citizens**, enabling teams to build agents in Java, Rust, Go, Python—or anything else, deploy them independently, and plug them into Fred with no loss of UI, streaming, or security guarantees.
 
+{{< mermaiddiagram >}}
+%%{init: {"themeVariables": {"fontSize": "16px"}}}%%
+flowchart LR
+  %% =========================
+  %% DEMO LA POSTE - vue simple
+  %% =========================
+
+  subgraph UI["🧑 Frontend React (Fred UI)"]
+    UChat["Chat de démonstration"]
+    UAdmin["Agent Hub (config + graphe agent)"]
+  end
+
+  subgraph AG["🧠 Fred Agentic Backend"]
+    Api["API Chat / WebSocket"]
+    Fred["Fred Orchestrateur"]
+    Agent["Agent La Poste<br/>(TrackingAgent ou BasicReAct)"]
+    UiParts["Réponses UI structurées<br/>(GeoPart, HITL, Mermaid)"]
+  end
+
+  subgraph MCP["🔌 Serveurs MCP métier (La Poste)"]
+    MCPTrack["MCP Suivi & Incidents Colis<br/>(tracking, événements, snapshot IoT, géométrie route)"]
+    MCPOps["MCP Actions de Livraison<br/>(points relais, reroutage, replanification, notification client)"]
+  end
+
+  subgraph KF["📚 Knowledge Flow"]
+    KFApi["API RAG / Recherche"]
+    Corpus["Corpus privé La Poste<br/>(tarifs, procédures, objets interdits, scripts de démo)"]
+  end
+
+  UChat -->|"WebSocket + REST"| Api
+  UAdmin -->|"CRUD agent"| AG
+  UAdmin -->|"GET /agents/{id}/graph"| AG
+
+  Api --> Fred
+  Fred -->|"délègue"| Agent
+  Agent -->|"tool calls"| MCPTrack
+  Agent -->|"tool calls"| MCPOps
+  Agent -->|"RAG (si besoin)"| KFApi
+  KFApi --> Corpus
+  Agent --> UiParts
+  UiParts --> UChat
+
+  %% Styles
+  style UI fill:#EAF2FF,stroke:#3B4A6B,stroke-width:1.2px
+  style AG fill:#FFEFE0,stroke:#7A4A21,stroke-width:1.2px
+  style MCP fill:#FFF7E6,stroke:#7A4A21,stroke-width:1.2px
+  style KF fill:#E9FFE9,stroke:#2E6B2E,stroke-width:1.2px
+
+  style Fred fill:#FFD9B3,stroke:#7A4A21,stroke-width:1.4px
+  style Agent fill:#FFF2CC,stroke:#6B5A1F,stroke-width:1.4px
+  style UiParts fill:#F5F0FF,stroke:#5B4A99,stroke-dasharray: 4 3
+
+  style MCPTrack fill:#E6F7FF,stroke:#1C6B8A,stroke-width:1.2px
+  style MCPOps fill:#E6F7FF,stroke:#1C6B8A,stroke-width:1.2px
+  style KFApi fill:#DFF6DF,stroke:#2E6B2E,stroke-width:1.2px
+  style Corpus fill:#F4FFF4,stroke:#2E6B2E,stroke-dasharray: 5 4
+{{< /mermaiddiagram >}}
+
+{{< mermaiddiagram >}}
+%%{init: {"themeVariables": {"fontSize": "15px"}}}%%
+flowchart TB
+  %% =========================
+  %% DEMO LA POSTE - vue étendue / infra cible
+  %% =========================
+
+  subgraph UI["🧑 Frontend React (Fred UI)"]
+    Chat["Chat + cartes HITL + GeoMap"]
+    Hub["Agent Hub (édition + graphe)"]
+    KfPages["Pages Knowledge Flow (gestion corpus)"]
+  end
+
+  subgraph SEC["🔐 IAM"]
+    KC["Keycloak (OIDC / JWT)"]
+  end
+
+  subgraph AG["🧠 Agentic Backend (Fred)"]
+    AGApi["API Chat / WS / Agents"]
+    Orch["Orchestrateur Fred"]
+    PostalAgent["Agent La Poste<br/>(custom ou BasicReAct)"]
+    AGPg["PostgreSQL Agentic<br/>(sessions, history, config agents)"]
+    Temporal["Temporal<br/>(workflows / tâches async)"]
+  end
+
+  subgraph MCP["🔌 MCP métier (La Poste / démo)"]
+    Mcp1["MCP Suivi & Incidents Colis"]
+    Mcp2["MCP Actions Livraison & Relation Client"]
+  end
+
+  subgraph KF["📚 Knowledge Flow"]
+    KFApi["API RAG / ingestion / recherche"]
+    KFPg["PostgreSQL KF<br/>(métadonnées, index logique)"]
+    Vec["Vector Store<br/>(embeddings / similarité)"]
+    S3["Object Store / S3<br/>(documents sources)"]
+    Corpus["Corpus privé La Poste<br/>(docs internes de démo)"]
+  end
+
+  %% Auth
+  Chat -->|"login OIDC"| KC
+  Hub -->|"login OIDC"| KC
+  KfPages -->|"login OIDC"| KC
+
+  Chat -->|"JWT + WS/REST"| AGApi
+  Hub -->|"JWT + REST"| AGApi
+  KfPages -->|"JWT + REST"| KFApi
+
+  %% Agentic internals
+  AGApi --> Orch
+  Orch --> PostalAgent
+  AGApi --> AGPg
+  Orch --> Temporal
+
+  %% Tooling & knowledge
+  PostalAgent -->|"tool calls"| Mcp1
+  PostalAgent -->|"tool calls"| Mcp2
+  PostalAgent -->|"RAG queries"| KFApi
+
+  %% Knowledge Flow storage
+  KFApi --> KFPg
+  KFApi --> Vec
+  KFApi --> S3
+  Corpus --> S3
+
+  %% Styles
+  style UI fill:#EAF2FF,stroke:#3B4A6B,stroke-width:1.2px
+  style SEC fill:#F5F5F5,stroke:#666,stroke-width:1.2px
+  style AG fill:#FFEFE0,stroke:#7A4A21,stroke-width:1.2px
+  style MCP fill:#FFF7E6,stroke:#7A4A21,stroke-width:1.2px
+  style KF fill:#E9FFE9,stroke:#2E6B2E,stroke-width:1.2px
+
+  style PostalAgent fill:#FFF2CC,stroke:#6B5A1F,stroke-width:1.4px
+  style Orch fill:#FFD9B3,stroke:#7A4A21,stroke-width:1.4px
+  style KC fill:#EFEFEF,stroke:#555,stroke-width:1.2px
+
+  style Mcp1 fill:#E6F7FF,stroke:#1C6B8A,stroke-width:1.2px
+  style Mcp2 fill:#E6F7FF,stroke:#1C6B8A,stroke-width:1.2px
+  style KFApi fill:#DFF6DF,stroke:#2E6B2E,stroke-width:1.2px
+  style Vec fill:#F4FFF4,stroke:#2E6B2E,stroke-dasharray: 5 4
+  style S3 fill:#F4FFF4,stroke:#2E6B2E,stroke-dasharray: 5 4
+  style KFPg fill:#F4FFF4,stroke:#2E6B2E,stroke-dasharray: 5 4
+{{< /mermaiddiagram >}}
+
+{{< mermaiddiagram >}}
+%%{init: {"themeVariables": {"fontSize": "16px"}}}%%
+flowchart LR
+  %% =========================
+  %% DEMO LA POSTE - vue simple
+  %% =========================
+
+  subgraph UI["🧑 Frontend React (Fred UI)"]
+    UChat["Chat de démonstration"]
+    UAdmin["Agent Hub (config + graphe agent)"]
+  end
+
+  subgraph AG["🧠 Fred Agentic Backend"]
+    Api["API Chat / WebSocket"]
+    Fred["Fred Orchestrateur"]
+    Agent["Agent La Poste<br/>(TrackingAgent ou BasicReAct)"]
+    UiParts["Réponses UI structurées<br/>(GeoPart, HITL, Mermaid)"]
+  end
+
+  subgraph MCP["🔌 Serveurs MCP métier (La Poste)"]
+    MCPTrack["MCP Suivi & Incidents Colis<br/>(tracking, événements, snapshot IoT, géométrie route)"]
+    MCPOps["MCP Actions de Livraison<br/>(points relais, reroutage, replanification, notification client)"]
+  end
+
+  subgraph KF["📚 Knowledge Flow"]
+    KFApi["API RAG / Recherche"]
+    Corpus["Corpus privé La Poste<br/>(tarifs, procédures, objets interdits, scripts de démo)"]
+  end
+
+  UChat -->|"WebSocket + REST"| Api
+  UAdmin -->|"CRUD agent"| AG
+  UAdmin -->|"GET /agents/{id}/graph"| AG
+
+  Api --> Fred
+  Fred -->|"délègue"| Agent
+  Agent -->|"tool calls"| MCPTrack
+  Agent -->|"tool calls"| MCPOps
+  Agent -->|"RAG (si besoin)"| KFApi
+  KFApi --> Corpus
+  Agent --> UiParts
+  UiParts --> UChat
+
+  %% Styles
+  style UI fill:#EAF2FF,stroke:#3B4A6B,stroke-width:1.2px
+  style AG fill:#FFEFE0,stroke:#7A4A21,stroke-width:1.2px
+  style MCP fill:#FFF7E6,stroke:#7A4A21,stroke-width:1.2px
+  style KF fill:#E9FFE9,stroke:#2E6B2E,stroke-width:1.2px
+
+  style Fred fill:#FFD9B3,stroke:#7A4A21,stroke-width:1.4px
+  style Agent fill:#FFF2CC,stroke:#6B5A1F,stroke-width:1.4px
+  style UiParts fill:#F5F0FF,stroke:#5B4A99,stroke-dasharray: 4 3
+
+  style MCPTrack fill:#E6F7FF,stroke:#1C6B8A,stroke-width:1.2px
+  style MCPOps fill:#E6F7FF,stroke:#1C6B8A,stroke-width:1.2px
+  style KFApi fill:#DFF6DF,stroke:#2E6B2E,stroke-width:1.2px
+  style Corpus fill:#F4FFF4,stroke:#2E6B2E,stroke-dasharray: 5 4
+{{< /mermaiddiagram >}}
+
 ---
 
 ## The Problem: Agents Are Outgrowing the Sandbox

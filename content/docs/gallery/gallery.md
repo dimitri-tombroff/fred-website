@@ -159,10 +159,10 @@ Below are real screenshots of the Fred chatbot UI: streaming replies, sources pr
     <div class="fred-caption">Agent Hub overview</div>
   </div>
   <div>
-    <a class="fred-thumb" href="/images/10-agents-crew.png" data-caption="Configuring the crew membership for a Leader agent.">
-      <img src="/images/10-agents-crew.png" alt="Agent crew editor" loading="lazy" decoding="async">
+    <a class="fred-thumb" href="/images/10-agents-crew.png" data-caption="Configuring agent grouping and availability in the Agent Hub.">
+      <img src="/images/10-agents-crew.png" alt="Agent grouping editor" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">Crew membership editor</div>
+    <div class="fred-caption">Agent grouping editor</div>
   </div>
   
   <div>
