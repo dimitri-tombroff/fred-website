@@ -1,35 +1,55 @@
 ---
 title: "User Interface"
-description: "architecture and design of the fred UI"
-summary: ""
+description: "Frontend reference for Fred UI architecture, authentication, and role-based user experience."
+summary: "Fred UI is React/TypeScript + Redux, integrates with OIDC (Keycloak by default), and adapts features by user role."
 date: 2023-09-07T16:13:18+02:00
-lastmod: 2023-09-07T16:13:18+02:00
+lastmod: 2026-03-05T12:00:00+01:00
 draft: false
-weight: 910
+weight: 916
 toc: true
 seo:
-  title: "" # custom title (optional)
-  description: "" # custom description (recommended)
-  canonical: "" # custom canonical URL (optional)
-  robots: "" # custom robot tags (optional)
+  title: "Fred User Interface"
+  description: "Reference for Fred UI stack, OIDC integration, and role-based UX."
+  canonical: ""
+  robots: ""
 ---
 
-Fred UI is a React application that uses Material, Redux and Typescript. It is designed
-to be easily customized and extended. It was updated with Vite.js and React Flow.
+This page is intentionally short and stable.
+It describes the core UI architecture and its security/runtime integration points.
 
-It comes with a lightweight (golang) backend ithat acts as a proxy server that, in turn, serves the UI and forwards
-the requests to the Fred python API servers. It also provides facilities to interact directly with a Kubernetes cluster.
+## UI Stack
 
-Fred UI provides you with:
+- React + TypeScript + Vite
+- Redux Toolkit / RTK Query for API state
+- Material UI for component system and theming
 
-- [x] Keycloak integration
-- [x] Cookie and Jwt token management
-- [x] Kubernetes integration
-- [x] Material, Redux, Typescript
-- [x] Docker file and helm chart for deployment
-- [x] Makefile for easy build and run
-- [x] Kooker integration
-- [x] Vite.js
+## Authentication Model
 
-Checkout the development documention.
+- Fred UI integrates with standard OIDC/OAuth2 identity flows.
+- Keycloak is the default and documented provider, but the model is standards-based.
+- The UI receives user tokens and uses them to call backend APIs (REST and WebSocket).
 
+## Role-Based Experience
+
+- UI capabilities are adapted by role.
+- Typical roles are `admin`, `contributor` (editor-equivalent), and `viewer`.
+- Server-side authorization remains the source of truth for access control.
+
+## Runtime Integration
+
+- The UI targets the Python backends (`agentic-backend` and related services) directly through configured endpoints.
+- The current reference architecture does not rely on a dedicated Golang UI proxy.
+
+## Scope
+
+For broader platform context, see:
+
+- [Architecture](/docs/reference/architecture/)
+- [Security](/docs/reference/security/)
+- [Deployment](/docs/reference/deployment/)
+
+## Source Of Truth (GitHub)
+
+- [frontend/README.md](https://github.com/ThalesGroup/fred/blob/main/frontend/README.md)
+- [docs/KEYCLOAK.md](https://github.com/ThalesGroup/fred/blob/main/docs/KEYCLOAK.md)
+- [docs/SECURITY.md](https://github.com/ThalesGroup/fred/blob/main/docs/SECURITY.md)

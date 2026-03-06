@@ -1,115 +1,94 @@
 ---
 title: "Value Proposition"
-description: "Why Fred and knowledge-flow stand out"
-summary: "Fred and knowledge-flow offer a production-ready, open, and modular foundation for building real-world, agentic applications — beyond demos and UIs."
+description: "Why Fred matters: an open, production-oriented agentic platform that organizations can adopt and scale."
+summary: "Fred is the open-source foundation for agentic and RAG systems, designed for governance, extensibility, and real deployment."
 date: 2025-07-25T19:00:00+02:00
-lastmod: 2026-03-04T10:00:00+02:00
+lastmod: 2026-03-05T10:00:00+02:00
 draft: false
 weight: 960
 toc: true
 seo:
-  title: "Fred + knowledge-flow: Value Proposition"
-  description: "Fred and knowledge-flow are a modular, enterprise-grade, open-source agentic platform. Learn why it’s more than just a chatbot UI."
+  title: "Fred Value Proposition"
+  description: "Fred is an open-source, production-ready agentic platform enabling robust deployment and governance."
   canonical: ""
   robots: "index, follow"
 ---
 
-## Agentic innovation meets production-grade engineering
+## Executive Summary
 
-Fred is both:
+Fred is a fully open-source agentic + RAG platform.
 
-- An **innovation lab** — to help developers rapidly explore agentic patterns, domain-specific logic, and custom tools.
-- A **production-ready platform** — already integrated with real enterprise constraints: auth, security, document lifecycle, and deployment best practices.
+It is designed to bridge the gap between:
 
----
+- experimentation with LLMs,
+- and production-grade AI systems with governance, security, and operational constraints.
 
-## Why it’s different
+## What Fred Is
 
-Fred and knowledge-flow are more than just a wrapper around an LLM or a UI for chatting. They're an **end-to-end framework** for building intelligent, grounded, and extensible agents — at scale.
+Fred is the open-source technical foundation:
 
-### Full agentic backend
+- `agentic-backend` for agents, sessions, streaming, model routing, and orchestration
+- `knowledge-flow-backend` for ingestion, metadata, retrieval, and content lifecycle
+- React frontend for user-facing and admin-facing interactions
+- policy-based governance primitives (models/rules, RBAC/ReBAC, observability)
 
-Fred uses [LangGraph](https://github.com/langchain-ai/langgraph) to model robust workflows in a tool-first architecture:
+Fred is designed to be:
 
-- Structured state transitions and deterministic runtime paths
-- Streaming responses and tool integration
-- WebSocket + REST APIs for real-time interactivity
-- v2 agent definitions and catalog-driven loading
+- tool-first
+- production-oriented
+- modular and extensible
+- deployable on-prem or cloud
 
-### Tool-augmented experts
+## Open Assets Available to Everyone
 
-Fred makes tool-using agents a first-class citizen. Each agent can bind to:
+Anyone can take and use:
 
-- External tools via MCP (e.g., SQL over tabular data, vector search)
-- Custom LangChain-compatible tools
-- Prebuilt LangGraph nodes (e.g., `ToolNode`) for seamless execution
+- `fred` repository (core platform)
+- `fred-deployment-factory` repository (deployment examples and templates)
 
-This aligns with the current direction: **strong model + explicit tools + observable runtime**, without requiring a coordinator agent pattern.
+These assets already provide strong value.
+For real deployments, teams still need to provision and operate surrounding services (for example OpenSearch, MinIO, Keycloak, databases, monitoring, and platform run operations).
 
-### Document-aware reasoning
+## Why Fred Enables Scalable Delivery
 
-The `knowledge-flow` backend handles ingestion, parsing, chunking, vectorization, and retrieval:
+Fred supports a clear operating model with separated responsibilities:
 
-- Structured + unstructured support (PDFs, Markdown, CSV, SQL)
-- UID-based access and versioning
-- Seamless agent integration (e.g., tool messages directly grounded in source content)
+| Responsibility | Platform Team | Delivery & Operations Teams | Business/Product Teams |
+| --- | --- | --- | --- |
+| Core platform engineering and reusable enablers | Primary owner | Consumer | Contributor (optional) |
+| Platform roadmap and governance patterns | Primary owner | Input + adoption | Input from use cases |
+| Release management and platform quality gates | Primary owner | Consumer | Consumer |
+| Deployment blueprint and runbooks | Co-owner | Co-owner | Consumer |
+| Deploying a concrete instance | Support | Primary owner | Consumer |
+| Operating and maintaining each deployed instance | Support | Primary owner | Consumer |
+| Security accreditation execution for each environment | Guidance + artifacts | Primary owner | Consumer |
+| Building domain prompts/agents/corpus configurations | Framework and best practices | Platform support | Primary owner |
+| Developing domain-specific agents and workflows | Framework and reviews | Platform support | Primary owner |
 
-### Modular, composable, and decoupled
+This model keeps the platform team focused on reusable capabilities while allowing delivery teams to scale concrete deployments and business teams to focus on domain outcomes.
 
-Fred and knowledge-flow communicate via **clean APIs** and support **MCP (Model Context Protocol)** to connect to:
+## Typical Adoption Pattern
 
-- External toolchains (like a Kubernetes analyzer)
-- Custom vector or tabular backends
-- Remote agents, services, or pipelines
+1. Start from Fred and deployment assets.
+2. Establish a platform ownership model (governance, release, architecture).
+3. Deploy one or more instances with delivery/run teams.
+4. Let business teams configure and build domain assistants.
+5. Feed reusable improvements back into the platform.
 
-You can plug in new components — or replace existing ones — without rewriting the system.
+## Why This Matters
 
-### Built for real deployment
+Without a platform-centered model, organizations often mix:
 
-Fred is production-minded:
+- platform engineering,
+- deployment operations,
+- and business solution delivery.
 
-- Authentication and access control
-- Configurable via YAML catalogs + `.env`
-- On-prem and cloud-ready
-- Clean React UI backed by RTK Query and WebSockets
-- Compatible with Docker, Dev Containers, Kubernetes
+Fred helps establish this separation with an open, modular, and governance-ready foundation.
 
----
+## References
 
-## Compared to typical OSS agent frameworks
-
-| Feature / Goal | Fred + knowledge-flow | OpenWebUI / Flowise / etc. |
-|----------------|------------------------|-----------------------------|
-| Tool-first runtime | ✅ Explicit tools + typed flows | ⚠️ Varies by plugin |
-| Model routing by policy | ✅ YAML catalog + rules | ❌ Usually per-agent static |
-| Secure document lifecycle | ✅ Full content + metadata mgmt | ❌ Basic file upload only |
-| Modular components (MCP) | ✅ Plug custom tools/services | ❌ Tooling often hardcoded |
-| Real-time streaming & UI | ✅ WebSocket + RTK Query | ⚠️ Often polling or static |
-| Co-innovation and governance | ✅ Designed for partnerships | ❌ Lacks clear extension model |
-
----
-
-## Open Source by Intent
-
-Fred is open source not to reinvent frameworks, but to:
-
-- Enable co-innovation with partners and contributors
-- Make enterprise-grade agentic development accessible
-- Provide a foundation that bridges open tooling with secure, extensible infrastructure
-
----
-
-## Learn More
-
-- 👉 [Fred on GitHub](https://github.com/ThalesGroup/fred)
-- 👉 [agentic-backend README](https://github.com/ThalesGroup/fred/tree/main/agentic-backend)
-- 👉 [knowledge-flow-backend README](https://github.com/ThalesGroup/fred/tree/main/knowledge-flow-backend)
-
----
-
-## Summary
-
-Fred and knowledge-flow aren’t just another chatbot wrapper.  
-They are a **foundation for building intelligent, secure, and domain-aware LLM applications**, backed by strong engineering, modular design, and a focus on real-world usability.
-
-Whether you want to build a Kubernetes explainer, a financial analyst, or a private document assistant — Fred gives you the pieces to do it right.
+- [Fred on GitHub](https://github.com/ThalesGroup/fred)
+- [Deployment Factory on GitHub](https://github.com/ThalesGroup/fred-deployment-factory)
+- [Architecture](/docs/reference/architecture/)
+- [Deployment](/docs/reference/deployment/)
+- [Security](/docs/reference/security/)

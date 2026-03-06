@@ -1,225 +1,99 @@
 ---
 title: "Security"
-description: "Security architecture and practices in the Fred Python backend"
-weight: 1000
-date: 2025-08-27T12:00:00+02:00
-lastmod: 2025-08-27T12:00:00+02:00
+description: "Security reference for Fred deployments (identity, authorization, service boundaries, secrets, and operational controls)."
+summary: "Short security reference for DSI/RSSI, platform, and run teams."
+date: 2026-03-05T12:00:00+01:00
+lastmod: 2026-03-05T12:00:00+01:00
 draft: false
+weight: 914
 toc: true
 seo:
-  title: "" # custom title (optional)
-  description: "" # custom description (recommended)
-  canonical: "" # custom canonical URL (optional)
-  robots: "" # custom robot tags (optional)
+  title: "Fred Security Reference"
+  description: "Security model and operator controls for Fred deployments."
+  canonical: ""
+  robots: ""
 ---
 
-> Fred is a reference implementation. Treat it as a **security-conscious starter** you can adapt to your needs.
+This page is intentionally concise and stable.
+It summarizes the security model for architecture, DSI/RSSI review, and run operations.
 
-# Security Overview
+For exact implementation details and fast-changing configuration keys, use the linked GitHub sources at the end.
 
-This page documents how authentication and authorization flow through the **Agentic** and **Knowledge Flow** services, how our **MCP** integrations are secured, and what operational controls we ship by default.
+## Security Scope
 
----
+Fred security is organized around five domains:
 
-## At a glance
+- identity and access
+- service-to-service trust
+- runtime isolation
+- data and secrets protection
+- auditability and operational control
 
-| Security Feature | What it covers | How we do it |
-|---|---|---|
-| **Authentication (UI → Backend)** | User identity & session | Keycloak (OIDC). UI obtains a bearer; backend verifies JWT per request. |
-| **RBAC** | Who can do what | Route-level role checks (Admin/Editor/Viewer planned). Claims read from `resource_access`. |
-| **WebSocket Security** | Real-time chat sessions | Token required on connect; session bound to user; periodic validation (configurable). |
-| **Session Isolation** | Data boundaries | Users can access **only their own** conversations/artifacts. |
-| **Audit Logging** | Traceability | Key actions (uploads, deletions, tool calls, errors) logged with user context. |
-| **Service-to-Service Auth** | Agentic → Knowledge Flow | Keycloak **client-credentials** (service accounts). Short-lived tokens minted on demand. |
-| **MCP Tool Auth** | Agent ↔ MCP servers (HTTP/stdio) | Outbound bearer injection (HTTP `Authorization` or stdio env). **Auto-refresh** on 401. |
-| **Transports** | HTTP(S) & stdio | Only `streamable_http`, `sse`, `websocket`, and `stdio` are allowed. |
-| **Resilience** | Transient failures | Timeouts/401s trigger MCP refresh; graph remains valid via fallback ToolMessages. |
-| **Secrets Handling** | No hardcoding | Env vars / K8s Secrets; no secrets in code or logs. |
-| **TLS** | In-cluster & external | HTTPS recommended everywhere; dev can relax verification, prod should verify CA. |
+## Identity And Access
 
----
+### End-user authentication
 
-## Identity & Clients (Keycloak)
+- User authentication is based on OIDC/OAuth2 (typically Keycloak).
+- UI obtains a user token and calls backend APIs with bearer authentication.
+- Backends validate token signature and standard claims.
 
-We use **three distinct clients** to separate concerns:
+### Authorization model
 
-1. **agentic** — *caller identity for the Agentic backend*  
-   - confidential; **Service accounts: ON**  
-   - Mints **client-credentials** tokens used to call Knowledge Flow.
+- RBAC is enforced on protected API surfaces.
+- ReBAC policies can be enabled for team and resource-scoped access.
+- Admin-only capabilities must stay restricted to administrator roles.
+- Detailed role and permission matrix is documented in [Access Model](/docs/reference/access-model/).
 
-2. **knowledge-flow** — *API identity for the Knowledge Flow backend*  
-   - confidential; **Service accounts: ON** (so KF can call other services / itself if needed)  
-   - Used to validate incoming tokens; also usable as KF’s own service identity for internal calls.
+## Service-To-Service Security
 
-3. **\<your-app-frontend\>** — *end-user application (web / SPA / mobile)*  
-   - public (SPA + PKCE) or confidential (server-side)  
-   - Used for **user** login; not used for Agentic → KF calls.
+- Agentic and Knowledge Flow communicate with authenticated service identities.
+- Client-credentials are used for service tokens where required.
+- MCP integrations use authenticated outbound calls; transport/auth behavior is policy-controlled.
 
-**Realm/Issuer example** (the `iss` claim should start with this URL):
+## Runtime And Data Boundaries
 
-    https://auth-<env>.<your-domain>/auth/realms/fred
+- User session boundaries are enforced at runtime.
+- Long-running processing uses Temporal workers with explicit task boundaries and retries.
+- Storage architecture is deployment-dependent (PostgreSQL and optional ClickHouse).
+- Data governance decisions (models/tools/prompts/agents/data scopes) should be explicit at team level.
 
----
+## Secrets, Keys, And Transport
 
-## What’s implemented today
+- Secrets are managed outside source code (K8s secrets, vaults, CI/CD secrets).
+- TLS is required for external endpoints and strongly recommended end-to-end.
+- Token/key rotation procedures are part of platform runbooks.
+- Logs and traces must avoid leaking credentials or full tokens.
 
-- **JWT validation** in backends:
-  - Signature via JWKS (PyJWKClient cache).
-  - `exp` enforced; optional clock skew (`FRED_JWT_CLOCK_SKEW`).
-  - **Soft** checks for issuer/audience with opt-in strictness (see toggles below).
-  - Safe diagnostics (no raw tokens in logs).
+## Operational Security Baseline
 
-- **Service-to-service calls**:
-  - **Agentic → Knowledge Flow** uses the `agentic` client (client-credentials grant).
-  - Knowledge Flow can also mint a service token when it needs to call out.
+Before production go-live, teams should validate:
 
-- **MCP runtime**:
-  - Outbound auth injected automatically:
-    - HTTP-like transports → `Authorization: Bearer <token>`.
-    - `stdio` → `MCP_AUTHORIZATION` / `AUTHORIZATION` env vars.
-  - **401 detection** → token refresh → single retry.
-  - **Resilient ToolNode** guarantees a ToolMessage for each tool call (prevents “dangling tool_calls” errors).
+1. IdP configuration (realm, clients, roles/groups, token claims).
+2. RBAC/ReBAC enforcement for admin actions.
+3. Secret distribution and rotation process.
+4. TLS and ingress hardening.
+5. Audit log retention and incident response workflow.
+6. Dependency and image vulnerability scanning in CI/CD.
 
-- **WebSocket handshake**:
-  - Bearer required on connect; session tied to the authenticated user.
+## Governance Position
 
----
+Fred is policy-first for enterprise usage:
 
-## Planned hardening (near term)
+- policies are the authority for model/tool/prompt/agent/data access decisions,
+- runtime behavior is expected to be deterministic and auditable,
+- end-user convenience must not bypass governance controls.
 
-- **Audience enforcement**: add an **Audience mapper** so Agentic tokens include `knowledge-flow` in `aud`, then set `FRED_STRICT_AUDIENCE=true`.
-- **RBAC**: enforce route-level roles from `resource_access['knowledge-flow'].roles` (Admin/Editor/Viewer).
-- **Issuer strictness**: set `FRED_STRICT_ISSUER=true` once all environments use the same realm URL shape.
+## Related References
 
----
+- [Architecture](/docs/reference/architecture/)
+- [Deployment](/docs/reference/deployment/)
+- [Access Model](/docs/reference/access-model/)
+- [Policy-based LLM Routing](/docs/reference/llm_routing/)
 
-## Configuration (env)
+## Source Of Truth (GitHub)
 
-### Knowledge Flow (the API being called)
-
-    # JWT validation
-    KEYCLOAK_SERVER_URL=https://auth-<env>.<your-domain>
-    KEYCLOAK_REALM_NAME=fred
-    KEYCLOAK_CLIENT_ID=knowledge-flow
-
-    # Diagnostics & strictness (defaults are permissive to ease rollout)
-    FRED_AUTH_VERBOSE=false       # set true temporarily to debug auth issues
-    FRED_STRICT_ISSUER=false
-    FRED_STRICT_AUDIENCE=false
-    FRED_JWT_CLOCK_SKEW=0         # seconds of leeway for exp/nbf
-
-    # Optional: if KF calls other services
-    KEYCLOAK_KNOWLEDGE_FLOW_CLIENT_SECRET=<secret of 'knowledge-flow' client>
-
-### Agentic backend (the caller)
-
-    # Mint service tokens to call KF
-    KEYCLOAK_SERVER_URL=https://auth-<env>.<your-domain>
-    KEYCLOAK_REALM_NAME=fred
-    KEYCLOAK_CLIENT_ID=agentic
-    KEYCLOAK_AGENTIC_CLIENT_SECRET=<secret of 'agentic' client>
-
-    # Where to reach KF (ingress base)
-    KNOWLEDGE_FLOW_BASE=https://<public-host>/knowledge-flow/v1
-
-### Frontend (end-user app)
-
-    OIDC_ISSUER=https://auth-<env>.<your-domain>/auth/realms/fred
-    OIDC_CLIENT_ID=<your-app-frontend>
-    OIDC_REDIRECT_URI=https://<public-host>/callback
-    OIDC_POST_LOGOUT_REDIRECT_URI=https://<public-host>/
-
----
-
-## MCP security model
-
-Our MCP servers are **FastAPI** apps secured like normal HTTP APIs.
-
-- **HTTP transports** (`streamable_http`, `sse`, `websocket`):
-  - Outbound requests include `Authorization: Bearer <token>`.
-  - We also send `MCP-Version: 2025-03-26` and `Accept: application/json` for compatibility.
-- **stdio transport**:
-  - No headers available; we pass the bearer via env (`MCP_AUTHORIZATION`, `AUTHORIZATION`).
-
-**Supported transports**: `streamable_http`, `sse`, `websocket`, `stdio` (others are rejected).
-
-### Resilience: why tool calls don’t break your graph
-
-- On **timeout** / **401** / **closed stream**, the Resilient ToolNode:
-  1) Logs structured context (tool, URL, status).
-  2) Refreshes the MCP client/toolkit.
-  3) Emits **fallback ToolMessages** so the LLM turn remains valid.
-
-This prevents the OpenAI 400 (“assistant message with tool_calls must be followed by tool messages”).
-
----
-
-## Secure WebSockets
-
-- Require `Authorization: Bearer <jwt>` at connect.
-- Bind connection to user identity.
-- Optional periodic token re-validation for long-lived sessions.
-- Per-session rate/size limits (configurable).
-
----
-
-## Secrets & TLS
-
-- Secrets come from **env** / **K8s Secrets**; never hardcode.
-- Prefer **short-lived** tokens minted with **client-credentials**.
-- Don’t log tokens; at most log a small prefix for presence checks.
-- Use **HTTPS** everywhere; verify CAs in prod; restrict CORS to known origins.
-
----
-
-## Verify end-to-end
-
-### 1) Mint a service token as `agentic`
-
-    KC="https://auth-<env>.<your-domain>/auth/realms/fred/protocol/openid-connect/token"
-    TOKEN=$(curl -s -X POST "$KC" \
-      -d grant_type=client_credentials \
-      -d client_id=agentic \
-      -d client_secret='<AGENTIC_SECRET>' | jq -r .access_token)
-
-### 2) Call Knowledge Flow (MCP base)
-
-    BASE="https://<public-host>/knowledge-flow/v1/mcp-opensearch-ops"
-    curl -v \
-      -H "Authorization: Bearer $TOKEN" \
-      -H "MCP-Version: 2025-03-26" \
-      -H "Accept: application/json" \
-      "$BASE"
-
-**Expected:** HTTP 200 with an MCP description payload (you should see `Processing request of type ListToolsRequest` in KF logs).
-
----
-
-## Operational toggles (summary)
-
-- `FRED_AUTH_VERBOSE=true` — rich, safe diagnostics (JWT header/claims summary; no raw tokens).
-- `FRED_STRICT_ISSUER=true` — reject tokens whose `iss` doesn’t match the configured realm URL.
-- `FRED_STRICT_AUDIENCE=true` — enforce `aud` to include `knowledge-flow` (configure audience mapper first).
-- `FRED_JWT_CLOCK_SKEW=<seconds>` — allow small leeway on `exp`/`nbf`.
-
----
-
-## FAQ
-
-**Why separate clients for Agentic and Knowledge Flow?**  
-Clear audit and scope separation: Agentic **mints** tokens; Knowledge Flow **validates** them and may mint its own for outbound calls.
-
-**Why allow `aud='account'` initially?**  
-That’s Keycloak’s default for service tokens. We start permissive (with warnings), then enforce once the audience mapper is in place.
-
-**Can I route via a unified public host?**  
-Yes—ingress can route `/knowledge-flow` to the Knowledge Flow service. If you ever observe redirects that alter the host, prefer direct routing to avoid `Authorization` header drops.
-
----
-
-## Credits
-
-- Keycloak OIDC validation with JWKS cache and safe diagnostics.  
-- MCP runtime with outbound auth injection and single-retry on 401.  
-- Resilient ToolNode to keep conversations valid under failures.  
-- Minimal, auditable surface area for secrets and TLS configuration.
+- [docs/SECURITY.md](https://github.com/ThalesGroup/fred/blob/main/docs/SECURITY.md)
+- [docs/KEYCLOAK.md](https://github.com/ThalesGroup/fred/blob/main/docs/KEYCLOAK.md)
+- [docs/DEPLOYMENT_GUIDE.md](https://github.com/ThalesGroup/fred/blob/main/docs/DEPLOYMENT_GUIDE.md)
+- [docs/CONTRIBUTING.md](https://github.com/ThalesGroup/fred/blob/main/docs/CONTRIBUTING.md)
+- [docs/VERSIONING.md](https://github.com/ThalesGroup/fred/blob/main/docs/VERSIONING.md)
