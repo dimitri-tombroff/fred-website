@@ -37,7 +37,7 @@ That is exactly the role of **Spot**, a monitoring-focused agent backed by **MCP
 
 ## Spot Starts by Exposing Its Real Capabilities
 
-One of the most interesting parts of the demo is the first interaction: asking Spot what it can do.
+One of the most interesting parts of the example is the first interaction: asking Spot what it can do.
 
 Instead of pretending to be a generic assistant with vague powers, Spot explicitly presents the capabilities made available to it through MCP. In the screenshots, this means a short list grouped around three domains:
 
@@ -76,7 +76,7 @@ This last point is particularly important. Spot is not prompted to improvise. It
 {{< mermaiddiagram >}}
 flowchart TD
     A[User question] --> B[Reason on the goal<br/>and the latest observation]
-    B --> C{Choose next MCP action}
+    B --> C{Choose next tool call}
 
     C --> D[Discover metrics<br/>prometheus_metrics<br/>prometheus_metrics_catalog<br/>prometheus_metadata]
     C --> E[Refine scope<br/>prometheus_labels<br/>prometheus_label_values<br/>prometheus_series]
@@ -141,7 +141,7 @@ The integration also supports optional authentication through environment variab
 
 ## From Natural Language to Exact PromQL
 
-The most compelling Prometheus demo is not that Spot can call a metrics API. It is that it turns a natural-language monitoring question into a disciplined investigation.
+The most compelling aspect is not that Spot can call a metrics API. It is that it turns a natural-language monitoring question into a disciplined investigation.
 
 In the screenshot sequence, the user asks for information about **disk space used by MinIO**. Spot does not jump directly to a guessed answer. It calls several Prometheus tools, runs multiple queries, and then returns a structured summary with raw values, human-readable sizes, and utilization ratios.
 
@@ -152,7 +152,7 @@ In the screenshot sequence, the user asks for information about **disk space use
   <figcaption>A natural-language question about MinIO becomes a multi-step Prometheus investigation grounded in actual metric queries.</figcaption>
 </figure>
 
-The same approach also appears in the application-level example from the demo, where Spot investigates **CSV document ingestion**. There again, the interesting part is not just the final number. Spot first identifies the relevant metric family, then derives the appropriate PromQL to compute an average duration instead of guessing a formula.
+The same approach also appears in the application-level example from the chat exchange, where Spot investigates **CSV document ingestion** on the same plateform it is running on, i.e. Fred. Spot first identifies the relevant metric family, then derives the appropriate PromQL to compute an average duration instead of guessing a formula.
 
 <figure>
   <a href="./spot-csv-ingestion-promql.png" target="_blank">
@@ -170,6 +170,8 @@ This is the practical difference between "chatting about monitoring" and **doing
 
 That last point matters a lot. It means the answer is inspectable, teachable, and reusable. A platform engineer can start from a conversational request, get a working PromQL query back, and then paste it into Grafana, an alert rule, a runbook, or a recording rule if needed.
 
+Another thing that is possible and will most likely be integrated in Fred soon is the ability to generate Grafana dashboards on the fly (which boils down to generating plain JSON based on the identified metrics gathered by the MCP endpoints) and display them in the Chat.
+
 This is where Fred's design becomes especially interesting. **Grafana is still useful and still necessary**, but Spot covers another category of needs:
 
 - one-off questions that do not deserve a full dashboard yet
@@ -183,7 +185,7 @@ The result is an observability experience that feels lighter for the user withou
 
 ## OpenSearch Audits with Real Tool Chaining
 
-The second part of the demo shifts from Prometheus to **OpenSearch**, and this is where Spot shows another valuable property: it can orchestrate a larger diagnostic workflow instead of answering a single query.
+The second part of the exchange shifts from Prometheus to **OpenSearch**, and this is where Spot shows another valuable property: it can orchestrate a larger diagnostic workflow instead of answering a single query.
 
 In the screenshots, the user asks for a **complete OpenSearch cluster audit** and requests that the result be saved into a file on the agent filesystem.
 
@@ -220,7 +222,7 @@ OpenSearch is not the main focus of this article, but it is worth stressing that
 
 ## Filesystem Persistence Changes the Nature of the Result
 
-One of the strongest aspects of this demo is not the query itself. It is what happens **after** the answer.
+One of the strongest aspects of this staged interaction is not the query itself. It is what happens **after** the answer.
 
 The OpenSearch audit is saved to a file such as `/tmp/opensearch_cluster_audit_20260403.json`, and the corresponding screenshot shows that file later retrieved from the Fred filesystem browser. In this setup, that filesystem is backed by **MinIO**, so the result is no longer an ephemeral chat message. It becomes a durable artifact.
 
@@ -228,7 +230,7 @@ The OpenSearch audit is saved to a file such as `/tmp/opensearch_cluster_audit_2
   <a href="./spot-opensearch-filesystem-browser.png" target="_blank">
     <img src="./spot-opensearch-filesystem-browser.png" alt="OpenSearch audit report stored in the Fred filesystem browser backed by MinIO." style="max-width: 100%; height: auto;" />
   </a>
-  <figcaption>The report survives the conversation: once written to the filesystem, it becomes a durable artifact that can be downloaded, reused, or archived.</figcaption>
+  <figcaption>The report survives the conversation: once written to the filesystem, it becomes a durable artifact that can be downloaded, reused by any other agent, or archived.</figcaption>
 </figure>
 
 <figure>
@@ -240,10 +242,10 @@ The OpenSearch audit is saved to a file such as `/tmp/opensearch_cluster_audit_2
 
 This is a major operational improvement.
 
-In many AI demos, the model answers well, but the output disappears into the chat history. Here, the output can be:
+In many AI chat scenarios, the model answers well, but the output disappears into the chat history. Here, the output can be:
 
 - stored for later review
-- downloaded as JSON
+- downloaded as JSON or any file format the user wishes for
 - attached to an incident workflow
 - reused by another agent
 - kept as a long-term technical report or audit trail
@@ -256,7 +258,7 @@ That matters for postmortems, periodic audits, compliance-oriented evidence coll
 
 ## Why This Matters for Fred
 
-This demo says something important about the direction of the platform.
+This example says something important about the direction of the platform.
 
 Fred is not building observability as a bolt-on assistant next to the real monitoring stack. It is building observability **by design**:
 
