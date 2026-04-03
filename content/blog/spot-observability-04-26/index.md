@@ -60,26 +60,57 @@ The visible tool trace in Fred reinforces that design choice. We do not just get
 
 ---
 
-## What the Prometheus MCP Commit Actually Adds
+## What the Prometheus MCP Integration Adds
 
-The Prometheus side of this story is captured in [commit `a8f80425`](https://github.com/ThalesGroup/fred/commit/a8f80425c040ec761ec0f94477b3ab773e44cb10), which introduces both the **Spot** agent and the corresponding **knowledge-flow Prometheus MCP endpoints**.
+On the Prometheus side, the key change is the introduction of both the **Spot** agent and the corresponding **knowledge-flow Prometheus MCP endpoints**.
 
-At a high level, this commit adds four pieces that matter in practice:
+At a high level, this integration adds four pieces that matter in practice:
 
 1. A dedicated Prometheus expert agent in the agentic backend, exposed as **Spot**
 2. A new Prometheus operations surface in knowledge-flow, mounted as an MCP server
 3. A read-only set of Prometheus endpoints for discovery and querying
 4. Guardrails that force the agent to work from exact metric names rather than invented PromQL
 
-This last point is particularly important. Spot is not prompted to improvise. Its workflow is intentionally discovery-first:
+This last point is particularly important. Spot is not prompted to improvise. Its workflow is intentionally discovery-first, and a realistic view of its potential reasoning is directly shaped by the actual Prometheus tools exposed by knowledge-flow:
 
-- it preloads the full metric inventory outside the visible prompt
-- it narrows the search with metric discovery tools
-- it validates candidate metrics through metadata and series inspection
-- only then does it execute PromQL
-- when it answers, it is instructed to show the exact query it used
+{{< mermaiddiagram >}}
+flowchart TD
+    A[User question] --> B[Reason on the goal<br/>and the latest observation]
+    B --> C{Choose next MCP action}
 
-That design is more than prompt engineering polish. It is a concrete way to make natural-language monitoring safer. The commit even includes tests that verify Spot refuses fuzzy metric names and avoids running PromQL when it cannot identify an exact metric.
+    C --> D[Discover metrics<br/>prometheus_metrics<br/>prometheus_metrics_catalog<br/>prometheus_metadata]
+    C --> E[Refine scope<br/>prometheus_labels<br/>prometheus_label_values<br/>prometheus_series]
+    C --> F[Check scrape health<br/>prometheus_targets]
+    C --> G[Run PromQL<br/>prometheus_query<br/>prometheus_query_range]
+
+    D --> H[Observe tool result]
+    E --> H
+    F --> H
+    G --> I{Query result usable?}
+
+    I -- No --> J[Reformulate the query<br/>change labels, time window, step,<br/>aggregation, or instant/range mode]
+    J --> B
+    I -- Yes --> H
+
+    H --> K{Enough evidence to answer?}
+    K -- No --> B
+    K -- Yes --> L[Return findings<br/>with the exact PromQL used]
+
+    style A fill:#e3f2fd,stroke:#1565c0,stroke-width:1.5px,color:#000
+    style B fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1.5px,color:#000
+    style C fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1.5px,color:#000
+    style D fill:#fff3e0,stroke:#ef6c00,stroke-width:1.5px,color:#000
+    style E fill:#fff3e0,stroke:#ef6c00,stroke-width:1.5px,color:#000
+    style F fill:#fff3e0,stroke:#ef6c00,stroke-width:1.5px,color:#000
+    style G fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#000
+    style H fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1.5px,color:#000
+    style I fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1.5px,color:#000
+    style J fill:#fff3e0,stroke:#ef6c00,stroke-width:1.5px,color:#000
+    style K fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1.5px,color:#000
+    style L fill:#e8f5e9,stroke:#2e7d32,stroke-width:1.5px,color:#000
+{{< /mermaiddiagram >}}
+
+That design is more than prompt engineering polish. It is a concrete way to make natural-language monitoring safer. In practice, Spot behaves like a small **ReAct loop over MCP tools**: it reasons, selects a tool, observes the result, then decides whether it has enough evidence or whether it should continue. When a PromQL query comes back empty, noisy, or poorly scoped, it can iterate by reformulating the query and adjusting parameters before answering.
 
 On the knowledge-flow side, the Prometheus MCP surface is also broad enough to be genuinely useful. It exposes endpoints and tools for:
 
@@ -104,7 +135,7 @@ mcp:
   prometheus_ops_enabled: true
 ```
 
-The same commit also wires optional authentication through environment variables such as `PROMETHEUS_PASSWORD` and `PROMETHEUS_BEARER_TOKEN`, which keeps credentials on the backend side rather than inside the agent prompt.
+The integration also supports optional authentication through environment variables such as `PROMETHEUS_PASSWORD` and `PROMETHEUS_BEARER_TOKEN`, which keeps credentials on the backend side rather than inside the agent prompt.
 
 ---
 
