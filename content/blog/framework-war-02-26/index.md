@@ -3,7 +3,7 @@ title: "Beyond Agent Framework Wars: Fred and the Infrastructure Layer"
 date: 2026-02-21T10:00:00+02:00
 summary: "Fred does not compete in the agent framework wars; it focuses on the production infrastructure layer for governed agent execution."
 draft: false
-weight: 5
+weight: 50
 pinned: true
 homepage: true
 tags:

@@ -5,7 +5,7 @@ summary: "Fred extends its existing agentic backend with a Temporal-powered exec
 date: 2026-02-04T10:00:00+02:00
 lastmod: 2026-02-04T10:00:00+02:00
 draft: false
-weight: 6
+weight: 50
 categories: [architecture, ai]
 tags:
   - temporal

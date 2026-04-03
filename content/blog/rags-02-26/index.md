@@ -3,7 +3,7 @@ title: "Document Ingestion Is Not a Side Effect"
 date: 2026-02-14T10:00:00+02:00
 summary: "Document ingestion is a first-class architectural concern in agentic platforms, and fast attachment is not the same as durable corpus ingestion."
 draft: false
-weight: 5
+weight: 50
 pinned: true
 homepage: true
 tags:
