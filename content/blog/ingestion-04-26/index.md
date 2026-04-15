@@ -85,31 +85,21 @@ As a result, these metrics should be interpreted as **observed trends rather tha
 #### Results
 
 The results were unambiguous.
+<img src="radar.png" width="500" alt="Comparison of qualitative metrics (0.0 - 2.0 scale)">
 
-Each metric reported below corresponds to the **average score across all evaluated samples**.
+Each metric reported corresponds to the **average score across all evaluated samples**. While Pipeline B (Caption-based) introduces interpretation bias during the "image-to-text" phase, Pipeline A (Rich Mode) maintains higher grounding and visual fidelity by bypassing the translation layer. For the record here are the results:
 
-**Pipeline A (Direct Multimodal):**
-- Average latency: 4.35s  
-- Accuracy: 0.90  
-- Relevance: 2.00  
-- Grounding: 1.93  
-- Visual fidelity: 1.77  
-- Cost / efficiency: 1.13  
-- **Total score: 7.37 / 9**
-
-**Pipeline B (Caption-based):**
-- Average latency: 5.05s  
-- Accuracy: 0.60  
-- Relevance: 1.80  
-- Grounding: 1.47  
-- Visual fidelity: 1.13  
-- Cost / efficiency: 0.93  
-- **Total score: 5.93 / 9**
+| Metric | Pipeline A (Direct Multimodal) | Pipeline B (Caption-based) |
+| :--- | :---: | :---: |
+| **Accuracy** | **0.90** | 0.60 |
+| **Relevance** | **2.00** | 1.80 |
+| **Grounding** | **1.93** | 1.47 |
+| **Visual Fidelity** | **1.77** | 1.13 |
+| **Cost / Efficiency** | **1.13** | 0.93 |
+| **Average Latency** | **4.35s** | 5.05s |
+| **Total Score** | **7.37 / 9** | **5.93 / 9** |
 
 While the dataset remains limited, the consistency of the gap across all metrics highlights a structural advantage of direct multimodal processing over text-based approximations.
-
-Beyond the numbers, the qualitative analysis revealed the core issue: transforming an image into text introduces interpretation bias.
-
 Even when correct, the intermediate description tends to enrich or reinterpret the image, injecting information that is not strictly present. This bias propagates into the final answer and degrades its fidelity.
 
 In other words, improving the text is not enough if the problem comes from reducing the image to text in the first place.
