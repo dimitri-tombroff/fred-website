@@ -1,1 +1,51 @@
 // Put your custom SCSS code here
+
+.context-box {
+  border-left: 4px solid #6366f1;
+  background-color: #f5f3ff;
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  color: #1e1b4b;
+  font-size: 0.95rem;
+  line-height: 1.6;
+
+  strong:first-child {
+    display: block;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: #6366f1;
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: #6366f1;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  p {
+    margin: 0.4rem 0;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Dark mode
+[data-bs-theme="dark"] .context-box,
+.dark .context-box {
+  background-color: #1e1b4b;
+  border-left-color: #818cf8;
+  color: #e0e7ff;
+
+  strong:first-child {
+    color: #818cf8;
+  }
+
+  a {
+    color: #a5b4fc;
+  }
+}

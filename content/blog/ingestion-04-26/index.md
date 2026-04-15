@@ -1,26 +1,32 @@
 ---
-title: "Extending Beyond Text: Why Rich Mode Was Needed"
-description: "Exploring the limitations of text-based RAG systems and how Rich mode introduces multimodal grounding by integrating images directly into the retrieval and inference pipeline."
-summary: "An analysis of text-centric RAG limitations, supported by benchmark results, and how Fred’s Rich mode extends retrieval with direct image usage to improve accuracy, grounding, and visual fidelity."
+title: "Beyond Text RAG: Introducing Rich Mode for Multimodal Grounding"
+description: "Why text-only RAG reaches its limits and how Rich mode extends retrieval by reintroducing images at inference time to improve grounding, accuracy, and fidelity."
+summary: "An exploration of the structural limitations of text-based RAG systems, supported by benchmarks, and how Rich mode introduces a multimodal retrieval strategy that preserves and leverages images as first-class evidence."
 date: 2026-04-13T12:07:05+01:00
 draft: false
 weight: 1
 categories: [agents, architecture]
 tags:
   - rag
-  - graphrag
-  - graph
-  - langgraph
+  - multimodal
+  - vision
   - agentic
+  - retrieval
 contributors: [Odelia Cohen]
 pinned: false
 homepage: false
 seo:
-  title: "Extending Beyond Text: Why Rich Mode Was Needed"
-  description: "Exploring the limitations of text-based RAG systems and how Rich mode introduces multimodal grounding by integrating images directly into the retrieval and inference pipeline."
+  title: "Beyond Text RAG: Introducing Rich Mode for Multimodal Grounding"
+  description: "Understand the limits of text-based RAG and how Rich mode improves accuracy and grounding by integrating images directly into the retrieval and inference pipeline."
   canonical: "https://fredk8.dev/blog/richard-vs-rico-agentic-duel"
   robots: "index, follow"
 ---
+
+
+{{< context >}}
+In Fred, advanced users can choose between three ingestion modes (Fast, Medium and Rich). Refer to [Document ingestion is not a side effect](https://fredk8.dev/blog/document-ingestion-is-not-a-side-effect/). This post focuses on the Rich mode, and the architectural shift it represents.
+{{< /context >}}
+
 ## Extending Beyond Text: Why Rich Mode Was Needed
 In a RAG system, a fundamental constraint quickly emerges: everything must ultimately be reduced to text.
 
@@ -131,11 +137,11 @@ This is precisely the space where Rich mode operates.
 
 ## Sources
 
-- https://cdn.openai.com/gpt-4o-system-card.pdf  
-- https://developers.openai.com/api/docs/guides/file-inputs/  
-- https://ai.google.dev/gemini-api/docs/document-processing?hl=fr  
-- https://platform.claude.com/docs/en/build-with-claude/vision  
-- https://llava-vl.github.io/  
-- https://aclanthology.org/2022.emnlp-main.375.pdf  
-- https://docs.cloud.google.com/document-ai/docs/layout-parse-chunk?hl=fr  
-- https://arxiv.org/abs/2502.08826  
+- [GPT-4o System Card](https://cdn.openai.com/gpt-4o-system-card.pdf)  
+- [OpenAI File Inputs Guide](https://developers.openai.com/api/docs/guides/file-inputs/)  
+- [Google Gemini Document Processing](https://ai.google.dev/gemini-api/docs/document-processing?hl=fr)  
+- [Anthropic Claude Vision Documentation](https://platform.claude.com/docs/en/build-with-claude/vision)  
+- [LLaVA Project](https://llava-vl.github.io/)  
+- [EMNLP 2022 Paper on Multimodal Models](https://aclanthology.org/2022.emnlp-main.375.pdf)  
+- [Google Document AI Layout Parsing](https://docs.cloud.google.com/document-ai/docs/layout-parse-chunk?hl=fr)  
+- [Recent Multimodal RAG Research (arXiv)](https://arxiv.org/abs/2502.08826)  
