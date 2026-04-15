@@ -1,10 +1,10 @@
 ---
-title: "Beyond Text RAG: Introducing Rich Mode for Multimodal Grounding"
+title: "Rich Mode: Extending RAG with Direct Visual Evidence"
 description: "Why text-only RAG reaches its limits and how Rich mode extends retrieval by reintroducing images at inference time to improve grounding, accuracy, and fidelity."
 summary: "An exploration of the structural limitations of text-based RAG systems, supported by benchmarks, and how Rich mode introduces a multimodal retrieval strategy that preserves and leverages images as first-class evidence."
 date: 2026-04-13T12:07:05+01:00
 draft: false
-weight: 1
+weight: 50
 categories: [agents, architecture]
 tags:
   - rag

@@ -1035,7 +1035,7 @@ The pod model solves isolation and deployment — but it also brings the standar
 # The Complexity Arc Illustrated
 
 
-![alt text](mermaid-diagram.png)
+![width:1000px center](diagrams/56-complexity-arc.png)
 
 ---
 
