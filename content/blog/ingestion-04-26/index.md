@@ -48,14 +48,65 @@ To better understand its impact, we conducted an internal benchmark comparing tw
 
 <img src="/images/multimodal_vs_vision_pipeline.png" alt="Multimodal vs Vision Pipeline">
 
+#### Evaluation Setup
+
+To ensure a fair comparison, both pipelines were evaluated on the same dataset and under identical conditions.
+
+The evaluation was conducted on a dataset of **10 images**, covering different types of visual content:
+- diagrams  
+- screenshots  
+- charts  
+- text-heavy documents  
+
+For each image, **3 questions** were defined, resulting in a total of **30 questions per pipeline** (60 responses overall).
+
+The outputs were then evaluated according to the following criteria:
+
+- **Accuracy**  
+  Does the model’s answer match the expected answer? *(factual correctness)*
+
+- **Relevance**  
+  Does the answer actually address the question? *(whether the response answers the question asked, beyond being correct)*
+
+- **Visual fidelity**  
+  Does the answer correctly describe the visual elements without introducing hallucinations?
+
+- **Grounding**  
+  Is the answer supported by elements explicitly visible in the image (text, objects, spatial relations)?
+
+- **Latency / cost**  
+  How efficient is the pipeline in terms of response time and processing complexity?
+
+Each response was scored using a predefined evaluation grid.
+
+It is important to note that this evaluation was conducted **manually (human-in-the-loop)**. While care was taken to ensure consistency and objectivity, some degree of subjectivity remains.  
+As a result, these metrics should be interpreted as **observed trends rather than absolute measurements**.
+
+#### Results
+
 The results were unambiguous.
 
-The direct multimodal pipeline consistently outperformed the caption-based approach:
+Each metric reported below corresponds to the **average score across all evaluated samples**.
 
-- Higher accuracy (0.90 vs 0.60)  
-- Better grounding in the image (1.93 vs 1.47)  
-- Higher visual fidelity (1.77 vs 1.13)  
-- Lower latency (4.35s vs 5.05s)  
+**Pipeline A (Direct Multimodal):**
+- Average latency: 4.35s  
+- Accuracy: 0.90  
+- Relevance: 2.00  
+- Grounding: 1.93  
+- Visual fidelity: 1.77  
+- Cost / efficiency: 1.13  
+- **Total score: 7.37 / 9**
+
+**Pipeline B (Caption-based):**
+- Average latency: 5.05s  
+- Accuracy: 0.60  
+- Relevance: 1.80  
+- Grounding: 1.47  
+- Visual fidelity: 1.13  
+- Cost / efficiency: 0.93  
+- **Total score: 5.93 / 9**
+
+While the dataset remains limited, the consistency of the gap across all metrics highlights a structural advantage of direct multimodal processing over text-based approximations.
 
 Beyond the numbers, the qualitative analysis revealed the core issue: transforming an image into text introduces interpretation bias.
 
