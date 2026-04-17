@@ -26,9 +26,9 @@ seo:
   robots: "index, follow"
 ---
 
-Commit [`2f5b3a1bcaca36d87bdfe26520108d235dc50fba`](https://github.com/ThalesGroup/fred/commit/2f5b3a1bcaca36d87bdfe26520108d235dc50fba), merged on **April 14, 2026**, is one of those changes that looks like a tabular refactor at first glance, but actually reshapes a broader part of the platform.
+This new feature looks like a tabular refactor at first glance, but it actually reshapes a broader part of the platform.
 
-Its title is straightforward: **"ensure tabular data are correctly dealt with scoped by team"**. But behind that title, the change does something more important: it aligns tabular data with Fred's main architectural principles.
+Behind the implementation details, the improvement does something more important: it aligns tabular data with Fred's main architectural principles.
 
 In other words, CSV and spreadsheet-like datasets are no longer handled as a special case living beside the rest of the system. They are now treated like first-class Fred resources: document-scoped, team-aware, ReBAC-controlled, and served through the same object-storage-oriented runtime used elsewhere in the platform.
 
@@ -179,7 +179,7 @@ That is often the difference between a feature that technically exists and a fea
 
 ---
 
-## Why This Commit Matters
+## Why This Improvement Matters
 
 What makes this improvement worth highlighting is that it solves several problems with one coherent move.
 
@@ -201,10 +201,9 @@ For an AI system that wants to mix documents, agents, permissions, and analytics
 
 ## Sources
 
-- [`docs/design/tabular_data_store/PARQUET_OBJECT_STORE_DUCKDB.md`](https://github.com/ThalesGroup/fred/blob/2f5b3a1bcaca36d87bdfe26520108d235dc50fba/docs/design/tabular_data_store/PARQUET_OBJECT_STORE_DUCKDB.md)
-- [`docs/platform/REBAC.md`](https://github.com/ThalesGroup/fred/blob/2f5b3a1bcaca36d87bdfe26520108d235dc50fba/docs/platform/REBAC.md)
-- [`docs/platform/DEPLOYMENT_GUIDE.md`](https://github.com/ThalesGroup/fred/blob/2f5b3a1bcaca36d87bdfe26520108d235dc50fba/docs/platform/DEPLOYMENT_GUIDE.md)
-- [`knowledge-flow-backend/README.md`](https://github.com/ThalesGroup/fred/blob/2f5b3a1bcaca36d87bdfe26520108d235dc50fba/knowledge-flow-backend/README.md)
-- [`knowledge-flow-backend/config/README.md`](https://github.com/ThalesGroup/fred/blob/2f5b3a1bcaca36d87bdfe26520108d235dc50fba/knowledge-flow-backend/config/README.md)
-- [`knowledge-flow-backend/docs/DEVELOPER_GUIDE.md`](https://github.com/ThalesGroup/fred/blob/2f5b3a1bcaca36d87bdfe26520108d235dc50fba/knowledge-flow-backend/docs/DEVELOPER_GUIDE.md)
-- [`commit 2f5b3a1bcaca36d87bdfe26520108d235dc50fba`](https://github.com/ThalesGroup/fred/commit/2f5b3a1bcaca36d87bdfe26520108d235dc50fba) (which introduces the feature)
+- [`docs/design/tabular_data_store/PARQUET_OBJECT_STORE_DUCKDB.md`](https://github.com/ThalesGroup/fred/blob/develop/docs/design/tabular_data_store/PARQUET_OBJECT_STORE_DUCKDB.md)
+- [`docs/platform/REBAC.md`](https://github.com/ThalesGroup/fred/blob/develop/docs/platform/REBAC.md)
+- [`docs/platform/DEPLOYMENT_GUIDE.md`](https://github.com/ThalesGroup/fred/blob/develop/docs/platform/DEPLOYMENT_GUIDE.md)
+- [`knowledge-flow-backend/README.md`](https://github.com/ThalesGroup/fred/blob/develop/knowledge-flow-backend/README.md)
+- [`knowledge-flow-backend/config/README.md`](https://github.com/ThalesGroup/fred/blob/develop/knowledge-flow-backend/config/README.md)
+- [`knowledge-flow-backend/docs/DEVELOPER_GUIDE.md`](https://github.com/ThalesGroup/fred/blob/develop/knowledge-flow-backend/docs/DEVELOPER_GUIDE.md)
