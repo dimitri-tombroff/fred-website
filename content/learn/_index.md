@@ -83,7 +83,7 @@ Fred is built around a small number of consistent principles that distinguish it
 
 ## Go further
 
-- [Getting started](/docs/guides/getting-started/) — deploy Fred locally in minutes
+- [Getting started](/docs/quickstart/getting-started/) — deploy Fred locally in minutes
 - [Configuration guide](/guides/configuration/ingestion-profiles/) — tune ingestion profiles for your documents
 - [Architecture](/docs/reference/architecture/) — understand how the platform components fit together
 - [Fred on GitHub](https://github.com/ThalesGroup/fred) — source code, issues, and contributions

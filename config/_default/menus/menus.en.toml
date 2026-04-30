@@ -35,7 +35,7 @@
 
 [[main]]
   name = "Docs"
-  url = "/docs/guides/getting-started/"
+  url = "/docs/quickstart/getting-started/"
   weight = 20
 
 [[main]]
