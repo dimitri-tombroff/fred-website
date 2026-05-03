@@ -1,7 +1,7 @@
 ---
 title: "Guides"
-description: "Task-oriented guides for users and operators of Fred."
-summary: "How to configure, operate, and extend Fred in practice."
+description: "Task-oriented guides for users and operators of Fred, organised by release."
+summary: "Kea 1.5 guides for production deployments. Swift 2.0 guides arriving with the release."
 date: 2026-04-30T00:00:00+02:00
 lastmod: 2026-04-30T00:00:00+02:00
 draft: false
@@ -16,7 +16,7 @@ seo:
   description: "Practical guides for Fred users and operators: ingestion profiles, configuration, and more."
 ---
 
-Practical guides for using and operating Fred — organized by audience.
+Practical guides for using and operating Fred, organised by release.
 
-- **[User Guide](/guides/user-guide/)** — understand Fred features from an end-user perspective
-- **[Configuration Guide](/guides/configuration/)** — reference for operators and DevOps teams
+- **[Kea 1.5 Guides](/guides/kea/)** — guides for the current production release
+- **[Swift 2.0 Guides](/guides/swift/)** — guides for the upcoming release (developer preview)

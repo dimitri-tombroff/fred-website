@@ -95,4 +95,4 @@ If documents uploaded to the same library have inconsistent quality, the most li
 ---
 
 > **This behavior is controlled by your platform operator.**
-> See [Ingestion Profiles — Configuration Guide]({{< ref "/guides/configuration/ingestion-profiles" >}}) for the exact settings that control each profile.
+> See [Ingestion Profiles — Configuration Guide]({{< ref "/guides/kea/configuration/ingestion-profiles" >}}) for the exact settings that control each profile.

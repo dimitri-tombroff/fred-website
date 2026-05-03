@@ -18,4 +18,4 @@ This section explains what you observe when using Fred, and why it behaves that 
 
 Each page answers a question a user might ask. When a behavior depends on how your platform is configured, the page tells you what to ask your platform operator.
 
-For operator and DevOps configuration details, see the [Configuration Guide]({{< ref "/guides/configuration" >}}).
+For operator and DevOps configuration details, see the [Configuration Guide]({{< ref "/guides/kea/configuration" >}}).

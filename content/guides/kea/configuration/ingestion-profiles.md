@@ -13,7 +13,7 @@ seo:
 ---
 
 > **User perspective:** what users observe with each profile →
-> [Ingestion Profiles — User Guide]({{< ref "/guides/user-guide/ingestion-profiles" >}})
+> [Ingestion Profiles — User Guide]({{< ref "/guides/kea/user-guide/ingestion-profiles" >}})
 
 ## Overview
 

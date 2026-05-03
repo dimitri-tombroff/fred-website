@@ -1,7 +1,7 @@
 ---
-title: "Learn"
-description: "Why Fred exists, what it solves, and where it's going."
-summary: "Rationale, value proposition, comparisons, and roadmap."
+title: "About"
+description: "Why Fred exists, what it solves, and how it is built."
+summary: "Rationale, value proposition, architecture, and comparisons."
 date: 2026-04-30T00:00:00+02:00
 lastmod: 2026-04-30T00:00:00+02:00
 draft: false

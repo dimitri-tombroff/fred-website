@@ -1,0 +1,132 @@
+{{/* bird-timeline: two bird cards side by side with a connecting arrow.
+     Renders Kea → Swift as a visual timeline.
+*/}}
+<style>
+  .bird-timeline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 2.5rem 0;
+    flex-wrap: wrap;
+  }
+  .bird-timeline .bird-card {
+    margin: 0;
+    flex: 0 0 auto;
+    width: 220px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(25,27,33,0.13);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+  .bird-timeline .bird-card-image {
+    width: 100%;
+    height: 180px;
+    object-fit: contain;
+    background: #ffffff;
+    display: block;
+    filter: sepia(0.12) contrast(1.04) brightness(0.98);
+  }
+  .bird-timeline .bird-card-body {
+    padding: 0.9rem 1.1rem 1rem;
+    background: #1d2535;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .bird-timeline .bird-card-label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+  .bird-timeline .bird-card-name {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.2;
+  }
+  .bird-timeline .bird-card-version {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.06em;
+  }
+  .bird-timeline .bird-card-status {
+    display: inline-block;
+    margin-top: 0.3rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.18rem 0.55rem;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    align-self: flex-start;
+  }
+  .bird-timeline .bird-card-hint {
+    display: block;
+    margin-top: 0.6rem;
+    font-size: 0.72rem;
+    font-style: italic;
+    color: rgba(255,255,255,0.4);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 0.6rem;
+    text-align: center;
+  }
+  .bird-timeline-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgba(100,110,130,0.7);
+    flex-shrink: 0;
+  }
+  .bird-timeline-arrow {
+    font-size: 1.8rem;
+    line-height: 1;
+    color: rgba(100,110,130,0.5);
+  }
+  .bird-timeline-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(100,110,130,0.6);
+    white-space: nowrap;
+  }
+  @media (max-width: 680px) {
+    .bird-timeline { flex-direction: column; }
+    .bird-timeline-arrow { transform: rotate(90deg); }
+  }
+</style>
+
+<div class="bird-timeline">
+  <div class="bird-card">
+    <img src="/images/kea_vintage_optimized.webp" alt="Kea" class="bird-card-image">
+    <div class="bird-card-body">
+      <span class="bird-card-label">Fred release</span>
+      <span class="bird-card-name">Kea</span>
+      <span class="bird-card-version">1.5.x</span>
+      <span class="bird-card-status">Production — now</span>
+      <em class="bird-card-hint">Understanding begins with curiosity.</em>
+    </div>
+  </div>
+
+  <div class="bird-timeline-connector">
+    <div class="bird-timeline-arrow">→</div>
+    <div class="bird-timeline-label">summer 2026</div>
+  </div>
+
+  <div class="bird-card">
+    <img src="/images/swift_vintage_optimized.webp" alt="Swift" class="bird-card-image">
+    <div class="bird-card-body">
+      <span class="bird-card-label">Fred release</span>
+      <span class="bird-card-name">Swift</span>
+      <span class="bird-card-version">2.0.x</span>
+      <span class="bird-card-status">Developer preview</span>
+      <em class="bird-card-hint">Speed is nothing without direction.</em>
+    </div>
+  </div>
+</div>
