@@ -34,7 +34,7 @@ Kea is the codename for the Fred 1.x release line. It is the first full producti
 
 The full changelog is available inside the running application under **Release Notes**, or in the [repository](https://github.com/ThalesGroup/fred).
 
-Current patch: **1.5.2** — streaming enabled for all agent types.
+Current patch: **1.5.x** — see the in-app release notes for the latest changelog.
 
 ## Guides
 

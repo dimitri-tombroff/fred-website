@@ -20,7 +20,7 @@ seo:
 
 Kea 1.5 is the current stable release. Teams deploy it today.
 
-Active development continues on Kea with patch releases for fixes and incremental improvements. The latest patch is **1.5.2**.
+Active development continues on Kea with patch releases for fixes and incremental improvements. The latest patch is **1.5.x**.
 
 Recent additions:
 - Streaming enabled for all agent types
