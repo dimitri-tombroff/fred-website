@@ -72,4 +72,4 @@ Swift is built around three principles:
 
 ## Guides
 
-Swift guides are being written now. See [Swift Guides](/guides/swift/) as they are published.
+Swift guides are being written now. See [Swift Guides](/releases/swift/guides/) as they are published.

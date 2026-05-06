@@ -90,4 +90,4 @@ A useful workflow when a conversation behaves unexpectedly:
 
 1. Run **Incident diagnosis** first to rule out errors.
 2. If no errors are found, run **Performance diagnosis** to identify latency contributors.
-3. If the diagnosis points to configuration (e.g. wrong model, knowledge base not scoped correctly), bring the findings to your platform operator. See [Performance Metrics — Configuration Guide]({{< ref "/guides/kea/configuration/performance-and-kpis" >}}) for the operator reference.
+3. If the diagnosis points to configuration (e.g. wrong model, knowledge base not scoped correctly), bring the findings to your platform operator. See [Performance Metrics — Configuration Guide]({{< ref "/releases/kea/guides/configuration/performance-and-kpis" >}}) for the operator reference.

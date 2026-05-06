@@ -16,8 +16,8 @@ seo:
 
 This section is for **operators and DevOps teams** who deploy and maintain Fred Swift 2.0 instances (`fred-agents`, `fred-runtime`).
 
-For developer setup (local tokens, model selection) see the [Developer Guide]({{< ref "/guides/swift/developer-guide" >}}).
-For the end-user perspective, see the [User Guide]({{< ref "/guides/swift/user-guide" >}}).
+For developer setup (local tokens, model selection) see the [Developer Guide]({{< ref "/releases/swift/guides/developer-guide" >}}).
+For the end-user perspective, see the [User Guide]({{< ref "/releases/swift/guides/user-guide" >}}).
 
 ## Key differences from Kea operations
 

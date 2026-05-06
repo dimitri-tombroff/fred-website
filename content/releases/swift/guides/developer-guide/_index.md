@@ -16,8 +16,8 @@ seo:
 
 This section is for **agent authors** — developers who write, configure, or test agents using `fred-sdk` and `fred-runtime` (Swift 2.0).
 
-Each page answers a concrete setup or configuration question. When a setting requires a production deployment decision, the page points to the [Operations Guide]({{< ref "/guides/swift/operations" >}}).
+Each page answers a concrete setup or configuration question. When a setting requires a production deployment decision, the page points to the [Operations Guide]({{< ref "/releases/swift/guides/operations" >}}).
 
 ## In this section
 
-- **[Model configuration](/guides/swift/developer-guide/models/)** — which env var holds your API token, how to select a provider, how `models_catalog.yaml` controls default model selection, how to switch between dev and prod configurations, and how to point `fred-samples` at local SDK builds.
+- **[Model configuration](/releases/swift/guides/developer-guide/models/)** — which env var holds your API token, how to select a provider, how `models_catalog.yaml` controls default model selection, how to switch between dev and prod configurations, and how to point `fred-samples` at local SDK builds.

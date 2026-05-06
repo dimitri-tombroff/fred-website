@@ -135,7 +135,7 @@ CONFIG_FILE=./config/configuration_prod.yaml
 
 For local development, the default `configuration.yaml` with security disabled is correct. You do not need Keycloak, PostgreSQL, or Temporal running.
 
-For a full production-like local setup (testing auth flows, ReBAC, etc.), copy `configuration_prod.yaml` and supply the additional secrets it requires — see the [Operations Guide]({{< ref "/guides/kea/operations" >}}).
+For a full production-like local setup (testing auth flows, ReBAC, etc.), copy `configuration_prod.yaml` and supply the additional secrets it requires — see the [Operations Guide]({{< ref "/releases/kea/guides/operations" >}}).
 
 ---
 
@@ -150,7 +150,7 @@ For a full production-like local setup (testing auth flows, ReBAC, etc.), copy `
 ---
 
 > **For operators:** how to inject these values in Kubernetes (Secrets, Helm values) →
-> [Model Secrets — Operations Guide]({{< ref "/guides/kea/operations" >}})
+> [Model Secrets — Operations Guide]({{< ref "/releases/kea/guides/operations" >}})
 >
 > **For routing rules and the full resolution algorithm** →
 > [LLM Routing reference]({{< ref "/docs/reference/llm_routing" >}})

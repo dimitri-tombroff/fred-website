@@ -18,5 +18,5 @@ This section is for platform operators and DevOps teams who deploy and configure
 
 Each page maps a user-visible behavior to the exact configuration that controls it, with the reasoning behind each option.
 
-For the end-user perspective on these features, see the [User Guide]({{< ref "/guides/kea/user-guide" >}}).
+For the end-user perspective on these features, see the [User Guide]({{< ref "/releases/kea/guides/user-guide" >}}).
 For the full technical specification, see the [Reference]({{< ref "/docs/reference" >}}).

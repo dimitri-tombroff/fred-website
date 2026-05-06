@@ -8,7 +8,7 @@ draft: false
 weight: 820
 toc: true
 seo:
-  title: "Performance Metrics and KPIs — Kea Operations Guide"
+  title: "Performance Metrics and KPIs — Fred Configuration Guide"
   description: "Fred Prometheus metrics, KPI label conventions, and LogGenius internals for platform operators. Covers changes introduced in Fred 1.5."
 ---
 
@@ -131,4 +131,4 @@ LogGenius is a built-in internal agent — it does not need to be created or pub
 
 ---
 
-> **User perspective:** see [Performance and KPIs — User Guide]({{< ref "/guides/kea/user-guide/performance-and-kpis" >}}) for how end-users interact with the dashboard and LogGenius.
+> **User perspective:** see [Performance and KPIs — User Guide]({{< ref "/releases/kea/guides/user-guide/performance-and-kpis" >}}) for how end-users interact with the dashboard and LogGenius.

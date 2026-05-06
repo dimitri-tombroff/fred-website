@@ -40,7 +40,7 @@
 
 [[main]]
   name = "Guides"
-  url = "/guides/"
+  url = "/releases/swift/guides/"
   weight = 23
 
 [[main]]

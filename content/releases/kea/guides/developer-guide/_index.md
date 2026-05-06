@@ -16,8 +16,8 @@ seo:
 
 This section is for **agent authors** — developers who write, configure, or test agents running on the Kea 1.5 platform.
 
-Each page answers a concrete setup or configuration question. When a setting requires a production deployment decision, the page points to the [Operations Guide]({{< ref "/guides/kea/operations" >}}).
+Each page answers a concrete setup or configuration question. When a setting requires a production deployment decision, the page points to the [Operations Guide]({{< ref "/releases/kea/guides/operations" >}}).
 
 ## In this section
 
-- **[Model configuration](/guides/kea/developer-guide/models/)** — which env var holds your API token, how to select a provider, how `models_catalog.yaml` controls default model selection, and how to switch between dev and prod configurations.
+- **[Model configuration](/releases/kea/guides/developer-guide/models/)** — which env var holds your API token, how to select a provider, how `models_catalog.yaml` controls default model selection, and how to switch between dev and prod configurations.

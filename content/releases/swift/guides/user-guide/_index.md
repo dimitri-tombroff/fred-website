@@ -18,6 +18,6 @@ This section explains what you observe when using Fred Swift 2.0, and why it beh
 
 Each page answers a question a daily user might ask — without requiring knowledge of configuration files or deployment details. When behaviour depends on platform configuration, the page tells you what to ask your operator.
 
-For developer and operator details, see the [Developer Guide]({{< ref "/guides/swift/developer-guide" >}}) and [Operations Guide]({{< ref "/guides/swift/operations" >}}).
+For developer and operator details, see the [Developer Guide]({{< ref "/releases/swift/guides/developer-guide" >}}) and [Operations Guide]({{< ref "/releases/swift/guides/operations" >}}).
 
 > Swift user guide pages are being added alongside the release. Check back as Swift 2.0 reaches general availability.

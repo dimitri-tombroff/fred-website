@@ -18,12 +18,12 @@ seo:
 
 Fred releases one production version at a time. Here is where things stand.
 
-| | [Kea 1.5](/releases/kea/) | [Swift 2.0](/releases/swift/) |
+| | [Swift 2.0](/releases/swift/) | [Kea 1.5](/releases/kea/) |
 |---|---|---|
-| **Status** | Production — stable | Developer preview |
-| **Runtime** | `agentic-backend` | `fred-runtime` + `fred-sdk` |
-| **Available** | Now | PyPI today · GA summer 2026 |
-| **What to do** | Nothing — keep running | Try the SDK, write your agents now |
+| **Status** | Developer preview — **next** | Production — stable |
+| **Runtime** | `fred-runtime` + `fred-sdk` | `agentic-backend` |
+| **Available** | PyPI today · GA summer 2026 | Now |
+| **What to do** | Try the SDK, write your agents now | Nothing — keep running |
 
 ---
 
@@ -35,7 +35,7 @@ Fred releases one production version at a time. Here is where things stand.
 
 ---
 
-- [Kea 1.5](/releases/kea/) — current stable release
-- [Swift 2.0](/releases/swift/) — developer preview, GA summer 2026
+- [Swift 2.0](/releases/swift/) — developer preview, GA summer 2026 · [Swift Guides](/releases/swift/guides/)
+- [Kea 1.5](/releases/kea/) — current stable release · [Kea Guides](/releases/kea/guides/)
 - [Release lifecycle](/releases/lifecycle/) — how Fred versions work, branch model, support windows
 - [Roadmap](/releases/roadmap/) — what's coming and when

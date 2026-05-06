@@ -3,6 +3,12 @@ title = "Fred"
 description = "A multi-agent Kubernetes AI assistant"
 images = ["cover.png"]
 
+# Release configuration — change this single line when the next bird ships
+current_release = "swift"
+current_release_label = "Swift 2.0"
+legacy_release = "kea"
+legacy_release_label = "Kea 1.5"
+
 # mainSections
 mainSections = ["docs"]
 

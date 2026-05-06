@@ -193,7 +193,7 @@ uv sync
 ---
 
 > **For operators:** how to inject these values in Kubernetes (Secrets, Helm values) →
-> [Operations Guide]({{< ref "/guides/swift/operations" >}})
+> [Operations Guide]({{< ref "/releases/swift/guides/operations" >}})
 >
 > **For routing rules and the full resolution algorithm** →
 > [LLM Routing reference]({{< ref "/docs/reference/llm_routing" >}})

@@ -8,12 +8,12 @@ draft: false
 weight: 810
 toc: true
 seo:
-  title: "Ingestion Profiles — Fred Configuration Guide"
+  title: "Ingestion Profiles — Kea Operations Guide"
   description: "Configure FAST, MEDIUM, and RICH ingestion profiles in Fred: PDF backends, OCR, force_full_page_ocr, and vision model wiring."
 ---
 
 > **User perspective:** what users observe with each profile →
-> [Ingestion Profiles — User Guide]({{< ref "/guides/kea/user-guide/ingestion-profiles" >}})
+> [Ingestion Profiles — User Guide]({{< ref "/releases/kea/guides/user-guide/ingestion-profiles" >}})
 
 ## Overview
 

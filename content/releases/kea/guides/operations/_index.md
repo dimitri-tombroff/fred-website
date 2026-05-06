@@ -18,10 +18,10 @@ This section is for **operators and DevOps teams** who deploy, configure, and ma
 
 Each page maps a deployment concern to the exact configuration that controls it, with the reasoning behind each option.
 
-For the developer perspective (local setup, token config, model selection) see the [Developer Guide]({{< ref "/guides/kea/developer-guide" >}}).
-For the end-user perspective on these features, see the [User Guide]({{< ref "/guides/kea/user-guide" >}}).
+For the developer perspective (local setup, token config, model selection) see the [Developer Guide]({{< ref "/releases/kea/guides/developer-guide" >}}).
+For the end-user perspective on these features, see the [User Guide]({{< ref "/releases/kea/guides/user-guide" >}}).
 
 ## In this section
 
-- **[Ingestion Profiles](/guides/kea/operations/ingestion-profiles/)** — configure FAST, MEDIUM, and RICH profiles; OCR backends; vision model wiring; Helm deployment notes.
-- **[Performance Metrics and KPIs](/guides/kea/operations/performance-and-kpis/)** — Prometheus endpoints, metric reference, breaking changes in 1.5, and LogGenius internals.
+- **[Ingestion Profiles](/releases/kea/guides/operations/ingestion-profiles/)** — configure FAST, MEDIUM, and RICH profiles; OCR backends; vision model wiring; Helm deployment notes.
+- **[Performance Metrics and KPIs](/releases/kea/guides/operations/performance-and-kpis/)** — Prometheus endpoints, metric reference, breaking changes in 1.5, and LogGenius internals.

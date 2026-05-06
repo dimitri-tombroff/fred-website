@@ -3,14 +3,17 @@ title: "Kea 1.5"
 description: "Kea is the current production release of Fred — stable, supported, and ready to deploy."
 summary: "Fred Kea 1.5 is the production release. Built on agentic-backend, it is the version your teams run today."
 date: 2026-05-02T00:00:00+02:00
-lastmod: 2026-05-02T00:00:00+02:00
+lastmod: 2026-05-06T00:00:00+02:00
 draft: false
 weight: 10
+legacy: true
 toc: true
 seo:
   title: "Kea 1.5 — Fred"
   description: "Fred Kea 1.5: the current stable production release. Features, release notes, and support status."
 ---
+
+{{< legacy-banner release="Swift 2.0" url="/releases/swift/" >}}
 
 {{< bird-card image="/images/kea_vintage_optimized.webp" name="Kea" version="1.5.x" status="Production — stable" hint="Understanding begins with curiosity." >}}
 
@@ -38,8 +41,10 @@ Current patch: **1.5.x** — see the in-app release notes for the latest changel
 
 ## Guides
 
-- [Kea User Guide](/guides/kea/user-guide/) — for daily users
-- [Kea Configuration Guide](/guides/kea/configuration/) — for operators and DevOps teams
+- [Kea User Guide](/releases/kea/guides/user-guide/) — for daily users
+- [Kea Developer Guide](/releases/kea/guides/developer-guide/) — for agent authors
+- [Kea Operations Guide](/releases/kea/guides/operations/) — for operators and DevOps teams
+- [Kea Configuration Guide](/releases/kea/guides/configuration/) — configuration reference
 
 ## Migration to Swift
 
