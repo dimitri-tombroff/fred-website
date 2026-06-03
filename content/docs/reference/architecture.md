@@ -19,6 +19,8 @@ It explains the architecture boundaries so platform teams, DSI, RSSI, and run te
 
 For implementation details and fast-moving parameters, rely on the GitHub references listed at the end.
 
+> **Full interactive version available** — For the complete annotated platform map with component tables, mental models, and a guided reading path, open the [interactive architecture document](/docs/architecture.html).
+
 ## System Overview
 
 {{< mermaiddiagram >}}

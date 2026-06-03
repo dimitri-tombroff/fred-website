@@ -39,6 +39,11 @@
   weight = 20
 
 [[main]]
+  name = "Architecture"
+  url = "/docs/architecture.html"
+  weight = 22
+
+[[main]]
   name = "Guides"
   url = "/releases/swift/guides/"
   weight = 23

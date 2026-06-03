@@ -24,3 +24,7 @@ For the end-user perspective, see the [User Guide]({{< ref "/releases/swift/guid
 Swift 2.0 uses a simpler service topology than Kea. `fred-agents` is a standalone Python pod — there is no separate agentic backend. The same two-file model configuration pattern applies (`configuration.yaml` + `models_catalog.yaml`), but there is no Knowledge Flow dependency for agents that do not use RAG tools.
 
 > Operations pages are being added as Swift 2.0 reaches general availability.
+
+## Migration runbook
+
+Migrating an existing kea deployment to swift — including data transfer, schema transforms, validation checklists, and rollback procedures — is covered in the [kea → swift migration runbook](/docs/migration-kea-to-swift.html).
