@@ -70,6 +70,10 @@ Swift is built around three principles:
 
 **The control plane is the authority.** Agent enrollment, permissions, team membership, and managed agent instances all flow through `control-plane-backend`. The runtime asks; the control plane decides.
 
+## Platform capabilities
+
+For a complete inventory of what Swift supports — ingestion formats, SSE event contracts, APIs, agent templates, governance model, security posture — see the **[Feature Reference](/docs/features.html)**.
+
 ## Guides
 
 Swift guides are being written now. See [Swift Guides](/releases/swift/guides/) as they are published.

@@ -19,7 +19,9 @@ It explains the architecture boundaries so platform teams, DSI, RSSI, and run te
 
 For implementation details and fast-moving parameters, rely on the GitHub references listed at the end.
 
-> **Full interactive version available** — For the complete annotated platform map with component tables, mental models, and a guided reading path, open the [interactive architecture document](/docs/architecture.html).
+> **Developer Guide** — The three-layer design rule, five mental models, and a guided reading path for new contributors: [Fred Developer Guide](/docs/developer-guide.html).
+
+> **Platform Architecture** — Deployment topology, data flows, storage boundaries, and security perimeter: [Platform Architecture](/docs/architecture.html) *(work in progress)*.
 
 ## System Overview
 
@@ -89,6 +91,7 @@ flowchart TD
 
 ## Related References
 
+- [Feature Reference](/docs/features.html) — complete inventory of supported formats, APIs, SSE events, agents, governance, and security
 - [Deployment](/docs/reference/deployment/)
 - [Security](/docs/reference/security/)
 - [Policy-based LLM Routing](/docs/reference/llm_routing/)
