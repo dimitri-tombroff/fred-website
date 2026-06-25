@@ -19,6 +19,10 @@ This section is for **operators and DevOps teams** who deploy and maintain Fred 
 For developer setup (local tokens, model selection) see the [Developer Guide]({{< ref "/releases/swift/guides/developer-guide" >}}).
 For the end-user perspective, see the [User Guide]({{< ref "/releases/swift/guides/user-guide" >}}).
 
+## Deploying on GKE
+
+A curated overview of a complete Fred deployment on Google Kubernetes Engine — the components, the stores, and the executable completeness checklist that tells you it is correct, not just running — is in the [Deploying Fred on GKE](/docs/deploy-gke.html) page. The environment-specific runbook (ordered commands, secrets, the completeness checker) ships with the Helm chart in the deployment repository.
+
 ## Key differences from Kea operations
 
 Swift 2.0 uses a simpler service topology than Kea. `fred-agents` is a standalone Python pod — there is no separate agentic backend. The same two-file model configuration pattern applies (`configuration.yaml` + `models_catalog.yaml`), but there is no Knowledge Flow dependency for agents that do not use RAG tools.

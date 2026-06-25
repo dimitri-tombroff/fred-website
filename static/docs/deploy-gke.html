@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Deploying on GKE</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    196px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    /* ─── Sidebar ─────────────────────────────────────────── */
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    /* ─── Main ────────────────────────────────────────────── */
+    main { flex: 1; max-width: 900px; padding: 3rem 3.5rem 6rem; }
+
+    /* ─── Page header ─────────────────────────────────────── */
+    .hd { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.15; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1rem; color: var(--muted); max-width: 540px; }
+
+    /* ─── Sections ────────────────────────────────────────── */
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+    h3 { font-size: 0.875rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    p { font-size: 0.9rem; margin-bottom: 0.7rem; max-width: 680px; }
+    ol, ul { font-size: 0.9rem; margin: 0.4rem 0 0.7rem 1.2rem; max-width: 680px; }
+    ol li, ul li { margin-bottom: 0.35rem; }
+
+    /* ─── Callout ─────────────────────────────────────────── */
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 660px; }
+    .callout strong { color: var(--text); }
+    .callout.warn  { border-left-color: var(--s); }
+    .callout.info  { border-left-color: var(--c); }
+    .callout.ok    { border-left-color: var(--r); }
+
+    /* ─── Component / gate cards ──────────────────────────── */
+    .wip-grid { display: flex; flex-direction: column; gap: 0.4rem; margin: 1rem 0; max-width: 660px; }
+    .wip-item { display: flex; align-items: flex-start; gap: 1rem; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); }
+    .wip-label { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .wip-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .wip-badge { display: inline-block; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: 0.1rem; }
+    .wip-badge.core { background: var(--c-bg); color: var(--c); border: 1px solid var(--c); }
+    .wip-badge.data { background: var(--s-bg); color: var(--s); border: 1px solid var(--s); }
+    .wip-badge.gate { background: var(--r-bg); color: var(--r); border: 1px solid var(--r); }
+
+    /* ─── Reference cards ─────────────────────────────────── */
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-path { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+
+    code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
+    pre { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rad); padding: 0.9rem 1rem; margin: 0.85rem 0; overflow-x: auto; max-width: 680px; }
+    pre code { background: none; border: none; padding: 0; font-size: 0.78rem; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Deploy on GKE</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#scope">Scope &amp; audience</a></li>
+    <li><a href="#complete">What "deployed" means</a></li>
+    <li><a href="#components">Components</a></li>
+    <li><a href="#flow">Deployment flow</a></li>
+    <li><a href="#gotchas">Operational gotchas</a></li>
+    <li><a href="#related">Related documents</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="callout warn" style="margin-bottom:2rem;max-width:680px;">
+    <strong>Draft.</strong> A curated overview shared for early review, distilled from a
+    reference Swift 2.0 deployment on GKE Autopilot. The authoritative step-by-step lives
+    in the deployment repository (see <a href="#related" style="color:inherit;font-weight:600;">Related</a>).
+  </div>
+
+  <div class="hd">
+    <div class="hd-eyebrow">guides / operations</div>
+    <h1>Deploying Fred<br>on GKE</h1>
+    <p class="hd-lead">
+      What a complete Fred deployment on Google Kubernetes Engine looks like — the
+      components, the stores, and how you know it is actually correct, not just running.
+    </p>
+  </div>
+
+  <!-- ── Scope ──────────────────────────────────────────── -->
+  <section id="scope">
+    <h2>Scope &amp; audience</h2>
+    <p>
+      For operators and DevOps teams standing up Fred Swift 2.0 on GKE Autopilot. This
+      page is the <em>map</em>: the shape of a deployment and its definition of "done". It
+      deliberately does not reproduce the environment-specific runbook (hostnames, secrets,
+      exact commands) — that lives with the Helm chart and stays in sync with it.
+    </p>
+    <div class="callout info">
+      <strong>Two companion documents.</strong> The
+      <a href="architecture.html" style="color:inherit;font-weight:600;">Architecture</a> page
+      covers component topology and the security perimeter; native Google Cloud Storage with
+      Workload Identity (no service-account keys) has its own reference. This page is the
+      operational overview that ties them together.
+    </div>
+  </section>
+
+  <!-- ── What "deployed" means ──────────────────────────── -->
+  <section id="complete">
+    <h2>What "deployed" means — complete <em>and</em> correct</h2>
+    <p>
+      The hardest deployment bugs are silent: every pod is <code>1/1 Ready</code>, yet the
+      product is subtly broken — a workload missing, a TLS certificate still provisioning,
+      a backend wired to ephemeral storage. Liveness does not equal correctness.
+    </p>
+    <p>
+      So the definition of "done" is an <strong>executable checklist</strong>, not a page to
+      tick through by hand. A deployment is complete only when a single status command is
+      green across every dimension:
+    </p>
+    <div class="wip-grid">
+      <div class="wip-item"><span class="wip-badge gate">presence</span><div><div class="wip-label">Workloads &amp; expected components</div><div class="wip-desc">Every desired replica Ready — and every <em>expected</em> component present, so a disabled or missing service is flagged, not silently absent.</div></div></div>
+      <div class="wip-item"><span class="wip-badge gate">deps</span><div><div class="wip-label">App dependency health</div><div class="wip-desc">Each service's <code>/ready</code> probe confirms its real backends (Postgres, OpenSearch, OpenFGA, object storage) — not just that the pod started.</div></div></div>
+      <div class="wip-item"><span class="wip-badge gate">edge</span><div><div class="wip-label">TLS certificates Active</div><div class="wip-desc">Managed certificates must be <code>Active</code>, not provisioning — a 1/1 pod behind a half-issued cert is unreachable over HTTPS.</div></div></div>
+      <div class="wip-item"><span class="wip-badge gate">correctness</span><div><div class="wip-label">Config &amp; schema correctness</div><div class="wip-desc">The semantic checks liveness can't see: durable (not ephemeral) conversation storage, the analytics/KPI store wired, runtime catalog sources reachable, DB migrations applied.</div></div></div>
+    </div>
+    <div class="callout ok">
+      <strong>Green means the site works end to end</strong> — not "the pods are up". Treat the
+      status command as the source of truth: if a written step ever disagrees with it, trust
+      the command.
+    </div>
+  </section>
+
+  <!-- ── Components ─────────────────────────────────────── -->
+  <section id="components">
+    <h2>What runs in the cluster</h2>
+    <p>
+      A Fred instance lives in one Kubernetes namespace. The application services share one
+      Postgres database and an in-cluster OpenSearch; all external traffic enters through a
+      single Ingress. (Full topology and data flows: the
+      <a href="architecture.html">Architecture</a> page.)
+    </p>
+    <div class="wip-grid">
+      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">control-plane-backend</div><div class="wip-desc">Sessions, teams, lifecycle, the admin/analytics surface, and runtime-catalog routing.</div></div></div>
+      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">knowledge-flow (backend + worker)</div><div class="wip-desc">Document ingestion, vector/tabular stores, and the MCP filesystem. The Temporal worker drains the ingestion queue.</div></div></div>
+      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">fred-agents</div><div class="wip-desc">The agent runtime. Conversation state (history + checkpoints) persists to Postgres so it survives restarts.</div></div></div>
+      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">fred-frontend</div><div class="wip-desc">The web UI. Proxies to the backends, so it is brought up last, after their Services exist.</div></div></div>
+      <div class="wip-item"><span class="wip-badge data">infra</span><div><div class="wip-label">Keycloak · OpenFGA · Temporal (+ UI)</div><div class="wip-desc">Identity (OIDC + M2M), relationship-based authorization, and workflow scheduling.</div></div></div>
+      <div class="wip-item"><span class="wip-badge data">data</span><div><div class="wip-label">PostgreSQL · OpenSearch</div><div class="wip-desc">Relational store (one DB, per-component tables) and the vector / KPI store. Object storage is native GCS via Workload Identity.</div></div></div>
+    </div>
+  </section>
+
+  <!-- ── Deployment flow ────────────────────────────────── -->
+  <section id="flow">
+    <h2>Deployment flow</h2>
+    <p>The reference deployment is a Helm chart plus a small set of scripts. The shape:</p>
+    <ol>
+      <li><strong>Build</strong> the component images at one shared, date-stamped tag (so a round is one coherent version).</li>
+      <li><strong>Preflight</strong> — verify identity prerequisites (realm, clients, roles) and that all required secrets render.</li>
+      <li><strong>Deploy in order</strong> — migrate the stateful backends, start them, then the agent runtime, and the frontend <em>last</em> (it resolves backend DNS at startup).</li>
+      <li><strong>Verify</strong> — run the status command until it is fully green (the checklist above). Re-run after any change.</li>
+    </ol>
+    <div class="callout info">
+      <strong>Fast iteration.</strong> Routine redeploys reuse a one-line image tag and skip
+      re-provisioning identity, so an app-only roll-forward is quick. Bouncing a pod to pick
+      up a config change is a plain <code>rollout restart</code> — no full release needed.
+    </div>
+  </section>
+
+  <!-- ── Operational gotchas ────────────────────────────── -->
+  <section id="gotchas">
+    <h2>Operational gotchas worth knowing</h2>
+    <p>Hard-won, and transferable to any GKE deployment:</p>
+    <div class="callout warn"><strong>Durable conversation storage.</strong> The agent runtime must persist to a real database, not a pod-local SQLite file on an <code>emptyDir</code> — otherwise conversations vanish on every restart while still appearing in the session list.</div>
+    <div class="callout warn"><strong>Analytics needs its store wired.</strong> The KPI dashboard reads from OpenSearch; if that sink is not enabled and connected, preset endpoints return <code>503</code> even though everything else is healthy.</div>
+    <div class="callout warn"><strong>Don't tear down the edge to "restart".</strong> Disabling the frontend deletes its managed TLS certificate; bringing it back triggers a fresh 15–60 min certificate re-provision. Roll the pod instead.</div>
+    <div class="callout warn"><strong>Provisioning isn't free per deploy.</strong> Re-running identity provisioning on every upgrade is slow; once the realm and clients exist, skip it for app-only redeploys.</div>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Related documents</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="architecture.html">
+        <div class="ref-topic">Platform Architecture →</div>
+        <div class="ref-path">component topology · security perimeter</div>
+      </a>
+      <a class="ref-card" href="/releases/swift/guides/operations/">
+        <div class="ref-topic">Swift Operations Guide →</div>
+        <div class="ref-path">/releases/swift/guides/operations</div>
+      </a>
+      <a class="ref-card" href="/releases/roadmap/">
+        <div class="ref-topic">Roadmap →</div>
+        <div class="ref-path">Kea 1.5 → Swift 2.0 GA</div>
+      </a>
+      <a class="ref-card" href="https://github.com/ThalesGroup/fred">
+        <div class="ref-topic">Fred on GitHub →</div>
+        <div class="ref-path">github.com/ThalesGroup/fred</div>
+      </a>
+    </div>
+    <div class="callout">
+      The environment-specific runbook (ordered commands, secrets, and the
+      <code>fredlab-status.sh</code> completeness checker) ships with the Helm chart in the
+      deployment repository, where it stays in sync with the chart it documents.
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

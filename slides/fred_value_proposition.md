@@ -305,6 +305,7 @@ style: |
 - **Policy, not config** — model and routing rules expressed as governed policy.
 - **Observability** — tracing, metrics and KPIs from day one.
 - **Deploy where you must** — on-prem, private Kubernetes, or sovereign cloud.
+- **Bring your own models** — your enterprise LLMaaS, public cloud (Azure OpenAI, Vertex, Bedrock…), or local inference; Fred ships none.
 
 > Security and governance are platform features — not afterthoughts.
 

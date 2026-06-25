@@ -408,6 +408,7 @@
       "delivery-and-promotion-model",
       "deploy-to-a-fred-platform-instance",
       "deploying-loggenius",
+      "deploying-on-gke",
       "deployment-building-blocks",
       "design-principles",
       "designing-a-new-mcp-agent-kimberley",
