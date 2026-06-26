@@ -260,6 +260,21 @@ style: |
   .smerge { color: #7fa8c9; font-weight: 800; font-size: 30px; padding: 0 2px; }
   .tag { color: #b8860b; font-weight: 800; }
   .schema-cap { text-align: center; color: #6b7a88; font-size: 14px; font-style: italic; margin-top: 4px; }
+
+  /* ── Split slide (text left, screenshot right) ────────────────────── */
+  section.split-slide { padding-top: 48px; }
+  .split { display: flex; gap: 24px; align-items: center; margin-top: 4px; }
+  .split .col-text { flex: 1; }
+  .split .col-text ul { margin-left: 16px; }
+  .split .col-text li { font-size: 19px; margin-bottom: 7px; }
+  .split .col-img { flex: 0 0 52%; }
+  .split .col-img img { display: block; margin: 0 auto; max-height: 380px; width: auto; max-width: 100%;
+                        border-radius: 10px; border: 1px solid #cfd9e3;
+                        box-shadow: 0 8px 24px rgba(0,0,0,0.18); }
+  .shot-ph { width: 100%; aspect-ratio: 16/10; border: 2px dashed #b9c8d6; border-radius: 10px;
+             display: flex; flex-direction: column; align-items: center; justify-content: center;
+             color: #7e93a6; background: #f4f8fc; font-weight: 700; text-align: center; }
+  .shot-ph small { font-weight: 500; color: #9fb0c0; margin-top: 8px; }
 ---
 
 <!-- _class: title -->
@@ -486,6 +501,30 @@ style: |
 | Migrations | A governed **pre-deploy migration step** |
 
 > A concrete backlog already exists for the team — see the deployment-factory RFC.
+
+---
+
+<!-- _class: split-slide -->
+
+# The pattern in action — on a real C1 platform
+
+## Adopt GitOps and a live status board comes for free
+
+<div class="split">
+  <div class="col-text">
+  <ul>
+  <li><strong>Every box is real</strong> — each is a running piece of the stack the controller manages or watches.</li>
+  <li><strong>Always current</strong> — it mirrors the live cluster continuously; no command to run, no refresh.</li>
+  <li><strong>Two badges are the whole answer</strong> — <i>Healthy</i> (workloads up) + <i>Synced</i> (matches git).</li>
+  <li><strong>Drill anywhere</strong> — click a box for its live manifest, its diff vs git, its history.</li>
+  </ul>
+  </div>
+  <div class="col-img">
+    <img src="diagrams/argocd-tree.png" alt="GitOps controller — live resource tree" />
+  </div>
+</div>
+
+> Not a diagram — the real stack, live and healthy, on one screen.
 
 ---
 
