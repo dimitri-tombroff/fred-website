@@ -19,6 +19,8 @@ It summarizes the security model for architecture, DSI/RSSI review, and run oper
 
 For exact implementation details and fast-changing configuration keys, use the linked GitHub sources at the end.
 
+> **Erasure you can prove** — How Fred deletes a conversation completely and provably, across every store, on the team's own terms (RGPD-ready data erasure, by design): [Erasure you can prove](/docs/erasure-you-can-prove.html).
+
 ## Security Scope
 
 Fred security is organized around five domains:
@@ -42,7 +44,7 @@ Fred security is organized around five domains:
 - RBAC is enforced on protected API surfaces.
 - ReBAC policies can be enabled for team and resource-scoped access.
 - Admin-only capabilities must stay restricted to administrator roles.
-- Detailed role and permission matrix is documented in [Access Model](/docs/reference/access-model/).
+- Detailed role and permission matrix is documented in [Access Model](/docs/access-model.html).
 
 ## Service-To-Service Security
 
@@ -85,10 +87,11 @@ Fred is policy-first for enterprise usage:
 
 ## Related References
 
-- [Architecture](/docs/reference/architecture/)
-- [Deployment](/docs/reference/deployment/)
-- [Access Model](/docs/reference/access-model/)
-- [Policy-based LLM Routing](/docs/reference/llm_routing/)
+- [Erasure you can prove](/docs/erasure-you-can-prove.html) — RGPD-ready data erasure, by design
+- [Architecture](/docs/architecture.html)
+- [Deploying on GCP / GKE](/docs/deploy-gke.html)
+- [Access Model](/docs/access-model.html)
+- [Policy-based LLM Routing](/docs/llm-routing.html)
 
 ## Source Of Truth (GitHub)
 

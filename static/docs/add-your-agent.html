@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Add your agent</title>
+  <meta name="description" content="Build a custom Fred agent as a standalone agentic pod with fred-sdk and fred-runtime, run it locally, and enroll it with a Fred control plane.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    212px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    /* ─── Sidebar ─────────────────────────────────────────── */
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    /* ─── Main ────────────────────────────────────────────── */
+    main { flex: 1; max-width: 900px; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
+
+    /* ─── Page header ─────────────────────────────────────── */
+    .hd { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 580px; }
+
+    /* ─── Sections ────────────────────────────────────────── */
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+    h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    p { font-size: 0.9rem; margin-bottom: 0.7rem; max-width: 680px; }
+    p strong { color: var(--text); font-weight: 650; }
+    ol, ul { font-size: 0.9rem; margin: 0.4rem 0 0.7rem 1.2rem; max-width: 680px; }
+    ol li, ul li { margin-bottom: 0.4rem; }
+    ol li strong, ul li strong { color: var(--text); font-weight: 650; }
+
+    /* ─── Callout ─────────────────────────────────────────── */
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 680px; }
+    .callout strong { color: var(--text); }
+    .callout.warn  { border-left-color: var(--s); }
+    .callout.info  { border-left-color: var(--c); }
+    .callout.ok    { border-left-color: var(--r); }
+
+    /* ─── Cards ───────────────────────────────────────────── */
+    .wip-grid { display: flex; flex-direction: column; gap: 0.4rem; margin: 1rem 0; max-width: 680px; }
+    .wip-item { display: flex; align-items: flex-start; gap: 1rem; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); }
+    .wip-label { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .wip-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+    .wip-badge { display: inline-block; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: 0.1rem; width: 4.6rem; text-align: center; }
+    .wip-badge.react { background: var(--c-bg); color: var(--c); border: 1px solid var(--c); }
+    .wip-badge.graph { background: var(--s-bg); color: var(--s); border: 1px solid var(--s); }
+    .wip-badge.team  { background: var(--r-bg); color: var(--r); border: 1px solid var(--r); }
+
+    /* ─── Diagram ─────────────────────────────────────────── */
+    .diagram-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rad); padding: 1.25rem 1rem; margin: 1.25rem 0 0.5rem; overflow-x: auto; }
+    .diagram-wrap svg { display: block; width: 100%; max-width: 860px; height: auto; margin: 0 auto; }
+    .fig-cap { font-size: 0.75rem; color: var(--muted); margin-top: 0.6rem; max-width: 700px; }
+
+    /* ─── Reference cards ─────────────────────────────────── */
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-path { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+
+    code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
+    pre { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rad); padding: 0.9rem 1rem; margin: 0.85rem 0; overflow-x: auto; max-width: 680px; }
+    pre code { background: none; border: none; padding: 0; font-size: 0.78rem; line-height: 1.6; }
+    a.inline { color: var(--c); text-decoration: none; font-weight: 600; }
+    a.inline:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Add your agent</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#scope">Scope &amp; audience</a></li>
+    <li><a href="#model">The model — an agent is a pod</a></li>
+    <li><a href="#author">Author with fred-sdk</a></li>
+    <li><a href="#shapes">Agent shapes</a></li>
+    <li><a href="#pod">Serve it as a pod</a></li>
+    <li><a href="#run">Run &amp; test locally</a></li>
+    <li><a href="#enroll">Enroll with a control plane</a></li>
+    <li><a href="#examples">Examples to start from</a></li>
+    <li><a href="#deploy">Deploy</a></li>
+    <li><a href="#related">Related documents</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">docs / authoring</div>
+    <h1>Add your agent</h1>
+    <p class="hd-lead">
+      Build a custom agent as a standalone <strong>agentic pod</strong> with
+      <code>fred-sdk</code> and <code>fred-runtime</code>, run it locally, and enroll it with a
+      Fred control plane — deployed on your terms, in your own repository.
+    </p>
+  </div>
+
+  <!-- ── Scope ──────────────────────────────────────────── -->
+  <section id="scope">
+    <h2>Scope &amp; audience</h2>
+    <p>
+      For developers building a custom agent for Fred. You author the agent with a small Python
+      SDK, wrap it in an HTTP server (the "pod"), and a Fred control plane discovers and routes to
+      it. You never fork the platform — an agent is a self-contained deployable unit that the
+      platform enrolls.
+    </p>
+    <div class="callout info">
+      Everything below uses the current authoring surface (<code>fred_sdk</code> +
+      <code>fred_runtime</code>). For working, maintained examples, use the
+      <a class="inline" href="#examples">sample agents</a> — they are the source of truth for
+      current patterns.
+    </div>
+  </section>
+
+  <!-- ── The model ──────────────────────────────────────── -->
+  <section id="model">
+    <h2>The model — an agent is a pod</h2>
+    <p>
+      Fred separates <strong>authoring</strong> from <strong>execution</strong> across three
+      published packages. You depend on the first two:
+    </p>
+    <div class="wip-grid">
+      <div class="wip-item"><span class="wip-badge react">sdk</span><div><div class="wip-label"><code>fred-sdk</code> — author</div><div class="wip-desc">The authoring surface: ReAct, Graph, and Team agent primitives, tools, and HITL. Pure Python, no infrastructure — it imports on a bare laptop with nothing running.</div></div></div>
+      <div class="wip-item"><span class="wip-badge graph">runtime</span><div><div class="wip-label"><code>fred-runtime[app]</code> — serve</div><div class="wip-desc">The pod factory: turns your agent registry into a FastAPI service with execution, SSE streaming, checkpoints, HITL, LLM routing, MCP wiring, and security.</div></div></div>
+      <div class="wip-item"><span class="wip-badge team">core</span><div><div class="wip-label"><code>fred-core</code> — utilities</div><div class="wip-desc">Shared low-level utilities (model factories, embeddings, logging). Pulled in transitively; you rarely import it directly.</div></div></div>
+    </div>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 860 280" xmlns="http://www.w3.org/2000/svg"
+           font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
+           role="img" aria-label="Your repository builds an agentic pod with fred-sdk and fred-runtime; a Fred control plane discovers its templates and routes team-scoped execution to it.">
+        <defs>
+          <marker id="aa" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#9ca3af"/></marker>
+          <marker id="ab" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#2563eb"/></marker>
+        </defs>
+        <!-- your repo -->
+        <rect x="20" y="46" width="244" height="196" rx="9" fill="none" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="7,4"/>
+        <text x="34" y="66" font-size="9.5" font-weight="700" fill="#64748b" letter-spacing="0.5">YOUR REPOSITORY</text>
+        <g font-size="10.5">
+          <rect x="34" y="78" width="216" height="30" rx="5" fill="#eff6ff" stroke="#2563eb" stroke-width="1.1"/><text x="46" y="97" fill="#1d4ed8" font-weight="600">agent — fred-sdk</text>
+          <rect x="34" y="116" width="216" height="30" rx="5" fill="#f9fafb" stroke="#cbd5e1"/><text x="46" y="135" fill="#334155">registry.py</text>
+          <rect x="34" y="154" width="216" height="30" rx="5" fill="#f9fafb" stroke="#cbd5e1"/><text x="46" y="173" fill="#334155">main.py — create_agent_app</text>
+        </g>
+        <text x="34" y="208" font-size="9" fill="#94a3b8">deps: fred-sdk · fred-runtime[app]</text>
+        <text x="34" y="222" font-size="9" fill="#94a3b8">python -m yourpod</text>
+        <!-- pod -->
+        <rect x="320" y="66" width="220" height="150" rx="9" fill="#eff6ff" stroke="#2563eb" stroke-width="1.6"/>
+        <text x="336" y="88" font-size="12" font-weight="700" fill="#1d4ed8">Agentic pod</text>
+        <text x="336" y="103" font-size="9" fill="#3b82f6">FastAPI · fred-runtime</text>
+        <g font-size="9.5" fill="#334155">
+          <rect x="336" y="116" width="188" height="26" rx="4" fill="#fff" stroke="#c7d7f0"/><text x="346" y="132">GET /agents/templates</text>
+          <rect x="336" y="146" width="188" height="26" rx="4" fill="#fff" stroke="#c7d7f0"/><text x="346" y="162">POST /agents/execute · SSE</text>
+          <rect x="336" y="176" width="188" height="26" rx="4" fill="#fff" stroke="#c7d7f0"/><text x="346" y="192">checkpoints · HITL</text>
+        </g>
+        <!-- control plane -->
+        <rect x="596" y="66" width="244" height="150" rx="9" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+        <text x="612" y="88" font-size="12" font-weight="700" fill="#047857">Fred control plane</text>
+        <g font-size="9.5" fill="#0f766e">
+          <text x="612" y="112">discovers &amp; enrolls templates</text>
+          <text x="612" y="132">ManagedAgentInstance per team</text>
+          <text x="612" y="152">team-scoped execution</text>
+          <text x="612" y="168" font-size="8.5" fill="#059669">Keycloak JWT · OpenFGA ReBAC</text>
+        </g>
+        <!-- arrows -->
+        <path d="M264,150 L320,145" stroke="#9ca3af" stroke-width="1.4" fill="none" marker-end="url(#aa)"/>
+        <text x="266" y="138" font-size="8.5" fill="#6b7280">build &amp; run</text>
+        <path d="M596,120 C566,120 566,129 540,129" stroke="#2563eb" stroke-width="1.4" fill="none" marker-end="url(#ab)"/>
+        <text x="548" y="112" font-size="8.5" fill="#2563eb">pull /agents/templates</text>
+        <path d="M540,168 C566,168 566,150 596,150" stroke="#9ca3af" stroke-width="1.3" fill="none" stroke-dasharray="4,3" marker-end="url(#aa)"/>
+        <text x="548" y="186" font-size="8.5" fill="#6b7280">execute (team-scoped)</text>
+      </svg>
+      <p class="fig-cap">
+        You build and run the pod from your own repository. The control plane <strong>pulls</strong>
+        the pod's template catalog to discover its agents, a team enrolls one as a managed instance,
+        and execution is routed back to the pod — authorized per team via Keycloak and OpenFGA.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Author ─────────────────────────────────────────── -->
+  <section id="author">
+    <h2>Author with fred-sdk</h2>
+    <p>
+      Install the SDK (Python 3.12) and write an agent. A ReAct agent is a class with an id, a role,
+      a description, a system prompt, and one or more <code>@tool</code> methods:
+    </p>
+    <pre><code>pip install "fred-runtime[app]" fred-sdk</code></pre>
+    <pre><code>from fred_sdk import ReActAgent, tool, ToolContext, ToolOutput
+
+class WeatherAgent(ReActAgent):
+    agent_id = "my.weather.agent"
+    role = "Weather assistant"
+    description = "Answers weather questions using the get_weather tool."
+    system_prompt_template = "You are a helpful weather assistant."
+
+    @tool("Get current weather for a city")
+    async def get_weather(self, city: str, ctx: ToolContext) -> ToolOutput:
+        return ToolOutput.text(f"It is sunny in {city}.")
+
+WEATHER_AGENT = WeatherAgent()</code></pre>
+    <p>
+      The required fields on any definition are <code>agent_id</code>, <code>role</code>, and
+      <code>description</code>. The <code>ToolContext</code> gives a tool the caller's
+      <code>user_id</code>, <code>team_id</code>, <code>session_id</code>, <code>language</code>,
+      and access token — and <code>invoke_agent()</code> to call another agent. Tools can be local
+      Python (as above), built-in tool refs, or <strong>MCP</strong>-backed for external systems.
+    </p>
+  </section>
+
+  <!-- ── Shapes ─────────────────────────────────────────── -->
+  <section id="shapes">
+    <h2>Agent shapes</h2>
+    <p>The SDK offers four authoring shapes — pick the simplest that fits:</p>
+    <div class="wip-grid">
+      <div class="wip-item"><span class="wip-badge react">ReAct</span><div><div class="wip-label"><code>ReActAgent</code></div><div class="wip-desc">Tool-first assistant with a reason-act loop. The default choice for "answer questions, call tools".</div></div></div>
+      <div class="wip-item"><span class="wip-badge graph">Graph</span><div><div class="wip-label"><code>GraphAgent</code></div><div class="wip-desc">A deterministic workflow over typed state, with built-in nodes (routing, structured model calls, finalize). For pipelines where the steps are known.</div></div></div>
+      <div class="wip-item"><span class="wip-badge team">Team</span><div><div class="wip-label"><code>TeamAgent</code></div><div class="wip-desc">Multi-agent composition — a coordinator delegating to child agents. Modes: <code>sequential</code>, <code>dynamic</code>, <code>route</code>.</div></div></div>
+      <div class="wip-item"><span class="wip-badge react">Deep</span><div><div class="wip-label"><code>DeepAgentDefinition</code></div><div class="wip-desc">An extended ReAct agent with a planning step wired by the runtime, for longer multi-step tasks.</div></div></div>
+    </div>
+    <div class="callout">
+      Human-in-the-loop is first-class: emit <code>HumanInputRequest</code> / <code>HumanChoiceOption</code>
+      from any shape and the runtime pauses, surfaces the prompt to the UI, and resumes on the reply —
+      continuity handled transparently by the checkpointer.
+    </div>
+  </section>
+
+  <!-- ── Pod ────────────────────────────────────────────── -->
+  <section id="pod">
+    <h2>Serve it as a pod</h2>
+    <p>
+      A pod is three tiny files plus config. The runtime does the rest — an HTTP server with
+      execution, streaming, sessions, checkpoints, HITL, and an OpenAI-compatible endpoint.
+    </p>
+    <pre><code># registry.py
+from myapp.agents import WEATHER_AGENT
+
+REGISTRY = {WEATHER_AGENT.agent_id: WEATHER_AGENT}
+
+# main.py
+from fred_runtime.app import create_agent_app, load_agent_pod_config
+from myapp.registry import REGISTRY
+
+app = create_agent_app(registry=REGISTRY, config=load_agent_pod_config())
+
+# __main__.py
+import uvicorn
+uvicorn.run("myapp.main:app", host="0.0.0.0", port=8000)</code></pre>
+    <p>
+      A <code>configuration.yaml</code> (path via <code>CONFIG_FILE</code>) sets the pod name, base
+      path, host/port, the Knowledge Flow URL, observability, and optional security; a
+      <code>.env</code> (path via <code>ENV_FILE</code>) carries model keys. The router is mounted
+      under your configured base path:
+    </p>
+    <div class="wip-grid">
+      <div class="wip-item"><span class="wip-badge react">GET</span><div><div class="wip-label"><code>/agents/templates</code></div><div class="wip-desc">The executable template catalog — this is the endpoint a control plane reads to discover your agents.</div></div></div>
+      <div class="wip-item"><span class="wip-badge graph">POST</span><div><div class="wip-label"><code>/agents/execute</code> · <code>/agents/execute/stream</code></div><div class="wip-desc">Single-turn execution, and an SSE stream of runtime events (thoughts, tool calls, tokens, HITL).</div></div></div>
+      <div class="wip-item"><span class="wip-badge team">GET</span><div><div class="wip-label"><code>/agents</code> · <code>/agents/mcp-catalog</code> · <code>/v1/chat/completions</code></div><div class="wip-desc">List registered agents, the MCP catalog, and an OpenAI-compatible chat endpoint (on by default).</div></div></div>
+    </div>
+  </section>
+
+  <!-- ── Run ────────────────────────────────────────────── -->
+  <section id="run">
+    <h2>Run &amp; test locally</h2>
+    <p>Start the pod, then drive it with the bundled CLI — no control plane or UI required:</p>
+    <pre><code># start the pod (SQLite checkpointer in dev — no database needed)
+ENV_FILE=./config/.env CONFIG_FILE=./config/configuration.yaml python -m myapp
+
+# talk to it: an interactive client for any pod
+fred-agents-cli --base-url http://127.0.0.1:8000/&lt;base_url&gt; --agent my.weather.agent</code></pre>
+    <div class="callout ok">
+      In development the runtime uses a local SQLite checkpointer, so multi-turn conversations and
+      HITL work end to end with zero infrastructure. In production the same code path uses PostgreSQL.
+    </div>
+  </section>
+
+  <!-- ── Enroll ─────────────────────────────────────────── -->
+  <section id="enroll">
+    <h2>Enroll with a control plane</h2>
+    <p>
+      The control plane is the sole authority for discovery, enrollment, and execution authorization.
+      It <strong>pulls</strong> your pod's catalog from a static list in its configuration — point it
+      at your pod's base URL:
+    </p>
+    <pre><code># control-plane configuration.yaml
+platform:
+  runtime_catalog_sources:
+    - runtime_id: my-agents          # stable logical id
+      base_url: http://my-agents:8000/&lt;base_url&gt;   # reachable from control-plane
+      ingress_prefix: /runtime/my-agents          # browser-facing prefix
+      enabled: true</code></pre>
+    <p>Then the lifecycle is:</p>
+    <ol>
+      <li>The control plane reads <code>GET {base_url}/agents/templates</code> and surfaces your agents as <strong>templates</strong>.</li>
+      <li>A team admin enrolls a template, creating a team-owned <strong>managed instance</strong> (with its own tuning — prompt overrides, model profile, selected MCP servers).</li>
+      <li>Execution goes to the managed instance and is <strong>team-scoped</strong>: your pod authorizes each call with the caller's Keycloak JWT and an OpenFGA (ReBAC) check on the team before running.</li>
+    </ol>
+    <div class="callout info">
+      <strong>Today, discovery is a pull</strong> from the static catalog — the authoritative
+      production mechanism. Push self-registration and Kubernetes-native auto-discovery are on the
+      roadmap; the static catalog is what a pod needs to expose right now.
+    </div>
+  </section>
+
+  <!-- ── Examples ───────────────────────────────────────── -->
+  <section id="examples">
+    <h2>Examples to start from</h2>
+    <p>Two working references — copy from these rather than from prose:</p>
+    <div class="wip-grid">
+      <div class="wip-item"><span class="wip-badge team">samples</span><div><div class="wip-label">fred-samples — ready-to-run pods</div><div class="wip-desc">A standalone sample repository with a General Assistant, a <strong>Bank Transfer</strong> HITL flow (two confirmation gates), a <strong>Postal Tracking</strong> agent (live map + HITL rerouting), and a <strong>Team of 3</strong> (a router delegating to a Graph and two ReAct agents), each paired with example MCP servers. Quickstart: set a model key in <code>.env</code>, start the MCP servers, <code>make run</code> the pod, <code>make chat</code>.</div></div></div>
+      <div class="wip-item"><span class="wip-badge react">default</span><div><div class="wip-label">fred-agents — the default pod</div><div class="wip-desc">The reference agentic pod shipped with Fred and the concrete implementation of the three-file pattern. It hosts a range of agents (RAG expert, SQL expert, mind-map and comparison graph agents, and more) you can read as templates.</div></div></div>
+    </div>
+  </section>
+
+  <!-- ── Deploy ─────────────────────────────────────────── -->
+  <section id="deploy">
+    <h2>Deploy</h2>
+    <p>
+      A pod is an ordinary container. Build an image whose entrypoint runs your module
+      (<code>python -m myapp</code>) and externalize the config directory. Deploy it as a Kubernetes
+      Service reachable from the control plane, then add its <code>runtime_catalog_sources</code>
+      entry. Because the pod owns its own database checkpointer, it scales independently of the rest
+      of the platform.
+    </p>
+    <div class="callout">
+      For the surrounding cluster — the control plane, Postgres, Keycloak, OpenFGA, OpenSearch,
+      Temporal, and how object storage auth works — see
+      <a class="inline" href="deploy-gke.html">Deploying Fred on GCP / GKE</a>.
+    </div>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Related documents</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="architecture.html">
+        <div class="ref-topic">Platform Architecture →</div>
+        <div class="ref-path">control plane · pods · execution</div>
+      </a>
+      <a class="ref-card" href="deploy-gke.html">
+        <div class="ref-topic">Deploying on GCP / GKE →</div>
+        <div class="ref-path">run the platform &amp; your pod</div>
+      </a>
+      <a class="ref-card" href="https://github.com/fred-agent/fred-samples">
+        <div class="ref-topic">fred-samples →</div>
+        <div class="ref-path">github.com/fred-agent/fred-samples</div>
+      </a>
+      <a class="ref-card" href="https://pypi.org/project/fred-sdk/">
+        <div class="ref-topic">fred-sdk on PyPI →</div>
+        <div class="ref-path">pip install fred-sdk</div>
+      </a>
+      <a class="ref-card" href="https://pypi.org/project/fred-runtime/">
+        <div class="ref-topic">fred-runtime on PyPI →</div>
+        <div class="ref-path">pip install "fred-runtime[app]"</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

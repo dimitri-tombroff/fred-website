@@ -726,7 +726,7 @@
         <div>
           <div class="path-why">Before touching any API boundary — understand who is allowed to do what and how the owner / manager / member split is enforced at the engine level.</div>
           <div class="path-doc">
-            <a href="swift/platform/REBAC.md">REBAC.md</a>
+            <strong>REBAC.md</strong>
             <span class="tbadge">5 min</span>
           </div>
           <div class="path-section">Start with the "Product authorization model" section</div>
@@ -738,7 +738,7 @@
         <div>
           <div class="path-why">Before touching the execution path — the SSE contract, ExecutionGrant lifecycle, and event types are frozen and cannot be improvised.</div>
           <div class="path-doc">
-            <a href="swift/design/RUNTIME-EXECUTION-CONTRACT.md">RUNTIME-EXECUTION-CONTRACT.md</a>
+            <strong>RUNTIME-EXECUTION-CONTRACT.md</strong>
             <span class="tbadge">5 min</span>
           </div>
           <div class="path-section">Read §1–4 only on first pass</div>
@@ -750,7 +750,7 @@
         <div>
           <div class="path-why">Before touching control-plane or the frontend — understand the product surface, what control-plane owns vs proxies, and which typed contracts the frontend depends on.</div>
           <div class="path-doc">
-            <a href="swift/design/CONTROL-PLANE-PRODUCT-CONTRACT.md">CONTROL-PLANE-PRODUCT-CONTRACT.md</a>
+            <strong>CONTROL-PLANE-PRODUCT-CONTRACT.md</strong>
             <span class="tbadge">5 min</span>
           </div>
           <div class="path-section">Read §1–3 only on first pass</div>
@@ -762,7 +762,7 @@
         <div>
           <div class="path-why">Before writing any code — build rules, test commands, CLI convention, and the non-negotiable engineering rules that prevent the most common mistakes.</div>
           <div class="path-doc">
-            <a href="swift/platform/DEVELOPER_CONTRACT.md">DEVELOPER_CONTRACT.md</a>
+            <strong>DEVELOPER_CONTRACT.md</strong>
             <span class="tbadge">3 min</span>
           </div>
         </div>
@@ -773,7 +773,7 @@
         <div>
           <div class="path-why">Before starting any task — understand the RFC → backlog → sprint → GitHub issue → implement workflow. Every task in this repo follows this sequence.</div>
           <div class="path-doc">
-            <a href="PMO.md">PMO.md</a>
+            <strong>PMO.md</strong>
             <span class="tbadge">2 min</span>
           </div>
           <div class="path-section">Read §7 "How work gets done"</div>
@@ -783,9 +783,9 @@
     </div>
 
     <div class="callout" style="margin-top:1rem;">
-      After these five, open <a href="swift/README.md" style="color:inherit;font-weight:600;">docs/swift/README.md</a>
+      After these five, open <strong>docs/swift/README.md</strong>
       as a lookup table — not a reading assignment. Use it to find the right doc
-      for a specific concern.
+      for a specific concern. These documents live in the Fred repository.
     </div>
   </section>
 
@@ -795,9 +795,9 @@
     <h2>How work gets done</h2>
     <p>Every task follows a fixed sequence: RFC → backlog entry → developer confirmation → GitHub issue → implementation → close-out. Steps cannot be skipped or reordered.</p>
     <div class="callout">
-      <strong>Full process documentation:</strong>
-      <a href="../CLAUDE.md" style="color:inherit;font-weight:600;">CLAUDE.md §Task lifecycle</a> for mandatory rules ·
-      <a href="PMO.md" style="color:inherit;font-weight:600;">docs/PMO.md §7</a> for coordination and handoff
+      <strong>Full process documentation</strong> lives in the Fred repository:
+      <strong>CLAUDE.md §Task lifecycle</strong> for mandatory rules ·
+      <strong>docs/PMO.md §7</strong> for coordination and handoff
     </div>
   </section>
 
@@ -806,41 +806,25 @@
   <section id="reference">
     <h2>Where to read more</h2>
     <div class="ref-grid">
-      <a class="ref-card" href="swift/platform/PLATFORM_RUNTIME_MAP.md">
-        <div class="ref-topic">Topology &amp; service boundaries</div>
-        <div class="ref-path">docs/swift/platform/PLATFORM_RUNTIME_MAP.md</div>
+      <a class="ref-card" href="architecture.html">
+        <div class="ref-topic">Platform Architecture</div>
+        <div class="ref-path">docs/architecture.html</div>
       </a>
-      <a class="ref-card" href="swift/design/RUNTIME-EXECUTION-CONTRACT.md">
-        <div class="ref-topic">Execution contract (frozen)</div>
-        <div class="ref-path">docs/swift/design/RUNTIME-EXECUTION-CONTRACT.md</div>
+      <a class="ref-card" href="deploy-gke.html">
+        <div class="ref-topic">Deploying on GCP / GKE</div>
+        <div class="ref-path">docs/deploy-gke.html</div>
       </a>
-      <a class="ref-card" href="swift/design/CONTROL-PLANE-PRODUCT-CONTRACT.md">
-        <div class="ref-topic">Product/session/admin contract (frozen)</div>
-        <div class="ref-path">docs/swift/design/CONTROL-PLANE-PRODUCT-CONTRACT.md</div>
-      </a>
-      <a class="ref-card" href="swift/platform/REBAC.md">
-        <div class="ref-topic">Authorization model</div>
-        <div class="ref-path">docs/swift/platform/REBAC.md</div>
-      </a>
-      <a class="ref-card" href="swift/platform/CONFIGURATION_AND_POLICY_CONVENTIONS.md">
-        <div class="ref-topic">Config &amp; policy conventions</div>
-        <div class="ref-path">docs/swift/platform/CONFIGURATION_AND_POLICY_CONVENTIONS.md</div>
-      </a>
-      <a class="ref-card" href="swift/platform/FRONTEND_CODING_GUIDELINES.md">
-        <div class="ref-topic">Frontend coding rules</div>
-        <div class="ref-path">docs/swift/platform/FRONTEND_CODING_GUIDELINES.md</div>
-      </a>
-      <a class="ref-card" href="swift/platform/DEVELOPER_CONTRACT.md">
-        <div class="ref-topic">Developer contract</div>
-        <div class="ref-path">docs/swift/platform/DEVELOPER_CONTRACT.md</div>
-      </a>
-      <a class="ref-card" href="swift/README.md">
-        <div class="ref-topic">Full document index</div>
-        <div class="ref-path">docs/swift/README.md</div>
+      <a class="ref-card" href="add-your-agent.html">
+        <div class="ref-topic">Add your agent</div>
+        <div class="ref-path">docs/add-your-agent.html</div>
       </a>
       <a class="ref-card" href="features.html">
         <div class="ref-topic">Feature reference</div>
-        <div class="ref-path">docs/FEATURES.html</div>
+        <div class="ref-path">docs/features.html</div>
+      </a>
+      <a class="ref-card" href="https://github.com/ThalesGroup/fred">
+        <div class="ref-topic">Contracts &amp; conventions →</div>
+        <div class="ref-path">the docs/ folder in the Fred repository</div>
       </a>
     </div>
   </section>

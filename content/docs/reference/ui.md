@@ -44,9 +44,9 @@ It describes the core UI architecture and its security/runtime integration point
 
 For broader platform context, see:
 
-- [Architecture](/docs/reference/architecture/)
+- [Architecture](/docs/architecture.html)
 - [Security](/docs/reference/security/)
-- [Deployment](/docs/reference/deployment/)
+- [Deploying on GCP / GKE](/docs/deploy-gke.html)
 
 ## Source Of Truth (GitHub)
 

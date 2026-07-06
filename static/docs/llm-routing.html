@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Policy-based LLM routing</title>
+  <meta name="description" content="How Fred resolves the effective model for an agent: capability, runtime context, model profiles, routing rules, and a deterministic resolution algorithm.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    212px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    main { flex: 1; max-width: 900px; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
+
+    .hd { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 580px; }
+
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+    h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    p { font-size: 0.9rem; margin-bottom: 0.7rem; max-width: 680px; }
+    p strong { color: var(--text); font-weight: 650; }
+    ol, ul { font-size: 0.9rem; margin: 0.4rem 0 0.7rem 1.2rem; max-width: 680px; }
+    ol li, ul li { margin-bottom: 0.4rem; }
+    .src { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.6rem; }
+
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 700px; }
+    .callout strong { color: var(--text); }
+    .callout.warn  { border-left-color: var(--s); }
+    .callout.info  { border-left-color: var(--c); }
+    .callout.ok    { border-left-color: var(--r); }
+
+    .tablewrap { overflow-x: auto; margin: 0.85rem 0; max-width: 100%; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.82rem; min-width: 460px; }
+    th, td { text-align: left; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; background: var(--bg2); }
+    td.k, th.k { font-family: var(--mono); font-size: 0.76rem; white-space: nowrap; }
+    tbody tr:hover { background: var(--bg2); }
+
+    code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
+    pre { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rad); padding: 0.9rem 1rem; margin: 0.85rem 0; overflow-x: auto; max-width: 700px; }
+    pre code { background: none; border: none; padding: 0; font-size: 0.78rem; line-height: 1.6; }
+
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-path { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+    a.inline { color: var(--c); text-decoration: none; font-weight: 600; }
+    a.inline:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Policy-based LLM routing</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#idea">Agents don't pick models</a></li>
+    <li><a href="#concepts">Concepts</a></li>
+    <li><a href="#catalog">The model catalog</a></li>
+    <li><a href="#providers">Providers</a></li>
+    <li><a href="#rules">Rules &amp; resolution</a></li>
+    <li><a href="#runtime">Runtime behavior</a></li>
+    <li><a href="#where">Where routing lives</a></li>
+    <li><a href="#governance">Governance position</a></li>
+    <li><a href="#related">Related documents</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">docs / model routing</div>
+    <h1>Policy-based LLM routing</h1>
+    <p class="hd-lead">
+      Agents don't hardcode providers or model names. They run with a capability and a
+      runtime context, and the platform resolves the effective model from a catalog —
+      deterministically, and auditable.
+    </p>
+  </div>
+
+  <!-- ── Idea ───────────────────────────────────────────── -->
+  <section id="idea">
+    <h2>Agents don't pick models</h2>
+    <p>
+      An agent definition declares an id, a role, tools, and behavior — but <strong>no provider,
+      no model name, not even a capability</strong>. When it runs, the runtime asks a routing
+      resolver for the effective model, keyed by the capability it needs and the request context
+      (team, user, agent, operation). The resolver returns a <strong>model profile</strong>; a
+      model factory builds the concrete client.
+    </p>
+    <div class="callout info">
+      Result: model choice is governed centrally from a catalog, decoupled from agent code — you
+      can change models, add a faster model for a phase, or swap a provider without touching an agent.
+    </div>
+  </section>
+
+  <!-- ── Concepts ───────────────────────────────────────── -->
+  <section id="concepts">
+    <h2>Concepts</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Concept</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td class="k">capability</td><td>The technical model family the runtime needs — one of <code>chat</code>, <code>language</code>, <code>embedding</code>, <code>image</code>. The runtime sets this (chat for ReAct/Graph); the author never declares it.</td></tr>
+          <tr><td class="k">operation</td><td>The pipeline phase of a multi-step agent (e.g. <code>routing</code>, <code>planning</code>, or a graph node name). The primary routing dimension.</td></tr>
+          <tr><td class="k">purpose</td><td>Optional business-intent discriminator (e.g. <code>rag</code>, <code>chatbot</code>).</td></tr>
+          <tr><td class="k">model profile</td><td>A named, reusable model configuration — <code>profile_id</code> + <code>capability</code> + <code>model</code> (<code>provider</code>, <code>name</code>, <code>settings</code>).</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="src">Source: fred-runtime <code>model_routing/contracts.py</code> (<code>ModelCapability</code>, <code>ModelProfile</code>)</p>
+  </section>
+
+  <!-- ── Catalog ────────────────────────────────────────── -->
+  <section id="catalog">
+    <h2>The model catalog</h2>
+    <p>
+      Routing is loaded from <code>config/models_catalog.yaml</code> at pod startup (override with
+      <code>FRED_MODELS_CATALOG_FILE</code>). The catalog is mandatory. Its keys:
+    </p>
+    <ul>
+      <li><code>common_model_settings</code> — global defaults merged into every profile.</li>
+      <li><code>common_model_settings_by_capability</code> — defaults merged per capability.</li>
+      <li><code>default_profile_by_capability</code> — <strong>required</strong>: the fallback profile for each capability.</li>
+      <li><code>profiles</code> — the concrete model profiles.</li>
+      <li><code>rules</code> — routing overrides (empty by default).</li>
+    </ul>
+    <p>Settings merge deterministically: <code>common_model_settings</code> → <code>common_model_settings_by_capability[capability]</code> → <code>profile.model.settings</code> (later wins).</p>
+    <pre><code>version: v1
+common_model_settings:
+  temperature: 0.0
+  max_retries: 0
+default_profile_by_capability:
+  chat: default.chat
+profiles:
+  - profile_id: default.chat
+    capability: chat
+    model:
+      provider: openai
+      name: gpt-4o-mini
+  - profile_id: chat.fast
+    capability: chat
+    model: { provider: openai, name: gpt-4o-mini }
+  - profile_id: chat.quality
+    capability: chat
+    model: { provider: openai, name: gpt-4o }
+rules:
+  - rule_id: react.routing.fast
+    capability: chat
+    operation: routing
+    target_profile_id: chat.fast
+  - rule_id: react.planning.quality
+    capability: chat
+    operation: planning
+    target_profile_id: chat.quality</code></pre>
+    <p class="src">Source: fred-runtime <code>model_routing/catalog.py</code> · example <code>apps/fred-agents/config/models_catalog.yaml</code></p>
+  </section>
+
+  <!-- ── Providers ──────────────────────────────────────── -->
+  <section id="providers">
+    <h2>Providers</h2>
+    <p>A profile's <code>provider</code> selects the client the model factory builds. Supported providers:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">provider</th><th>Backend</th></tr></thead>
+        <tbody>
+          <tr><td class="k">openai</td><td>OpenAI models — and any <strong>OpenAI-compatible</strong> endpoint (e.g. Mistral, or a local mock) by setting a <code>base_url</code> in settings.</td></tr>
+          <tr><td class="k">azure-openai</td><td>Azure OpenAI deployments.</td></tr>
+          <tr><td class="k">azure-apim</td><td>Azure OpenAI fronted by API Management.</td></tr>
+          <tr><td class="k">ollama</td><td>Locally / self-hosted models via Ollama.</td></tr>
+          <tr><td class="k">vertex-ai</td><td>Google Vertex AI (Gemini).</td></tr>
+          <tr><td class="k">vertex-ai-model-garden</td><td>Vertex Model Garden (Mistral / Llama / Claude).</td></tr>
+          <tr><td class="k">anthropic</td><td>Anthropic Claude models.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout">
+      <strong>Mistral is not a separate provider.</strong> Mistral profiles use <code>provider: openai</code>
+      with a Mistral <code>base_url</code>. Provider credentials come from environment variables
+      (<code>OPENAI_API_KEY</code>, <code>ANTHROPIC_API_KEY</code>, GCP ADC, …), never from the catalog.
+    </div>
+    <p class="src">Source: fred-core <code>model/models.py</code> (<code>ModelProvider</code>) · <code>model/factory.py</code></p>
+  </section>
+
+  <!-- ── Rules ──────────────────────────────────────────── -->
+  <section id="rules">
+    <h2>Rules &amp; resolution</h2>
+    <p>
+      A rule maps a context to a profile. Required fields are <code>rule_id</code>, <code>capability</code>,
+      and <code>target_profile_id</code>; optional criteria are <code>operation</code>, <code>purpose</code>,
+      <code>agent_id</code>, <code>team_id</code>, <code>user_id</code>. A rule with any criterion must set
+      <code>operation</code> — catch-all rules are rejected (use the capability default instead).
+    </p>
+    <p>For one selection request, the resolver:</p>
+    <ol>
+      <li>Keeps rules whose <code>capability</code> equals the request's.</li>
+      <li>Keeps rules whose every defined criterion matches the context (an absent criterion is a wildcard).</li>
+      <li>Picks the winner by <strong>specificity</strong> (most defined criteria), tie-broken by declaration order.</li>
+      <li>If nothing matches, uses <code>default_profile_by_capability[capability]</code> — and errors if there is no default for that capability.</li>
+    </ol>
+    <p>
+      The decision is returned as a result carrying its <code>source</code> (<code>rule</code> or
+      <code>default</code>), the <code>profile_id</code>, the resolved <code>model</code>, the matched
+      <code>rule_id</code>, and the matched criteria — deterministic and testable.
+    </p>
+    <p class="src">Source: fred-runtime <code>model_routing/resolver.py</code> (<code>ModelRoutingResolver</code>) · <code>contracts.py</code></p>
+  </section>
+
+  <!-- ── Runtime ────────────────────────────────────────── -->
+  <section id="runtime">
+    <h2>Runtime behavior</h2>
+    <ul>
+      <li><strong>ReAct agents</strong> resolve a model <em>per phase</em>: the operation is inferred from the conversation — <code>routing</code> after a user message, <code>planning</code> after a tool result — so you can route a fast model for routing and a stronger model for planning.</li>
+      <li><strong>Graph agents</strong> can resolve per node (the operation is the node name); otherwise the model is resolved once when the graph is built.</li>
+      <li><strong>Embeddings</strong> for ingestion are configured separately in the Knowledge Flow config, not through the chat routing path.</li>
+    </ul>
+    <p class="src">Source: fred-runtime <code>react_tool_loop.py</code>, <code>react_model_adapter.py</code>, <code>graph_runtime.py</code></p>
+  </section>
+
+  <!-- ── Where ──────────────────────────────────────────── -->
+  <section id="where">
+    <h2>Where routing lives</h2>
+    <p>Two layers with a clean split:</p>
+    <ul>
+      <li><strong>Decide which profile</strong> — <code>fred-runtime</code>'s <code>model_routing</code> package: a pure, deterministic resolver over the loaded policy (no I/O, no model construction).</li>
+      <li><strong>Build the client</strong> — <code>fred-core</code>'s model factory turns the chosen profile's configuration into the concrete LangChain client.</li>
+    </ul>
+    <p>The agent pod wires these together at startup, exposing a model-factory port to the runtime; the agent only ever asks for "a model for this operation".</p>
+    <p class="src">Source: fred-runtime <code>model_routing/provider.py</code>, <code>app/agent_app.py</code> · fred-core <code>model/factory.py</code></p>
+  </section>
+
+  <!-- ── Governance ─────────────────────────────────────── -->
+  <section id="governance">
+    <h2>Governance position</h2>
+    <p>
+      The posture is <strong>policy-first</strong>: model choice is governed from the catalog, not
+      chosen by end users at runtime — there is no end-user model picker acting as the routing
+      authority. (The one place a user selects a model profile is the evaluation judge, a separate
+      surface.) This keeps behavior predictable and aligned with team governance.
+    </p>
+    <p>
+      Model routing is the <em>model</em> domain of Fred's governance. Tools live in a sibling
+      <code>mcp_catalog.yaml</code> loaded the same way; conversation retention and scheduling have
+      their own policy catalogs. They are parallel per-domain catalogs rather than one monolith.
+    </p>
+    <p class="src">Source: fred-agents <code>config/models_catalog.yaml</code>, <code>config/mcp_catalog.yaml</code></p>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Related documents</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="add-your-agent.html">
+        <div class="ref-topic">Add your agent →</div>
+        <div class="ref-path">author an agent that uses routing</div>
+      </a>
+      <a class="ref-card" href="architecture.html">
+        <div class="ref-topic">Platform Architecture →</div>
+        <div class="ref-path">where the runtime fits</div>
+      </a>
+      <a class="ref-card" href="access-model.html">
+        <div class="ref-topic">Access model →</div>
+        <div class="ref-path">who may do what</div>
+      </a>
+      <a class="ref-card" href="deploy-gke.html">
+        <div class="ref-topic">Deploying on GCP / GKE →</div>
+        <div class="ref-path">run the platform</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

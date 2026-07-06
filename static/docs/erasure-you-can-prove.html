@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Erasure you can prove</title>
+  <meta name="description" content="How Fred deletes a conversation — completely, provably, and on the team's own terms. RGPD-ready data erasure, by design.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    196px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    /* ─── Sidebar ─────────────────────────────────────────── */
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    /* ─── Main ────────────────────────────────────────────── */
+    main { flex: 1; max-width: 900px; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
+
+    /* ─── Page header ─────────────────────────────────────── */
+    .hd { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 560px; }
+
+    /* ─── Sections ────────────────────────────────────────── */
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+    h3 { font-size: 0.95rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.4rem; }
+    p { font-size: 0.9rem; margin-bottom: 0.7rem; max-width: 680px; }
+    p strong { color: var(--text); font-weight: 650; }
+    .lead-p { font-size: 0.98rem; max-width: 680px; }
+
+    /* ─── Callout ─────────────────────────────────────────── */
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 680px; }
+    .callout strong { color: var(--text); }
+    .callout.warn  { border-left-color: var(--s); }
+    .callout.info  { border-left-color: var(--c); }
+    .callout.ok    { border-left-color: var(--r); }
+
+    /* ─── Diagram container ───────────────────────────────── */
+    .diagram-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rad); padding: 1.25rem 1rem; margin: 1.25rem 0 0.5rem; overflow-x: auto; }
+    .diagram-wrap svg { display: block; width: 100%; max-width: 860px; height: auto; margin: 0 auto; }
+    .fig-cap { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); margin-top: 0.5rem; }
+
+    /* ─── Receipt ─────────────────────────────────────────── */
+    .receipt { max-width: 460px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rad); padding: 1.1rem 1.25rem 1.2rem; font-family: var(--mono); font-size: 0.8rem; line-height: 1.9; position: relative; margin: 1.25rem 0 0.5rem; }
+    .receipt .r-head { display: flex; justify-content: space-between; gap: 1rem; color: var(--muted); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; border-bottom: 1px dashed var(--border); padding-bottom: 0.55rem; margin-bottom: 0.55rem; }
+    .receipt .r-line { display: flex; justify-content: space-between; gap: 0.6rem; white-space: nowrap; }
+    .receipt .r-line .dots { flex: 1; border-bottom: 1px dotted var(--border); transform: translateY(-0.32em); margin: 0 0.4rem; }
+    .receipt .r-line .v { color: var(--muted); }
+    .receipt .ok { color: var(--r); font-weight: 700; }
+    .receipt .r-total { border-top: 1px dashed var(--border); margin-top: 0.55rem; padding-top: 0.55rem; color: var(--text); font-weight: 700; }
+    .receipt .seal { position: absolute; top: 0.9rem; right: 1.1rem; width: 2.9rem; height: 2.9rem; border-radius: 50%; border: 1.5px solid var(--r); color: var(--r); display: grid; place-items: center; transform: rotate(-13deg); font-size: 0.5rem; font-weight: 700; letter-spacing: 0.06em; text-align: center; line-height: 1.2; }
+
+    /* ─── Commitments ─────────────────────────────────────── */
+    .commit { display: grid; grid-template-columns: 2rem 1fr; gap: 0.9rem; padding: 1rem 0; border-top: 1px solid var(--border); max-width: 720px; }
+    .commit:first-of-type { border-top: 0; }
+    .commit .idx { font-family: var(--mono); font-size: 0.78rem; font-weight: 700; color: var(--c); padding-top: 0.05rem; }
+    .commit h3 { margin: 0 0 0.25rem; font-size: 0.95rem; }
+    .commit p { margin: 0; font-size: 0.86rem; color: var(--muted); }
+    .commit p b { color: var(--text); font-weight: 650; }
+
+    /* ─── Two modes ───────────────────────────────────────── */
+    .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin: 1rem 0 0; max-width: 720px; }
+    @media (max-width: 560px) { .modes { grid-template-columns: 1fr; } }
+    .mode { border: 1px solid var(--border); border-radius: var(--rad); padding: 1rem 1.15rem; }
+    .mode .m-tag { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c); margin-bottom: 0.4rem; }
+    .mode h3 { margin: 0 0 0.3rem; font-size: 0.92rem; }
+    .mode p { margin: 0; font-size: 0.84rem; color: var(--muted); }
+
+    /* ─── Task list ───────────────────────────────────────── */
+    .tasklist { border: 1px solid var(--border); border-radius: var(--rad); overflow: hidden; margin: 1rem 0 0; max-width: 720px; }
+    .tasklist .t-head { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0.5rem 0.9rem; background: var(--bg2); border-bottom: 1px solid var(--border); }
+    .trow { display: flex; align-items: center; gap: 0.8rem; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); }
+    .trow:last-child { border-bottom: 0; }
+    .t-badge { font-family: var(--mono); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; width: 5.2rem; text-align: center; }
+    .t-badge.plan { background: var(--bg2); color: var(--muted); border: 1px solid var(--border); }
+    .t-badge.run  { background: var(--c-bg); color: var(--c); border: 1px solid var(--c); }
+    .t-badge.done { background: var(--r-bg); color: var(--r); border: 1px solid var(--r); }
+    .t-lbl { flex: 1; font-size: 0.86rem; min-width: 0; }
+    .t-lbl small { display: block; color: var(--muted); font-size: 0.72rem; font-family: var(--mono); margin-top: 0.05rem; }
+    .t-pct { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); flex-shrink: 0; }
+
+    /* ─── Pull quote ──────────────────────────────────────── */
+    .pull { margin: 2.5rem 0 0; max-width: 620px; }
+    .pull p { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.35; color: var(--text); max-width: 24ch; }
+    .pull .by { font-family: var(--mono); font-size: 0.72rem; color: var(--c); margin-top: 0.7rem; }
+
+    /* ─── Reference cards ─────────────────────────────────── */
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-path { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+
+    code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
+    a.inline { color: var(--c); text-decoration: none; font-weight: 600; }
+    a.inline:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Data protection by design</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#what">What deletion means</a></li>
+    <li><a href="#fanout">One delete, every store</a></li>
+    <li><a href="#commitments">The commitments</a></li>
+    <li><a href="#modes">Two ways to delete</a></li>
+    <li><a href="#converge">How it converges</a></li>
+    <li><a href="#tasks">Observable erasure</a></li>
+    <li><a href="#related">Related documents</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">docs / ERASURE</div>
+    <h1>Erasure you can prove</h1>
+    <p class="hd-lead">
+      How Fred deletes a conversation — completely, provably, and on the team's own terms.
+      RGPD-ready data erasure, by design — for DSI/RSSI, architects, and users.
+    </p>
+  </div>
+
+  <!-- ── What deletion means ─────────────────────────────── -->
+  <section id="what">
+    <h2>What deletion means</h2>
+    <p class="lead-p">
+      Deleting a conversation should mean it is <strong>gone</strong> — not hidden, not "scheduled",
+      not left behind in some store nobody remembers. In an AI platform a single conversation is
+      scattered across many places: the transcript, the model's working memory, uploaded files and
+      their search embeddings, and the usage statistics. Fred treats erasure as a first-class
+      operation over <strong>all</strong> of them, and hands back proof that it happened.
+    </p>
+    <p>
+      That same operation carries the platform's most useful trade-off. A team can keep a deleted
+      conversation for a bounded <strong>retention window</strong> — hidden from people, but available
+      to the team to measure how its AI agents performed on real work — after which erasure is
+      guaranteed. The retention window <em>is</em> the evaluation window.
+    </p>
+
+    <div class="receipt" role="img" aria-label="Example erasure receipt: transcript, checkpoint, attachments, embeddings and usage stats all erased; status complete.">
+      <div class="seal">RGPD<br>ERASED</div>
+      <div class="r-head"><span>Erasure receipt</span><span>session&nbsp;7f3a·2b</span></div>
+      <div class="r-line"><span>transcript</span><span class="dots"></span><span class="v">14 removed</span> <span class="ok">✓</span></div>
+      <div class="r-line"><span>checkpoint</span><span class="dots"></span><span class="v">3 removed</span> <span class="ok">✓</span></div>
+      <div class="r-line"><span>attachments</span><span class="dots"></span><span class="v">2 removed</span> <span class="ok">✓</span></div>
+      <div class="r-line"><span>embeddings</span><span class="dots"></span><span class="v">128 removed</span> <span class="ok">✓</span></div>
+      <div class="r-line"><span>usage&nbsp;stats</span><span class="dots"></span><span class="v">anonymised</span> <span class="ok">✓</span></div>
+      <div class="r-line r-total"><span>status</span><span class="dots"></span><span>COMPLETE</span> <span class="ok">✓</span></div>
+    </div>
+    <p class="fig-cap">Every erasure returns a per-store receipt. Complete, or it isn't done.</p>
+  </section>
+
+  <!-- ── Fan-out diagram ─────────────────────────────────── -->
+  <section id="fanout">
+    <h2>One delete, every store</h2>
+    <p>
+      A single <code>erase_session</code> operation fans out across every store the platform owns and
+      returns an auditable receipt — store by store, what was removed and whether it worked. Usage
+      statistics are <strong>anonymised</strong>, not deleted: aggregate counts survive, but the link
+      to a person is severed. The receipt's overall status is <strong>complete only if every store
+      succeeded</strong>.
+    </p>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 860 320" xmlns="http://www.w3.org/2000/svg"
+           font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
+           role="img" aria-label="A single delete operation fans out to every store, then returns a completion receipt.">
+        <defs>
+          <marker id="ah" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+            <path d="M0,0 L7,3.5 L0,7 Z" fill="#9ca3af"/>
+          </marker>
+        </defs>
+        <!-- delete node -->
+        <rect x="24" y="128" width="150" height="64" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+        <text x="99" y="154" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">Delete</text>
+        <text x="99" y="172" text-anchor="middle" font-size="10" fill="#3b82f6">erase_session</text>
+        <!-- store boxes -->
+        <g font-size="12" fill="#111827">
+          <rect x="330" y="14" width="220" height="42" rx="7" fill="#f9fafb" stroke="#cbd5e1"/>
+          <text x="346" y="34" font-weight="600">Transcript</text><text x="346" y="48" font-size="9.5" fill="#6b7280" font-family="ui-monospace,monospace">runtime_history</text>
+          <rect x="330" y="66" width="220" height="42" rx="7" fill="#f9fafb" stroke="#cbd5e1"/>
+          <text x="346" y="86" font-weight="600">Model checkpoint</text><text x="346" y="100" font-size="9.5" fill="#6b7280" font-family="ui-monospace,monospace">runtime_checkpoint</text>
+          <rect x="330" y="118" width="220" height="42" rx="7" fill="#f9fafb" stroke="#cbd5e1"/>
+          <text x="346" y="138" font-weight="600">Attachments + embeddings</text><text x="346" y="152" font-size="9.5" fill="#6b7280" font-family="ui-monospace,monospace">knowledge&nbsp;flow</text>
+          <rect x="330" y="170" width="220" height="42" rx="7" fill="#fffbeb" stroke="#d1c19a"/>
+          <text x="346" y="190" font-weight="600">Usage stats</text><text x="346" y="204" font-size="9.5" fill="#b45309" font-family="ui-monospace,monospace">anonymised, not deleted</text>
+          <rect x="330" y="222" width="220" height="42" rx="7" fill="#f9fafb" stroke="#cbd5e1"/>
+          <text x="346" y="242" font-weight="600">Ownership anchor</text><text x="346" y="256" font-size="9.5" fill="#6b7280" font-family="ui-monospace,monospace">session_metadata · last</text>
+        </g>
+        <!-- connectors delete -> stores -->
+        <g stroke="#9ca3af" stroke-width="1.3" fill="none" marker-end="url(#ah)">
+          <path d="M174,150 C250,150 250,35 328,35"/>
+          <path d="M174,155 C250,155 250,87 328,87"/>
+          <path d="M174,160 C250,160 250,139 328,139"/>
+          <path d="M174,165 C250,165 250,191 328,191"/>
+          <path d="M174,172 C250,172 250,243 328,243"/>
+        </g>
+        <!-- connectors stores -> receipt -->
+        <g stroke="#9ca3af" stroke-width="1.3" fill="none" marker-end="url(#ah)">
+          <path d="M550,35 C630,35 630,150 706,150"/>
+          <path d="M550,87 C630,87 630,153 706,153"/>
+          <path d="M550,139 C630,139 630,156 706,156"/>
+          <path d="M550,191 C630,191 630,159 706,159"/>
+          <path d="M550,243 C630,243 630,166 706,166"/>
+        </g>
+        <!-- receipt node -->
+        <rect x="708" y="120" width="128" height="80" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="1.5"/>
+        <text x="772" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#047857">Receipt</text>
+        <text x="772" y="168" text-anchor="middle" font-size="10" fill="#059669">complete</text>
+        <text x="772" y="186" text-anchor="middle" font-size="16" fill="#059669">✓</text>
+      </svg>
+      <p class="fig-cap">Ordering is a correctness rule: checkpoint before transcript; the ownership anchor deleted last, so a partial failure stays retryable.</p>
+    </div>
+  </section>
+
+  <!-- ── Commitments ─────────────────────────────────────── -->
+  <section id="commitments">
+    <h2>The commitments</h2>
+
+    <div class="commit"><div class="idx">01</div><div>
+      <h3>Delete means delete</h3>
+      <p>One action erases a conversation across <b>every</b> store and returns an auditable receipt — store by store, what was removed and whether it worked. No shadow copies, no "mostly deleted".</p>
+    </div></div>
+    <div class="commit"><div class="idx">02</div><div>
+      <h3>The retention window is the evaluation window</h3>
+      <p>A team owner sets how long deleted conversations are kept, so the team can evaluate its agents on real usage — bounded by a platform ceiling the team can only <b>tighten</b>. Privacy's storage-limitation on one side, AI-Act monitoring on the other, owned by the team.</p>
+    </div></div>
+    <div class="commit"><div class="idx">03</div><div>
+      <h3>Immediate by default; deferral is a deliberate choice</h3>
+      <p>With no window set, delete erases <b>now</b>. Deferral only happens when a team opts in — the ceiling is never a silent default that quietly keeps everyone's conversations around.</p>
+    </div></div>
+    <div class="commit"><div class="idx">04</div><div>
+      <h3>Never a half-state</h3>
+      <p>A conversation that was hidden but never actually erased is treated as a <b>defect</b>, not a milestone. Erasure is retry-safe by construction: if any part fails, nothing is stranded and the work finishes on the next attempt.</p>
+    </div></div>
+    <div class="commit"><div class="idx">05</div><div>
+      <h3>The worker acts as the platform, authenticated</h3>
+      <p>When erasure happens later, a background worker performs it — with no human present. It authenticates as the platform's own identity and is <b>authorised</b> to erase; it is never an unchecked backdoor, and it never impersonates a user.</p>
+    </div></div>
+    <div class="commit"><div class="idx">06</div><div>
+      <h3>Pseudonymous by default</h3>
+      <p>Conversation stores hold an opaque identity token, never an email. Who someone is lives in the identity provider; what they said lives — briefly, accountably — in Fred.</p>
+    </div></div>
+  </section>
+
+  <!-- ── Two modes ───────────────────────────────────────── -->
+  <section id="modes">
+    <h2>Two ways to delete</h2>
+    <div class="modes">
+      <div class="mode">
+        <div class="m-tag">Immediate — the default</div>
+        <h3>Erase now</h3>
+        <p>The full erasure runs on the spot, as you. The conversation is gone and you get the receipt.</p>
+      </div>
+      <div class="mode">
+        <div class="m-tag">Deferred — opt in</div>
+        <h3>Hide now, erase at expiry</h3>
+        <p>The conversation is hidden immediately and provably erased when the team's window ends — tracked as a task you can watch.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Convergence ─────────────────────────────────────── -->
+  <section id="converge">
+    <h2>How it converges</h2>
+    <p>For architecture and RSSI review, the guarantee rests on a few invariants:</p>
+    <div class="callout ok"><strong>One fan-out, one receipt.</strong> A single operation clears every store and returns a per-store receipt whose overall status is complete only if every store succeeded.</div>
+    <div class="callout info"><strong>Ordering is a correctness rule.</strong> Checkpoint before transcript; the ownership/metadata anchor last. A partial failure keeps the anchor so the work stays retryable — no store is orphaned.</div>
+    <div class="callout"><strong>Convergence by construction.</strong> Deferred deletes are hidden immediately and reconciled by a durable scheduler (Temporal) until the receipt is complete. An expired-but-unerased conversation is a defect, not a state.</div>
+    <div class="callout warn"><strong>Attention, never silent failure.</strong> Erasure never auto-fails; if a fan-out wedges after repeated attempts it is flagged <em>stalled</em> for an operator, rather than retrying invisibly forever.</div>
+  </section>
+
+  <!-- ── Observable tasks ────────────────────────────────── -->
+  <section id="tasks">
+    <h2>Every erasure is an observable task</h2>
+    <p>
+      Erasure is asynchronous — planned for a future date, or running right now across several stores.
+      None of that is invisible. Fred is built on a <strong>single async-task model</strong> (Temporal for
+      durability, the <code>fred-core</code> task library for state), so any surface can always answer
+      <em>what is scheduled, what is in flight, and what finished</em> — and admins get an erasure schedule
+      that reads the same way anywhere.
+    </p>
+    <div class="tasklist" role="img" aria-label="Task tracker showing one planned erasure, one running, and one done.">
+      <div class="t-head">Erasure activity</div>
+      <div class="trow"><span class="t-badge plan">Planned</span><span class="t-lbl">Erase conversation "Q3 pricing"<small>at retention expiry · in 12 days</small></span><span class="t-pct">scheduled</span></div>
+      <div class="trow"><span class="t-badge run">Running</span><span class="t-lbl">Erasing 5 conversations<small>member removed · store 3 of 5</small></span><span class="t-pct">60%</span></div>
+      <div class="trow"><span class="t-badge done">Done</span><span class="t-lbl">Erased "onboarding notes"<small>receipt available · every store 0</small></span><span class="t-pct">complete</span></div>
+    </div>
+
+    <div class="pull">
+      <p>Evaluate agents on real conversations — without compromising the right to be forgotten.</p>
+      <div class="by">— the one sentence Fred 2.0.2 is built around</div>
+    </div>
+  </section>
+
+  <!-- ── Related ─────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Related documents</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="architecture.html">
+        <div class="ref-topic">Platform Architecture</div>
+        <div class="ref-path">docs/architecture.html</div>
+      </a>
+      <a class="ref-card" href="features.html">
+        <div class="ref-topic">Feature Reference</div>
+        <div class="ref-path">docs/features.html</div>
+      </a>
+      <a class="ref-card" href="deploy-gke.html">
+        <div class="ref-topic">Deploying on GCP / GKE</div>
+        <div class="ref-path">docs/deploy-gke.html</div>
+      </a>
+      <a class="ref-card" href="add-your-agent.html">
+        <div class="ref-topic">Add your agent</div>
+        <div class="ref-path">docs/add-your-agent.html</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

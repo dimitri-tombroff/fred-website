@@ -89,6 +89,6 @@ Fred helps establish this separation with an open, modular, and governance-ready
 
 - [Fred on GitHub](https://github.com/ThalesGroup/fred)
 - [Deployment Factory on GitHub](https://github.com/ThalesGroup/fred-deployment-factory)
-- [Architecture](/docs/reference/architecture/)
-- [Deployment](/docs/reference/deployment/)
+- [Architecture](/docs/architecture.html)
+- [Deploying on GCP / GKE](/docs/deploy-gke.html)
 - [Security](/docs/reference/security/)

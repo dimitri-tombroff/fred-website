@@ -111,7 +111,7 @@ No token needed for Ollama — remove `OPENAI_API_KEY` from `.env` or leave it u
 
 ### Per-operation routing
 
-For advanced use cases (e.g. a faster model for routing decisions, a stronger model for planning), add `rules:`. See the [LLM Routing reference]({{< ref "/docs/reference/llm_routing" >}}) for the full rule syntax and resolution algorithm.
+For advanced use cases (e.g. a faster model for routing decisions, a stronger model for planning), add `rules:`. See the [LLM Routing reference](/docs/llm-routing.html) for the full rule syntax and resolution algorithm.
 
 ---
 
@@ -153,4 +153,4 @@ For a full production-like local setup (testing auth flows, ReBAC, etc.), copy `
 > [Model Secrets — Operations Guide]({{< ref "/releases/kea/guides/operations" >}})
 >
 > **For routing rules and the full resolution algorithm** →
-> [LLM Routing reference]({{< ref "/docs/reference/llm_routing" >}})
+> [LLM Routing reference](/docs/llm-routing.html)

@@ -196,4 +196,4 @@ uv sync
 > [Operations Guide]({{< ref "/releases/swift/guides/operations" >}})
 >
 > **For routing rules and the full resolution algorithm** →
-> [LLM Routing reference]({{< ref "/docs/reference/llm_routing" >}})
+> [LLM Routing reference](/docs/llm-routing.html)

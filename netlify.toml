@@ -32,6 +32,37 @@
 
 # Redirects and rewrites — https://docs.netlify.com/routing/redirects/#syntax-for-the-netlify-configuration-file
 
+# Old reference pages consolidated into the standalone HTML topic pages.
+[[redirects]]
+  from = "/docs/reference/add-your-agent/"
+  to = "/docs/add-your-agent.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/reference/deployment/"
+  to = "/docs/deploy-gke.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/reference/architecture/"
+  to = "/docs/architecture.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/reference/access-model/"
+  to = "/docs/access-model.html"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/reference/llm_routing/"
+  to = "/docs/llm-routing.html"
+  status = 301
+  force = true
+
 # Custom headers — https://docs.netlify.com/routing/headers/#syntax-for-the-netlify-configuration-file
 [[headers]]
   for = "/*"

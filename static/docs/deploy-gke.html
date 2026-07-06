@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fred — Deploying on GKE</title>
+  <title>Fred — Deploying on GCP / GKE</title>
+  <meta name="description" content="A typical Google Kubernetes Engine (GKE) deployment of Fred: workloads, in-cluster services, managed Google Cloud services, keyless Workload Identity, TLS, secrets, and the Helm + GitOps deployment flow.">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,7 +17,7 @@
       --bg:     #ffffff;
       --bg2:    #f9fafb;
       --border: #e5e7eb;
-      --nav:    196px;
+      --nav:    212px;
       --rad:    8px;
       --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
@@ -36,6 +37,7 @@
     }
 
     html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
     body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
 
     /* ─── Sidebar ─────────────────────────────────────────── */
@@ -53,37 +55,46 @@
 
     /* ─── Main ────────────────────────────────────────────── */
     main { flex: 1; max-width: 900px; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
 
     /* ─── Page header ─────────────────────────────────────── */
     .hd { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
     .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
-    .hd h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.15; margin-bottom: 0.7rem; }
-    .hd-lead { font-size: 1rem; color: var(--muted); max-width: 540px; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 560px; }
 
     /* ─── Sections ────────────────────────────────────────── */
     section { margin-bottom: 3rem; }
     h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
-    h3 { font-size: 0.875rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.5rem; }
     p { font-size: 0.9rem; margin-bottom: 0.7rem; max-width: 680px; }
+    p strong { color: var(--text); font-weight: 650; }
     ol, ul { font-size: 0.9rem; margin: 0.4rem 0 0.7rem 1.2rem; max-width: 680px; }
-    ol li, ul li { margin-bottom: 0.35rem; }
+    ol li, ul li { margin-bottom: 0.4rem; }
+    ol li strong, ul li strong { color: var(--text); font-weight: 650; }
 
     /* ─── Callout ─────────────────────────────────────────── */
-    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 660px; }
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 680px; }
     .callout strong { color: var(--text); }
     .callout.warn  { border-left-color: var(--s); }
     .callout.info  { border-left-color: var(--c); }
     .callout.ok    { border-left-color: var(--r); }
 
     /* ─── Component / gate cards ──────────────────────────── */
-    .wip-grid { display: flex; flex-direction: column; gap: 0.4rem; margin: 1rem 0; max-width: 660px; }
+    .wip-grid { display: flex; flex-direction: column; gap: 0.4rem; margin: 1rem 0; max-width: 680px; }
     .wip-item { display: flex; align-items: flex-start; gap: 1rem; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); }
     .wip-label { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.2rem; }
     .wip-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
-    .wip-badge { display: inline-block; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: 0.1rem; }
+    .wip-badge { display: inline-block; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: 0.1rem; width: 4.2rem; text-align: center; }
     .wip-badge.core { background: var(--c-bg); color: var(--c); border: 1px solid var(--c); }
     .wip-badge.data { background: var(--s-bg); color: var(--s); border: 1px solid var(--s); }
+    .wip-badge.cloud{ background: var(--r-bg); color: var(--r); border: 1px solid var(--r); }
     .wip-badge.gate { background: var(--r-bg); color: var(--r); border: 1px solid var(--r); }
+
+    /* ─── Diagram ─────────────────────────────────────────── */
+    .diagram-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: var(--rad); padding: 1.25rem 1rem; margin: 1.25rem 0 0.5rem; overflow-x: auto; }
+    .diagram-wrap svg { display: block; width: 100%; max-width: 860px; height: auto; margin: 0 auto; }
+    .fig-cap { font-size: 0.75rem; color: var(--muted); margin-top: 0.6rem; max-width: 700px; }
 
     /* ─── Reference cards ─────────────────────────────────── */
     .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
@@ -96,6 +107,8 @@
     code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
     pre { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rad); padding: 0.9rem 1rem; margin: 0.85rem 0; overflow-x: auto; max-width: 680px; }
     pre code { background: none; border: none; padding: 0; font-size: 0.78rem; line-height: 1.6; }
+    a.inline { color: var(--c); text-decoration: none; font-weight: 600; }
+    a.inline:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -103,123 +116,274 @@
 <nav>
   <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
   <div class="nav-logo">Fred</div>
-  <div class="nav-tag">Deploy on GKE</div>
+  <div class="nav-tag">GCP / GKE deployment</div>
   <ul>
     <li class="nav-section">In this document</li>
     <li><a href="#scope">Scope &amp; audience</a></li>
-    <li><a href="#complete">What "deployed" means</a></li>
-    <li><a href="#components">Components</a></li>
-    <li><a href="#flow">Deployment flow</a></li>
-    <li><a href="#gotchas">Operational gotchas</a></li>
+    <li><a href="#topology">Topology at a glance</a></li>
+    <li><a href="#workloads">What runs in the cluster</a></li>
+    <li><a href="#gcp">Google Cloud services</a></li>
+    <li><a href="#identity">Keyless object storage</a></li>
+    <li><a href="#edge">Edge, TLS &amp; secrets</a></li>
+    <li><a href="#deploy">How it is deployed</a></li>
+    <li><a href="#steps">Deployment steps</a></li>
+    <li><a href="#verify">Verifying the deployment</a></li>
     <li><a href="#related">Related documents</a></li>
   </ul>
 </nav>
 
 <main>
 
-  <div class="callout warn" style="margin-bottom:2rem;max-width:680px;">
-    <strong>Draft.</strong> A curated overview shared for early review, distilled from a
-    reference Swift 2.0 deployment on GKE Autopilot. The authoritative step-by-step lives
-    in the deployment repository (see <a href="#related" style="color:inherit;font-weight:600;">Related</a>).
+  <div class="hd">
+    <div class="hd-eyebrow">docs / deployment</div>
+    <h1>Deploying Fred on GCP / GKE</h1>
+    <p class="hd-lead">
+      A typical Google Kubernetes Engine deployment — the workloads, the in-cluster
+      services, the managed Google Cloud services, and how you know it is correct,
+      not just running.
+    </p>
   </div>
 
-  <div class="hd">
-    <div class="hd-eyebrow">guides / operations</div>
-    <h1>Deploying Fred<br>on GKE</h1>
-    <p class="hd-lead">
-      What a complete Fred deployment on Google Kubernetes Engine looks like — the
-      components, the stores, and how you know it is actually correct, not just running.
-    </p>
+  <div class="callout info" style="margin-bottom:2rem;">
+    <strong>This documents a typical GKE deployment.</strong> Fred is cloud-agnostic — the same
+    shape runs on AWS (EKS) or Azure (AKS), swapping the managed pieces (object storage, image
+    registry, managed TLS, model API) for each cloud's equivalents. The specifics below are GCP.
+    Project, region, and host names are <em>placeholders</em> — <code>PROJECT_ID</code>,
+    <code>REGION</code>, <code>studio.example.com</code>.
   </div>
 
   <!-- ── Scope ──────────────────────────────────────────── -->
   <section id="scope">
     <h2>Scope &amp; audience</h2>
     <p>
-      For operators and DevOps teams standing up Fred Swift 2.0 on GKE Autopilot. This
-      page is the <em>map</em>: the shape of a deployment and its definition of "done". It
-      deliberately does not reproduce the environment-specific runbook (hostnames, secrets,
-      exact commands) — that lives with the Helm chart and stays in sync with it.
+      For operators and platform engineers standing up Fred on GKE Autopilot. This page is the
+      <em>map</em>: the shape of a deployment, what talks to what, and its definition of "done".
+      It is deliberately not the environment-specific runbook (exact hostnames, secrets, and
+      commands) — that ships with the Helm chart and stays in sync with it.
     </p>
-    <div class="callout info">
-      <strong>Two companion documents.</strong> The
-      <a href="architecture.html" style="color:inherit;font-weight:600;">Architecture</a> page
-      covers component topology and the security perimeter; native Google Cloud Storage with
-      Workload Identity (no service-account keys) has its own reference. This page is the
-      operational overview that ties them together.
+    <div class="callout">
+      Companion pages: <a class="inline" href="architecture.html">Platform Architecture</a> covers
+      the logical component model and data flows; this page is the operational deployment view.
     </div>
   </section>
 
-  <!-- ── What "deployed" means ──────────────────────────── -->
-  <section id="complete">
-    <h2>What "deployed" means — complete <em>and</em> correct</h2>
+  <!-- ── Topology ───────────────────────────────────────── -->
+  <section id="topology">
+    <h2>Topology at a glance</h2>
     <p>
-      The hardest deployment bugs are silent: every pod is <code>1/1 Ready</code>, yet the
-      product is subtly broken — a workload missing, a TLS certificate still provisioning,
-      a backend wired to ephemeral storage. Liveness does not equal correctness.
+      A Fred instance runs in a single Kubernetes namespace on a GKE Autopilot cluster. Four
+      stateless application workloads share a set of in-cluster services (Postgres, Keycloak,
+      OpenFGA, OpenSearch, Temporal). The only reach outside the cluster is to a few managed
+      Google Cloud services — reached <strong>keylessly</strong> through Workload Identity.
     </p>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 860 420" xmlns="http://www.w3.org/2000/svg"
+           font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
+           role="img" aria-label="Fred on GKE: a namespace with an Ingress, four Fred workloads, and in-cluster services, reaching managed Google Cloud services (Cloud Storage, Vertex AI, Artifact Registry) via Workload Identity.">
+        <defs>
+          <marker id="ga" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#9ca3af"/></marker>
+          <marker id="gb" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#2563eb"/></marker>
+        </defs>
+        <!-- cluster boundary -->
+        <rect x="24" y="70" width="536" height="332" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="8,5"/>
+        <text x="40" y="88" font-size="9.5" font-weight="700" fill="#64748b" letter-spacing="1">GKE AUTOPILOT CLUSTER — ONE NAMESPACE</text>
+        <!-- users -> ingress -->
+        <text x="42" y="56" font-size="10" fill="#6b7280">users</text>
+        <path d="M120,44 L120,98" stroke="#9ca3af" stroke-width="1.3" fill="none" marker-end="url(#ga)"/>
+        <text x="128" y="60" font-size="9" fill="#6b7280">HTTPS</text>
+        <!-- ingress -->
+        <rect x="42" y="98" width="500" height="34" rx="6" fill="#fff7ed" stroke="#ea580c" stroke-width="1.3"/>
+        <text x="60" y="119" font-size="11" font-weight="600" fill="#9a3412">GKE Ingress (gce) · Managed TLS · reserved global IP + DNS</text>
+        <!-- workloads group -->
+        <rect x="42" y="146" width="500" height="94" rx="7" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="54" y="160" font-size="8.5" font-weight="700" fill="#94a3b8" letter-spacing="0.5">FRED WORKLOADS · GITOPS</text>
+        <g font-size="10.5" fill="#1d4ed8" font-weight="600">
+          <rect x="54" y="168" width="222" height="28" rx="5" fill="#eff6ff" stroke="#2563eb" stroke-width="1.1"/><text x="66" y="186">fred-frontend</text>
+          <rect x="290" y="168" width="240" height="28" rx="5" fill="#eff6ff" stroke="#2563eb" stroke-width="1.1"/><text x="302" y="186">fred-agents — runtime · SSE</text>
+          <rect x="54" y="202" width="222" height="28" rx="5" fill="#eff6ff" stroke="#2563eb" stroke-width="1.1"/><text x="66" y="220">control-plane-backend</text>
+          <rect x="290" y="202" width="240" height="28" rx="5" fill="#eff6ff" stroke="#2563eb" stroke-width="1.1"/><text x="302" y="220">knowledge-flow · backend + worker</text>
+        </g>
+        <!-- services group -->
+        <rect x="42" y="252" width="500" height="140" rx="7" fill="none" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="54" y="266" font-size="8.5" font-weight="700" fill="#94a3b8" letter-spacing="0.5">IN-CLUSTER SERVICES · HELM FOUNDATION</text>
+        <g font-size="10" fill="#334155">
+          <rect x="54" y="274" width="150" height="30" rx="5" fill="#f9fafb" stroke="#cbd5e1"/><text x="65" y="293">PostgreSQL (pgvector)</text>
+          <rect x="214" y="274" width="150" height="30" rx="5" fill="#f9fafb" stroke="#cbd5e1"/><text x="225" y="293">OpenSearch</text>
+          <rect x="374" y="274" width="156" height="30" rx="5" fill="#f9fafb" stroke="#cbd5e1"/><text x="385" y="293">Keycloak (OIDC)</text>
+          <rect x="54" y="310" width="150" height="30" rx="5" fill="#f9fafb" stroke="#cbd5e1"/><text x="65" y="329">OpenFGA (ReBAC)</text>
+          <rect x="214" y="310" width="150" height="30" rx="5" fill="#f9fafb" stroke="#cbd5e1"/><text x="225" y="329">Temporal</text>
+        </g>
+        <text x="374" y="322" font-size="8.5" fill="#94a3b8">one Postgres,</text>
+        <text x="374" y="333" font-size="8.5" fill="#94a3b8">a database per component</text>
+        <text x="54" y="360" font-size="8.5" fill="#94a3b8">durable state — no ephemeral pod storage</text>
+        <text x="54" y="378" font-size="8.5" fill="#94a3b8">databases: keycloak · openfga · temporal · fred</text>
+
+        <!-- managed cloud -->
+        <rect x="596" y="70" width="240" height="250" rx="10" fill="#f6fdfa" stroke="#5eb89f" stroke-width="1.4" stroke-dasharray="8,5"/>
+        <text x="612" y="88" font-size="9.5" font-weight="700" fill="#0f766e" letter-spacing="1">MANAGED GOOGLE CLOUD</text>
+        <g>
+          <rect x="612" y="98" width="208" height="44" rx="6" fill="#ecfdf5" stroke="#059669" stroke-width="1.2"/>
+          <text x="626" y="120" font-size="11" font-weight="600" fill="#047857">Cloud Storage (GCS)</text><text x="626" y="134" font-size="9" fill="#059669">object storage</text>
+          <rect x="612" y="152" width="208" height="44" rx="6" fill="#ecfdf5" stroke="#059669" stroke-width="1.2"/>
+          <text x="626" y="174" font-size="11" font-weight="600" fill="#047857">Vertex AI</text><text x="626" y="188" font-size="9" fill="#059669">embeddings · LLM</text>
+          <rect x="612" y="206" width="208" height="44" rx="6" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1.2"/>
+          <text x="626" y="228" font-size="11" font-weight="600" fill="#334155">Artifact Registry</text><text x="626" y="242" font-size="9" fill="#6b7280">container images</text>
+          <rect x="612" y="260" width="208" height="40" rx="6" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1.2"/>
+          <text x="626" y="284" font-size="11" font-weight="600" fill="#334155">Cloud Build</text>
+        </g>
+
+        <!-- cross-cloud arrows -->
+        <path d="M530,214 C574,214 574,120 612,120" stroke="#2563eb" stroke-width="1.4" fill="none" marker-end="url(#gb)"/>
+        <path d="M530,222 C572,222 572,174 612,174" stroke="#2563eb" stroke-width="1.4" fill="none" marker-end="url(#gb)"/>
+        <path d="M612,228 C576,228 576,210 532,210" stroke="#9ca3af" stroke-width="1.2" fill="none" stroke-dasharray="4,3" marker-end="url(#ga)"/>
+        <text x="556" y="112" font-size="8" fill="#6b7280">objects</text>
+        <text x="556" y="166" font-size="8" fill="#6b7280">embed</text>
+      </svg>
+      <p class="fig-cap">
+        Fred's stateless workloads (deployed via GitOps) and its in-cluster services run in one
+        namespace. Only Knowledge Flow reaches managed Google Cloud — Cloud Storage and Vertex AI —
+        authenticated <strong>keylessly</strong> through Workload Identity (no service-account keys).
+        Images come from Artifact Registry, built by Cloud Build.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Workloads ──────────────────────────────────────── -->
+  <section id="workloads">
+    <h2>What runs in the cluster</h2>
+    <h3>Fred workloads (stateless)</h3>
+    <div class="wip-grid">
+      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">control-plane-backend</div><div class="wip-desc">Teams, users, policies and permissions, agent-template and instance lifecycle, session metadata, and <code>ExecutionGrant</code> issuance. The sole authority for agent discovery and enrollment.</div></div></div>
+      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">fred-agents</div><div class="wip-desc">The agent execution surface (<code>/agents/execute</code>, <code>/agents/execute/stream</code>, plus an OpenAI-compatible endpoint). Runs the agent definitions; conversation state persists to Postgres.</div></div></div>
+      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">knowledge-flow (backend + worker)</div><div class="wip-desc">Ingestion, documents, tags/libraries, vectors, and retrieval — the only component that uses object storage. The Temporal worker drains the ingestion/processing queue.</div></div></div>
+      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">fred-frontend</div><div class="wip-desc">Nginx serving the static React UI; proxies to the backends, so it comes up last, after their Services exist.</div></div></div>
+    </div>
+    <h3>In-cluster services</h3>
+    <div class="wip-grid">
+      <div class="wip-item"><span class="wip-badge data">data</span><div><div class="wip-label">PostgreSQL (pgvector)</div><div class="wip-desc">One StatefulSet, a database per component (<code>keycloak</code>, <code>openfga</code>, <code>temporal</code>, <code>fred</code>). Backed by a persistent volume — never ephemeral pod storage.</div></div></div>
+      <div class="wip-item"><span class="wip-badge data">data</span><div><div class="wip-label">OpenSearch</div><div class="wip-desc">Single-node store for hybrid/vector search and the control-plane KPI / analytics data.</div></div></div>
+      <div class="wip-item"><span class="wip-badge data">infra</span><div><div class="wip-label">Keycloak · OpenFGA · Temporal</div><div class="wip-desc">OIDC identity (a realm with a public frontend client and confidential per-backend clients), relationship-based authorization (ReBAC), and durable workflow scheduling (with a gated Temporal UI).</div></div></div>
+    </div>
+    <div class="callout">
+      Postgres, OpenSearch, Keycloak, OpenFGA and Temporal run <strong>as workloads in the cluster</strong>
+      in a typical deployment — not as managed services. You can move any of them to a managed
+      equivalent (e.g. Cloud SQL) later; the apps only need the connection string.
+    </div>
+  </section>
+
+  <!-- ── Google Cloud services ──────────────────────────── -->
+  <section id="gcp">
+    <h2>Managed Google Cloud services</h2>
+    <p>A typical GKE deployment leans on a small set of managed services:</p>
+    <div class="wip-grid">
+      <div class="wip-item"><span class="wip-badge cloud">gcp</span><div><div class="wip-label">Cloud Storage (GCS)</div><div class="wip-desc">Object storage for the content store (documents, extracted objects, files) and the virtual filesystem. Selected with a <code>type: gcs</code> discriminator; used only by Knowledge Flow.</div></div></div>
+      <div class="wip-item"><span class="wip-badge cloud">gcp</span><div><div class="wip-label">Vertex AI</div><div class="wip-desc">Embeddings and model inference for ingestion and retrieval, granted via <code>roles/aiplatform.user</code>.</div></div></div>
+      <div class="wip-item"><span class="wip-badge cloud">gcp</span><div><div class="wip-label">Artifact Registry + Cloud Build</div><div class="wip-desc">Container image registry and builder. Images are tagged per release and referenced by the workloads.</div></div></div>
+    </div>
+  </section>
+
+  <!-- ── Keyless storage ────────────────────────────────── -->
+  <section id="identity">
+    <h2>Keyless object storage — Workload Identity</h2>
     <p>
-      So the definition of "done" is an <strong>executable checklist</strong>, not a page to
-      tick through by hand. A deployment is complete only when a single status command is
-      green across every dimension:
+      Fred authenticates to Google Cloud with <strong>no service-account keys</strong>. It uses GKE
+      Workload Identity: clients call Application Default Credentials, and the pod's Kubernetes
+      service account (KSA) is federated to a Google service account (GSA).
+    </p>
+    <ol>
+      <li>A GSA (e.g. <code>fred-knowledge-flow-gcs@PROJECT_ID.iam.gserviceaccount.com</code>) is granted <code>roles/storage.objectAdmin</code> on the buckets and <code>roles/aiplatform.user</code>.</li>
+      <li>The GSA is bound to the workload's KSA with <code>roles/iam.workloadIdentityUser</code>.</li>
+      <li>The KSA is annotated <code>iam.gke.io/gcp-service-account: &lt;GSA&gt;</code>. That is the whole wiring — no JSON key is ever created, committed, or mounted.</li>
+    </ol>
+    <div class="callout ok">
+      <strong>No secret for storage.</strong> Because access is keyless, object storage needs no
+      entry in the deployment's secret. Rotation and revocation happen entirely through IAM.
+    </div>
+  </section>
+
+  <!-- ── Edge, TLS & secrets ────────────────────────────── -->
+  <section id="edge">
+    <h2>Edge, TLS &amp; secrets</h2>
+    <h3>Ingress, TLS and DNS</h3>
+    <p>
+      All external traffic enters through a single GKE Ingress, fronted by a reserved global static
+      IP. Public hostnames (frontend, Keycloak, and the Temporal UI) resolve via DNS A-records you
+      create outside Helm. TLS uses GKE <code>ManagedCertificate</code> resources — one per host —
+      which provision automatically once DNS points at the IP.
+    </p>
+    <div class="callout warn">
+      <strong>Certificates take time.</strong> A managed certificate goes <code>Active</code> only
+      after DNS resolves to the load-balancer IP — typically 15–60 minutes. A ready pod behind a
+      still-provisioning certificate is unreachable over HTTPS; don't mistake that for a failure.
+    </div>
+    <h3>Secrets &amp; configuration</h3>
+    <p>
+      Sensitive values live in a single Kubernetes Secret, rendered from a git-ignored values file
+      (a committed example shows the shape with empty values). It carries the Postgres passwords,
+      the Keycloak admin password and confidential client secrets, the OpenFGA API token, and any
+      optional model-provider API key. <strong>Object storage is absent by design</strong> — it uses
+      Workload Identity. Non-secret configuration (hostnames, feature flags, per-team quotas) is
+      plain Helm values.
+    </p>
+  </section>
+
+  <!-- ── How it is deployed ─────────────────────────────── -->
+  <section id="deploy">
+    <h2>How it is deployed</h2>
+    <p>The deployment splits cleanly into two layers with different change cadences:</p>
+    <div class="wip-grid">
+      <div class="wip-item"><span class="wip-badge data">foundation</span><div><div class="wip-label">Foundation — imperative Helm</div><div class="wip-desc">The slow-moving base: Postgres, Keycloak, OpenFGA, OpenSearch, Temporal, the shared Ingress, the managed certificates, and the one Secret. Provisioning runs as Helm hook Jobs — create databases and users, seed the Keycloak realm and clients, apply schema migrations, register the Temporal namespace.</div></div></div>
+      <div class="wip-item"><span class="wip-badge core">apps</span><div><div class="wip-label">Apps — GitOps via Argo&nbsp;CD</div><div class="wip-desc">The four stateless workloads, delivered continuously. A single Argo CD Application tracks a multi-workload chart; per-app enable flags and pinned image tags live in a values file. Sync is deliberately manual (server-side apply), so a rollout is an explicit, reviewable action.</div></div></div>
+    </div>
+    <div class="callout info">
+      <strong>Autopilot-friendly.</strong> Every workload sets explicit CPU/memory requests and runs
+      unprivileged. App Deployments replace in place (<code>maxSurge: 0</code>) rather than surging a
+      second copy of all four at once — which would spike memory and node auto-provisioning on a
+      small cluster. Postgres uses a modest persistent volume on a standard storage class.
+    </div>
+  </section>
+
+  <!-- ── Steps ──────────────────────────────────────────── -->
+  <section id="steps">
+    <h2>Deployment steps</h2>
+    <ol>
+      <li><strong>Prerequisites.</strong> <code>gcloud</code>, <code>kubectl</code>, and <code>helm</code> authenticated to the target project; a GKE Autopilot cluster; the target namespace.</li>
+      <li><strong>Reserve the edge.</strong> Reserve a global static IP and create DNS A-records for the public hostnames pointing at it.</li>
+      <li><strong>Google Cloud prerequisites.</strong> Create the Artifact Registry repository and enable Cloud Build; create the GCS buckets, the GSA, the Workload Identity binding, and enable Vertex AI.</li>
+      <li><strong>Fill secrets.</strong> Copy the example values file, fill the required secret values, and keep it out of version control.</li>
+      <li><strong>Deploy the foundation.</strong> Install the foundation chart. Its hook Jobs provision the databases and users, seed the Keycloak realm and clients, and register the Temporal namespace. Confirm the provisioning Jobs completed.</li>
+      <li><strong>Build images.</strong> Build the component images at one shared, date-stamped tag via Cloud Build, so a release round is one coherent version.</li>
+      <li><strong>Run migrations.</strong> Apply the control-plane and knowledge-flow schema migrations (each tracks its own migration version).</li>
+      <li><strong>Deploy the apps.</strong> Bring up <code>control-plane-backend</code>, then <code>knowledge-flow</code> (backend + worker) and <code>fred-agents</code>, and the <code>fred-frontend</code> last — it resolves backend DNS at startup.</li>
+      <li><strong>Provision identity.</strong> Create the initial users, teams, and groups so the <code>groups</code> claim is populated.</li>
+      <li><strong>Verify.</strong> Run the status/completeness check until it is fully green (see below), then log in over HTTPS and run an ingestion smoke test.</li>
+    </ol>
+    <div class="callout">
+      Steady state is a GitOps loop: build and bump image tags, commit and push, trigger the Argo CD
+      sync, and re-run the status check. A config-only change is a plain <code>rollout restart</code> —
+      no full release.
+    </div>
+  </section>
+
+  <!-- ── Verify ─────────────────────────────────────────── -->
+  <section id="verify">
+    <h2>Verifying the deployment — complete <em>and</em> correct</h2>
+    <p>
+      The hardest deployment bugs are silent: every pod is <code>1/1 Ready</code>, yet the product is
+      subtly broken. Liveness is not correctness. Treat "done" as an <strong>executable checklist</strong>
+      — a single status command green across every dimension:
     </p>
     <div class="wip-grid">
       <div class="wip-item"><span class="wip-badge gate">presence</span><div><div class="wip-label">Workloads &amp; expected components</div><div class="wip-desc">Every desired replica Ready — and every <em>expected</em> component present, so a disabled or missing service is flagged, not silently absent.</div></div></div>
-      <div class="wip-item"><span class="wip-badge gate">deps</span><div><div class="wip-label">App dependency health</div><div class="wip-desc">Each service's <code>/ready</code> probe confirms its real backends (Postgres, OpenSearch, OpenFGA, object storage) — not just that the pod started.</div></div></div>
-      <div class="wip-item"><span class="wip-badge gate">edge</span><div><div class="wip-label">TLS certificates Active</div><div class="wip-desc">Managed certificates must be <code>Active</code>, not provisioning — a 1/1 pod behind a half-issued cert is unreachable over HTTPS.</div></div></div>
-      <div class="wip-item"><span class="wip-badge gate">correctness</span><div><div class="wip-label">Config &amp; schema correctness</div><div class="wip-desc">The semantic checks liveness can't see: durable (not ephemeral) conversation storage, the analytics/KPI store wired, runtime catalog sources reachable, DB migrations applied.</div></div></div>
+      <div class="wip-item"><span class="wip-badge gate">deps</span><div><div class="wip-label">Dependency health</div><div class="wip-desc">Each service's <code>/ready</code> probe confirms its real backends (Postgres, OpenSearch, OpenFGA, object storage) — not just that the pod started.</div></div></div>
+      <div class="wip-item"><span class="wip-badge gate">edge</span><div><div class="wip-label">TLS certificates Active</div><div class="wip-desc">Managed certificates must be <code>Active</code>, not provisioning — a ready pod behind a half-issued certificate is unreachable over HTTPS.</div></div></div>
+      <div class="wip-item"><span class="wip-badge gate">correct</span><div><div class="wip-label">Config &amp; schema correctness</div><div class="wip-desc">The semantic checks liveness can't see: durable (not ephemeral) conversation storage, the analytics store wired, keyless object-storage access working, migrations applied.</div></div></div>
     </div>
-    <div class="callout ok">
-      <strong>Green means the site works end to end</strong> — not "the pods are up". Treat the
-      status command as the source of truth: if a written step ever disagrees with it, trust
-      the command.
-    </div>
-  </section>
-
-  <!-- ── Components ─────────────────────────────────────── -->
-  <section id="components">
-    <h2>What runs in the cluster</h2>
-    <p>
-      A Fred instance lives in one Kubernetes namespace. The application services share one
-      Postgres database and an in-cluster OpenSearch; all external traffic enters through a
-      single Ingress. (Full topology and data flows: the
-      <a href="architecture.html">Architecture</a> page.)
-    </p>
-    <div class="wip-grid">
-      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">control-plane-backend</div><div class="wip-desc">Sessions, teams, lifecycle, the admin/analytics surface, and runtime-catalog routing.</div></div></div>
-      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">knowledge-flow (backend + worker)</div><div class="wip-desc">Document ingestion, vector/tabular stores, and the MCP filesystem. The Temporal worker drains the ingestion queue.</div></div></div>
-      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">fred-agents</div><div class="wip-desc">The agent runtime. Conversation state (history + checkpoints) persists to Postgres so it survives restarts.</div></div></div>
-      <div class="wip-item"><span class="wip-badge core">app</span><div><div class="wip-label">fred-frontend</div><div class="wip-desc">The web UI. Proxies to the backends, so it is brought up last, after their Services exist.</div></div></div>
-      <div class="wip-item"><span class="wip-badge data">infra</span><div><div class="wip-label">Keycloak · OpenFGA · Temporal (+ UI)</div><div class="wip-desc">Identity (OIDC + M2M), relationship-based authorization, and workflow scheduling.</div></div></div>
-      <div class="wip-item"><span class="wip-badge data">data</span><div><div class="wip-label">PostgreSQL · OpenSearch</div><div class="wip-desc">Relational store (one DB, per-component tables) and the vector / KPI store. Object storage is native GCS via Workload Identity.</div></div></div>
-    </div>
-  </section>
-
-  <!-- ── Deployment flow ────────────────────────────────── -->
-  <section id="flow">
-    <h2>Deployment flow</h2>
-    <p>The reference deployment is a Helm chart plus a small set of scripts. The shape:</p>
-    <ol>
-      <li><strong>Build</strong> the component images at one shared, date-stamped tag (so a round is one coherent version).</li>
-      <li><strong>Preflight</strong> — verify identity prerequisites (realm, clients, roles) and that all required secrets render.</li>
-      <li><strong>Deploy in order</strong> — migrate the stateful backends, start them, then the agent runtime, and the frontend <em>last</em> (it resolves backend DNS at startup).</li>
-      <li><strong>Verify</strong> — run the status command until it is fully green (the checklist above). Re-run after any change.</li>
-    </ol>
-    <div class="callout info">
-      <strong>Fast iteration.</strong> Routine redeploys reuse a one-line image tag and skip
-      re-provisioning identity, so an app-only roll-forward is quick. Bouncing a pod to pick
-      up a config change is a plain <code>rollout restart</code> — no full release needed.
-    </div>
-  </section>
-
-  <!-- ── Operational gotchas ────────────────────────────── -->
-  <section id="gotchas">
-    <h2>Operational gotchas worth knowing</h2>
-    <p>Hard-won, and transferable to any GKE deployment:</p>
-    <div class="callout warn"><strong>Durable conversation storage.</strong> The agent runtime must persist to a real database, not a pod-local SQLite file on an <code>emptyDir</code> — otherwise conversations vanish on every restart while still appearing in the session list.</div>
-    <div class="callout warn"><strong>Analytics needs its store wired.</strong> The KPI dashboard reads from OpenSearch; if that sink is not enabled and connected, preset endpoints return <code>503</code> even though everything else is healthy.</div>
-    <div class="callout warn"><strong>Don't tear down the edge to "restart".</strong> Disabling the frontend deletes its managed TLS certificate; bringing it back triggers a fresh 15–60 min certificate re-provision. Roll the pod instead.</div>
-    <div class="callout warn"><strong>Provisioning isn't free per deploy.</strong> Re-running identity provisioning on every upgrade is slow; once the realm and clients exist, skip it for app-only redeploys.</div>
+    <h3>Gotchas worth knowing</h3>
+    <div class="callout warn"><strong>Durable conversation storage.</strong> The agent runtime must persist to a real database, not a pod-local file on an <code>emptyDir</code> — otherwise conversations vanish on every restart while still appearing in the session list.</div>
+    <div class="callout warn"><strong>Analytics needs its store wired.</strong> The KPI dashboard reads from OpenSearch; if that sink is not enabled and connected, its endpoints return errors even though everything else is healthy.</div>
+    <div class="callout warn"><strong>Don't tear down the edge to "restart".</strong> Disabling the frontend deletes its managed certificate; bringing it back triggers a fresh 15–60 min re-provision. Roll the pod instead.</div>
   </section>
 
   <!-- ── Related ────────────────────────────────────────── -->
@@ -228,25 +392,25 @@
     <div class="ref-grid">
       <a class="ref-card" href="architecture.html">
         <div class="ref-topic">Platform Architecture →</div>
-        <div class="ref-path">component topology · security perimeter</div>
+        <div class="ref-path">component model · data flows</div>
+      </a>
+      <a class="ref-card" href="erasure-you-can-prove.html">
+        <div class="ref-topic">Erasure you can prove →</div>
+        <div class="ref-path">RGPD-ready data erasure</div>
       </a>
       <a class="ref-card" href="/releases/swift/guides/operations/">
-        <div class="ref-topic">Swift Operations Guide →</div>
+        <div class="ref-topic">Operations Guide →</div>
         <div class="ref-path">/releases/swift/guides/operations</div>
-      </a>
-      <a class="ref-card" href="/releases/roadmap/">
-        <div class="ref-topic">Roadmap →</div>
-        <div class="ref-path">Kea 1.5 → Swift 2.0 GA</div>
       </a>
       <a class="ref-card" href="https://github.com/ThalesGroup/fred">
         <div class="ref-topic">Fred on GitHub →</div>
-        <div class="ref-path">github.com/ThalesGroup/fred</div>
+        <div class="ref-path">source, Helm chart &amp; runbook</div>
       </a>
     </div>
     <div class="callout">
-      The environment-specific runbook (ordered commands, secrets, and the
-      <code>fredlab-status.sh</code> completeness checker) ships with the Helm chart in the
-      deployment repository, where it stays in sync with the chart it documents.
+      The environment-specific runbook — ordered commands, the secret template, and the completeness
+      checker — ships with the Helm chart in the deployment repository, where it stays in sync with
+      the chart it documents.
     </div>
   </section>
 

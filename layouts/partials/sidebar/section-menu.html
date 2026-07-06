@@ -1,0 +1,81 @@
+{{- /*
+  Local override of Doks sidebar/section-menu.html.
+  Renders the docs sidebar as a SINGLE <nav class="section-nav docs-links"> (the
+  theme relies on there being exactly one), with a curated "Key Topics" group as
+  the first item, followed by the normal content-tree sections. Key Topics links
+  to standalone HTML topic pages in static/docs/, driven by the `docs_highlights`
+  site menu, so topics are added by editing config, not this template.
+
+  The recursive item renderer is copied from the theme's render-section-menu.html
+  but renamed to "kt-walk" to avoid clashing with the theme's "walk" define.
+*/ -}}
+{{- $skipHome := true }}
+{{- $currentPage := . }}
+
+{{- /* Same node source as the theme: a sidebar_<section> menu if defined, else the content-tree sections. */}}
+{{- $sidebar := printf "sidebar_%s" .Section }}
+{{- $nodes := slice }}
+{{- with index site.Menus $sidebar }}
+  {{- $nodes = . }}
+{{- else }}
+  {{- with (.Site.GetPage "section" .Section).Sections }}
+    {{- $nodes = . }}
+  {{- end }}
+{{- end }}
+
+<nav class="section-nav docs-links">
+  <ul class="list-unstyled">
+    {{- if eq .Section "docs" }}
+      {{- with site.Menus.docs_highlights }}
+      <li>
+        <details open>
+          <summary>Key Topics</summary>
+          <ul class="list-unstyled list-nested">
+            {{- range . }}
+            <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+            {{- end }}
+          </ul>
+        </details>
+      </li>
+      {{- end }}
+    {{- end }}
+    {{- range $nodes }}
+      {{- if and .Page.IsHome $skipHome }}
+        {{- continue }}
+      {{- end }}
+      {{- template "kt-walk" (dict "node" . "currentPage" $currentPage) }}
+    {{- end }}
+  </ul>
+</nav>
+
+{{- define "kt-walk" }}
+  {{- $currentPage := .currentPage }}
+  {{- $node := .node }}
+  {{- $linkContent := $node.Page.LinkTitle }}
+  {{- with $node.Name }}
+    {{- $linkContent = . }}
+  {{- end }}
+  {{- $ariaCurrent := "" }}
+  {{- $liClass := "" }}
+  {{- if in $currentPage.Ancestors $node.Page }}
+    {{- $ariaCurrent = "true" }}
+  {{- end }}
+  {{- if $currentPage.Eq $node.Page }}
+    {{- $ariaCurrent = "page" }}
+    {{- $liClass = "active" }}
+  {{- end }}
+  <li {{- with $liClass }} class="{{ . }}" {{ end -}}>
+    {{- with $node.Page.Pages }}
+    <details{{- with $ariaCurrent }} open{{- end }}{{- if ne $node.Page.Params.sidebar.collapsed true }} open{{- end }}>
+      <summary>{{ $linkContent }}</summary>
+      <ul class="list-unstyled list-nested">
+        {{- range . }}
+          {{- template "kt-walk" (dict "node" . "currentPage" $currentPage) }}
+        {{- end }}
+      </ul>
+    </details>
+    {{- else }}
+      <a {{- with $ariaCurrent }} aria-current="{{ . }}" {{- end }} href="{{- $node.Page.RelPermalink }}">{{ $linkContent }}</a>
+    {{- end }}
+  </li>
+{{- end }}

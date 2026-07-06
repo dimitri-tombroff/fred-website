@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Access model</title>
+  <meta name="description" content="How Fred authorizes: Keycloak identity, ReBAC (OpenFGA) as the sole enforcement mechanism, the display-only RBAC catalog, per-endpoint enforcement, and ReBAC-disabled mode.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    212px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    main { flex: 1; max-width: 900px; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
+
+    .hd { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 580px; }
+
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+    h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    p { font-size: 0.9rem; margin-bottom: 0.7rem; max-width: 680px; }
+    p strong { color: var(--text); font-weight: 650; }
+    ul { font-size: 0.9rem; margin: 0.4rem 0 0.7rem 1.2rem; max-width: 680px; }
+    ul li { margin-bottom: 0.35rem; }
+    .src { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.6rem; }
+
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 700px; }
+    .callout strong { color: var(--text); }
+    .callout.warn  { border-left-color: var(--s); }
+    .callout.info  { border-left-color: var(--c); }
+    .callout.ok    { border-left-color: var(--r); }
+
+    .tablewrap { overflow-x: auto; margin: 0.85rem 0; max-width: 100%; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.82rem; min-width: 460px; }
+    th, td { text-align: left; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; background: var(--bg2); }
+    td.k, th.k { font-family: var(--mono); font-size: 0.76rem; white-space: nowrap; }
+    tbody tr:hover { background: var(--bg2); }
+    .legend { font-size: 0.74rem; color: var(--muted); margin-top: 0.4rem; }
+
+    code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
+
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-path { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+    a.inline { color: var(--c); text-decoration: none; font-weight: 600; }
+    a.inline:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Access model</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#model">Authorization in one line</a></li>
+    <li><a href="#identity">Identity &amp; claims</a></li>
+    <li><a href="#rebac">ReBAC — the enforcement model</a></li>
+    <li><a href="#catalog">The RBAC display catalog</a></li>
+    <li><a href="#enforcement">Endpoint enforcement</a></li>
+    <li><a href="#execution">Execution authorization</a></li>
+    <li><a href="#noop">ReBAC-disabled mode</a></li>
+    <li><a href="#related">Related documents</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">docs / access model</div>
+    <h1>Access model</h1>
+    <p class="hd-lead">
+      How Fred decides who may do what: Keycloak identity, relationship-based
+      authorization (ReBAC / OpenFGA) as the single enforcement mechanism, and a
+      display-only role catalog for the UI.
+    </p>
+  </div>
+
+  <!-- ── Model ──────────────────────────────────────────── -->
+  <section id="model">
+    <h2>Authorization in one line</h2>
+    <p>
+      <strong>Authentication</strong> is a Keycloak JWT (OIDC), validated on every request.
+      <strong>Authorization</strong> is <strong>ReBAC (OpenFGA), and only ReBAC</strong> — evaluated at
+      every endpoint against the caller's relationships to the object (their team, the resource owner,
+      the tag hierarchy).
+    </p>
+    <div class="callout warn">
+      <strong>Roles are not the enforcement layer.</strong> The RBAC roles and resource matrix further
+      down are a <strong>display-only catalog</strong>: the frontend uses them to gate which menus and
+      buttons a user sees. They are never used to allow or deny an operation on the server — that is
+      done exclusively by a ReBAC check. (The former RBAC enforcement path was removed under AUTHZ-01.)
+    </div>
+    <p class="src">Source: fred-core <code>security/authorization.py</code> · <code>security/permission_catalog.py</code></p>
+  </section>
+
+  <!-- ── Identity ───────────────────────────────────────── -->
+  <section id="identity">
+    <h2>Identity &amp; claims</h2>
+    <p>A validated token is decoded into a <code>KeycloakUser</code>:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Token claim</th><th class="k">KeycloakUser field</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td class="k">sub</td><td class="k">uid</td><td>Stable user identity key</td></tr>
+          <tr><td class="k">preferred_username</td><td class="k">username</td><td>Display and tracing</td></tr>
+          <tr><td class="k">email</td><td class="k">email</td><td>User profile</td></tr>
+          <tr><td class="k">resource_access[client].roles</td><td class="k">roles</td><td>Role labels — feed the display catalog</td></tr>
+          <tr><td class="k">groups</td><td class="k">groups</td><td>Team membership — drives ReBAC relations</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="src">Source: fred-core <code>security/oidc.py</code> (<code>decode_jwt</code>) · <code>security/structure.py</code> (<code>KeycloakUser</code>)</p>
+  </section>
+
+  <!-- ── ReBAC ──────────────────────────────────────────── -->
+  <section id="rebac">
+    <h2>ReBAC — the enforcement model</h2>
+    <p>
+      Fred's OpenFGA schema defines object types, the relations users/teams can hold on them, and the
+      permissions those relations grant. Every protected endpoint resolves to one of these checks.
+    </p>
+
+    <h3>Organization</h3>
+    <p>Relations: <code>admin</code>, <code>editor</code> (= <code>[user] or admin</code>), <code>viewer</code> (= <code>[user] or editor</code>). Keycloak roles map onto these three. Global capabilities are organization permissions:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Permission</th><th class="k">Granted to</th></tr></thead>
+        <tbody>
+          <tr><td class="k">can_create_team</td><td class="k">admin</td></tr>
+          <tr><td class="k">can_create_agent</td><td class="k">editor</td></tr>
+          <tr><td class="k">can_edit_agent_class_path</td><td class="k">admin</td></tr>
+          <tr><td class="k">can_manage_platform · can_administer_users · can_run_benchmark</td><td class="k">admin</td></tr>
+          <tr><td class="k">can_read_kpi_global</td><td class="k">admin</td></tr>
+          <tr><td class="k">can_read_kpi · can_read_logs · can_read_metrics</td><td class="k">viewer</td></tr>
+          <tr><td class="k">can_read_opensearch · can_read_knowledge_graph · can_read_content</td><td class="k">viewer</td></tr>
+          <tr><td class="k">can_process_content</td><td class="k">editor</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Team</h3>
+    <p>Relations form an owner → manager → member hierarchy, plus an optional <code>public</code> marker:</p>
+    <ul>
+      <li><code>owner</code> = <code>[user] or admin from organization</code>; <code>manager</code> = <code>[user] or owner</code>; <code>member</code> = <code>[user] or manager</code>; <code>public</code> = <code>[user:*]</code>.</li>
+      <li><code>can_read</code> = <code>member or public</code>; <code>can_update_info</code>, <code>can_administer_members/managers/owners</code> = <code>owner</code>; <code>can_read_members</code>, <code>can_read_conversations</code> = <code>member</code>.</li>
+      <li>Helper permissions <code>can_update_resources</code> and <code>can_update_agents</code> = <code>manager</code> — these flow into the object types below.</li>
+    </ul>
+
+    <h3>Agent, tag, document, resource</h3>
+    <ul>
+      <li><strong>agent</strong> — <code>owner: [user, team]</code>; <code>read</code> = owner or team member; <code>update</code>/<code>delete</code> = owner or the team's <code>can_update_agents</code>.</li>
+      <li><strong>tag</strong> — <code>owner</code>/<code>editor</code>/<code>viewer</code> (each <code>[user, team]</code>) and a <code>parent</code> tag; grants <code>read</code>, <code>update</code>, <code>delete</code>, <code>share</code>, with inheritance from the parent tag and the owning team's <code>can_update_resources</code>.</li>
+      <li><strong>document</strong> — has a <code>parent</code> tag; <code>read</code> follows the tag's read, and <code>update</code>/<code>delete</code>/<code>process</code> follow the tag's update.</li>
+      <li><strong>resource</strong> — like document: <code>read</code>/<code>update</code>/<code>delete</code>/<code>share</code> derived from its parent tag.</li>
+    </ul>
+    <p class="src">Source: fred-core <code>security/rebac/schema.fga</code> · <code>security/rebac/rebac_engine.py</code></p>
+  </section>
+
+  <!-- ── RBAC catalog ───────────────────────────────────── -->
+  <section id="catalog">
+    <h2>The RBAC display catalog</h2>
+    <div class="callout info">
+      Everything in this section is a <strong>frontend display hint</strong>, not server-side
+      enforcement. It decides what the UI offers; ReBAC decides what actually happens.
+    </div>
+    <h3>Actions &amp; roles</h3>
+    <p>Actions: <code>create</code> (C), <code>read</code> (R), <code>update</code> (U), <code>delete</code> (D), <code>read:global</code> (G), <code>process</code> (P). Roles:</p>
+    <ul>
+      <li><code>admin</code> — every action on every resource.</li>
+      <li><code>editor</code> — an allowlist per resource (matrix below).</li>
+      <li><code>viewer</code> — baseline <code>read</code>, with a few explicit overrides.</li>
+      <li><code>service_agent</code> — a narrow read-only subset; also an identity marker (not a ReBAC relation) that lets the evaluation worker act within a scoped <code>team_id</code>.</li>
+    </ul>
+    <p>Keycloak roles <code>admin</code>/<code>editor</code>/<code>viewer</code> are mapped onto the OpenFGA <em>organization</em> relations above; that mapping — not this table — is what enforces.</p>
+
+    <h3>Resource matrix</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Resource</th><th>admin</th><th>editor</th><th>viewer</th><th>service_agent</th></tr></thead>
+        <tbody>
+          <tr><td class="k">tag</td><td>ALL</td><td>CRUD</td><td>R</td><td>R</td></tr>
+          <tr><td class="k">document</td><td>ALL</td><td>CRU</td><td>R</td><td>R</td></tr>
+          <tr><td class="k">documents_source</td><td>ALL</td><td>R</td><td>R</td><td>—</td></tr>
+          <tr><td class="k">resource</td><td>ALL</td><td>CRUD</td><td>R</td><td>—</td></tr>
+          <tr><td class="k">table</td><td>ALL</td><td>CRUD</td><td>R</td><td>R</td></tr>
+          <tr><td class="k">tables_database</td><td>ALL</td><td>CRUD</td><td>R</td><td>R</td></tr>
+          <tr><td class="k">kpi</td><td>ALL</td><td>R</td><td>R</td><td>—</td></tr>
+          <tr><td class="k">opensearch</td><td>ALL</td><td>R</td><td>R</td><td>R</td></tr>
+          <tr><td class="k">neo4j</td><td>ALL</td><td>—</td><td>R</td><td>—</td></tr>
+          <tr><td class="k">logs</td><td>ALL</td><td>—</td><td>R</td><td>—</td></tr>
+          <tr><td class="k">files</td><td>ALL</td><td>CRUD</td><td>CRUD</td><td>—</td></tr>
+          <tr><td class="k">feedback</td><td>ALL</td><td>C</td><td>C</td><td>—</td></tr>
+          <tr><td class="k">prompt_completions</td><td>ALL</td><td>C</td><td>C</td><td>—</td></tr>
+          <tr><td class="k">metrics</td><td>ALL</td><td>R</td><td>R</td><td>R</td></tr>
+          <tr><td class="k">agents</td><td>ALL</td><td>R</td><td>R</td><td>—</td></tr>
+          <tr><td class="k">agent</td><td>ALL</td><td>—</td><td>R</td><td>—</td></tr>
+          <tr><td class="k">sessions</td><td>ALL</td><td>CRUD</td><td>CRUD</td><td>—</td></tr>
+          <tr><td class="k">message_attachments</td><td>ALL</td><td>C,R</td><td>CRUD</td><td>—</td></tr>
+          <tr><td class="k">mcp_servers</td><td>ALL</td><td>CRU</td><td>R</td><td>—</td></tr>
+          <tr><td class="k">user</td><td>ALL</td><td>R</td><td>R</td><td>—</td></tr>
+          <tr><td class="k">team</td><td>ALL</td><td>—</td><td>R</td><td>—</td></tr>
+          <tr><td class="k">organization</td><td>ALL</td><td>—</td><td>R</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="legend">ALL = all six actions · CRUD = create/read/update/delete · CRU = create/read/update · C = create · R = read · — = none.</div>
+    <p class="src">Source: fred-core <code>security/models.py</code> (Action, Resource) · <code>security/permission_catalog.py</code> (ROLE_CAPABILITIES)</p>
+  </section>
+
+  <!-- ── Enforcement ────────────────────────────────────── -->
+  <section id="enforcement">
+    <h2>Endpoint enforcement</h2>
+    <p>Authentication is a Keycloak JWT everywhere. Authorization is a ReBAC check keyed to the surface:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Surface</th><th>Authorization (ReBAC)</th></tr></thead>
+        <tbody>
+          <tr><td class="k">control-plane · teams</td><td>Team permissions — <code>can_read</code>, <code>can_update_info</code>, <code>can_read_members</code>, <code>can_administer_*</code></td></tr>
+          <tr><td class="k">control-plane · platform, import/export, agent class path</td><td>Organization <code>can_manage_platform</code></td></tr>
+          <tr><td class="k">control-plane · global KPIs</td><td>Organization <code>can_read_kpi_global</code></td></tr>
+          <tr><td class="k">control-plane · sessions &amp; history</td><td>Team + <strong>owner</strong> scoping — <code>session.user_id == uid</code> and matching <code>team_id</code></td></tr>
+          <tr><td class="k">control-plane · evaluations</td><td>Team <code>can_update_agents</code> / <code>can_read</code></td></tr>
+          <tr><td class="k">fred-agents · execute / stream</td><td>Pod-side team <code>can_read</code> on a mandatory <code>team_id</code>, per request</td></tr>
+          <tr><td class="k">knowledge-flow · tags, documents, resources</td><td>Object-level tag / document / resource permissions</td></tr>
+          <tr><td class="k">knowledge-flow · content, logs, statistics</td><td>Organization <code>can_read_content</code> / <code>can_process_content</code> / <code>can_read_logs</code></td></tr>
+          <tr><td class="k">health / readiness</td><td>Public — no auth</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="src">Source: control-plane <code>teams/service.py</code>, <code>product/service.py</code>, <code>evaluations/api.py</code> · knowledge-flow <code>features/*</code> · fred-runtime <code>app/agent_app.py</code></p>
+  </section>
+
+  <!-- ── Execution ──────────────────────────────────────── -->
+  <section id="execution">
+    <h2>Execution authorization</h2>
+    <p>
+      Agent execution is <strong>team-scoped and authorized at the pod</strong>. There is <strong>no
+      signed grant or capability token</strong>: the control plane issues none. Identity is the
+      Keycloak JWT, and the agent pod runs an OpenFGA check on the caller's <code>team_id</code> for
+      every request before executing. The <code>ExecutionGrantAction</code> values (<code>execute</code>,
+      <code>resume</code>) are action labels, not tokens.
+    </p>
+    <p class="src">Source: fred-sdk <code>contracts/execution.py</code> · fred-runtime <code>app/agent_app.py</code></p>
+  </section>
+
+  <!-- ── Noop ───────────────────────────────────────────── -->
+  <section id="noop">
+    <h2>ReBAC-disabled mode</h2>
+    <p>
+      When OIDC is off or ReBAC is disabled, Fred loads a no-op engine: <code>has_permission()</code>
+      returns <code>True</code>, and lookups return a "disabled" marker so services skip object-level
+      filtering. The deployment is effectively open — intended for local development, never production.
+    </p>
+    <p class="src">Source: fred-core <code>security/rebac/noop_engine.py</code> · <code>security/rebac/rebac_factory.py</code></p>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Related documents</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="architecture.html">
+        <div class="ref-topic">Platform Architecture →</div>
+        <div class="ref-path">control plane · pods · execution</div>
+      </a>
+      <a class="ref-card" href="add-your-agent.html">
+        <div class="ref-topic">Add your agent →</div>
+        <div class="ref-path">team-scoped execution in practice</div>
+      </a>
+      <a class="ref-card" href="deploy-gke.html">
+        <div class="ref-topic">Deploying on GCP / GKE →</div>
+        <div class="ref-path">Keycloak &amp; OpenFGA in the cluster</div>
+      </a>
+      <a class="ref-card" href="erasure-you-can-prove.html">
+        <div class="ref-topic">Erasure you can prove →</div>
+        <div class="ref-path">team-scoped, authorized erasure</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

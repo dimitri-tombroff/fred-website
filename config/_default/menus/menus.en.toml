@@ -89,6 +89,39 @@
   post = '[fred](https://github.com/ThalesGroup/fred) / [knowledge-app](https://github.com/ThalesGroup/knowledge-app)'
   weight = 31
 
+# Curated high-level "Key Topics" group at the top of the docs left sidebar.
+# Each entry links to a standalone HTML topic page in static/docs/.
+# Add the most important feature / technology topics here.
+[[docs_highlights]]
+  name = "Erasure you can prove"
+  url = "/docs/erasure-you-can-prove.html"
+  weight = 10
+
+[[docs_highlights]]
+  name = "Platform Architecture"
+  url = "/docs/architecture.html"
+  weight = 20
+
+[[docs_highlights]]
+  name = "Deploying on GCP / GKE"
+  url = "/docs/deploy-gke.html"
+  weight = 30
+
+[[docs_highlights]]
+  name = "Add your agent"
+  url = "/docs/add-your-agent.html"
+  weight = 40
+
+[[docs_highlights]]
+  name = "Access model"
+  url = "/docs/access-model.html"
+  weight = 50
+
+[[docs_highlights]]
+  name = "Policy-based LLM routing"
+  url = "/docs/llm-routing.html"
+  weight = 60
+
 # [[sidebar_docs]]
 #   name = "Guides"
 #   pageRef = "/docs/guides"
