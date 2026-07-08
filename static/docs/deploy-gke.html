@@ -54,7 +54,7 @@
     @media (max-width: 640px) { nav { display: none; } body { display: block; } }
 
     /* ─── Main ────────────────────────────────────────────── */
-    main { flex: 1; max-width: 900px; padding: 3rem 3.5rem 6rem; }
+    main { width: 100%; max-width: 900px; margin: 0 auto; padding: 3rem 3.5rem 6rem; }
     @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
 
     /* ─── Page header ─────────────────────────────────────── */
@@ -85,7 +85,7 @@
     .wip-item { display: flex; align-items: flex-start; gap: 1rem; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); }
     .wip-label { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.2rem; }
     .wip-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
-    .wip-badge { display: inline-block; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: 0.1rem; width: 4.2rem; text-align: center; }
+    .wip-badge { display: inline-block; font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; margin-top: 0.1rem; min-width: 4.2rem; text-align: center; }
     .wip-badge.core { background: var(--c-bg); color: var(--c); border: 1px solid var(--c); }
     .wip-badge.data { background: var(--s-bg); color: var(--s); border: 1px solid var(--s); }
     .wip-badge.cloud{ background: var(--r-bg); color: var(--r); border: 1px solid var(--r); }

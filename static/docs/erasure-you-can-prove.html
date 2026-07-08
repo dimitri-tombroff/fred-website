@@ -54,7 +54,7 @@
     @media (max-width: 640px) { nav { display: none; } body { display: block; } }
 
     /* ─── Main ────────────────────────────────────────────── */
-    main { flex: 1; max-width: 900px; padding: 3rem 3.5rem 6rem; }
+    main { width: 100%; max-width: 900px; margin: 0 auto; padding: 3rem 3.5rem 6rem; }
     @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
 
     /* ─── Page header ─────────────────────────────────────── */
@@ -114,7 +114,7 @@
     .tasklist .t-head { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 0.5rem 0.9rem; background: var(--bg2); border-bottom: 1px solid var(--border); }
     .trow { display: flex; align-items: center; gap: 0.8rem; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); }
     .trow:last-child { border-bottom: 0; }
-    .t-badge { font-family: var(--mono); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; width: 5.2rem; text-align: center; }
+    .t-badge { font-family: var(--mono); font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.5rem; border-radius: 3px; white-space: nowrap; flex-shrink: 0; min-width: 5.2rem; text-align: center; }
     .t-badge.plan { background: var(--bg2); color: var(--muted); border: 1px solid var(--border); }
     .t-badge.run  { background: var(--c-bg); color: var(--c); border: 1px solid var(--c); }
     .t-badge.done { background: var(--r-bg); color: var(--r); border: 1px solid var(--r); }
