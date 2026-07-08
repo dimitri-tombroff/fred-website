@@ -4,7 +4,7 @@ description: "How we equipped a real, complex cloud-native project so AI assista
 summary: "Fred is a full cloud-native agentic platform: speed and batch layers, Temporal workflows, identity propagation, ReBAC authorization, observability. We use AI assistants everywhere — for code, but also for backlogs, RFCs, and PMO tracking. This post is an honest account of the guardrails we built into the repository so that the humans, not the assistants, stay in control of a robust, industrial, maintainable application."
 date: 2026-07-08T00:00:00+02:00
 lastmod: 2026-07-08T00:00:00+02:00
-draft: true
+draft: false
 weight: 50
 categories: [engineering, ai]
 tags: [ai, claude, codex, engineering-practices, governance, product-management, devops]
