@@ -156,12 +156,17 @@ We wrote our own review skills, versioned in the repository: a **contract review
 
 ## Two Teams, One Conclusion
 
-<div class="ep-todo">
-  <span class="ep-tag">To do — Yahya</span>
-  Your project's perspective — leaner scope, different team size, same practice: the assistant holds context, drafts specs, flags contradictions, and the humans keep the decisions. What did you keep, what did you drop?
-</div>
+Yahya Zaim Mounajed reached the same conclusion from the opposite end of the scale — not a multi-service cloud-native platform, but a personal project, built and maintained by one person. The size is different; the failure mode he describes is not.
 
-What strikes us is that our two teams, on very different projects, converged on the same shape: **the assistant proposes, the repository constrains, the human decides.** Not because a methodology told us to, but because every alternative we tried produced code we did not want to own.
+> My clearest experience with this came from a much smaller project than Fred. The scale was different, but the lesson was the same: for work that needs to remain maintainable, explainable, and easy to resume, AI does not automatically make the work better. It amplifies the way the work is framed. A vague workflow leads to vague output. An undefined deliverable leads to more content, not necessarily more progress. And when the project memory only lives in the chat, the assistant ends up guessing continuity.
+>
+> The first rule I took from this was simple: design the work before executing it. The assistant can help with that design, but the workflow itself has to become explicit before implementation starts. On a software project, that means deciding the path first: specification, critical review, validation, roadmap, architecture, implementation, review, testing, and documentation. It also means giving each conversation a single purpose. One discussion, one output: a specification, an audit, a roadmap, an architecture note, an installation guide, or a recovery context for the next session.
+>
+> This changed how I think about project memory. I do not want the assistant to rebuild the project from whatever it remembers from the previous exchange. The project should carry its own memory: specifications, roadmap, architecture, decisions, known limitations, and next steps. Updating that memory at the end of a session is part of the work. It is what allows the next session to start from the actual state of the project instead of from a plausible reconstruction of it.
+>
+> That is where my experience converges with Fred's, even at a very different scale. The goal is not to add process for the sake of it. The goal is to make the work clear enough for the assistant to accelerate it without taking ownership of it. Once the work is designed, the next questions become easier to handle: where the assistant should be autonomous, where the workflow should stay deterministic, and where a human decision is still required.
+
+What strikes us is that our two teams, on very different projects — a multi-service cloud-native platform on one side, a single-person project on the other — converged on the same shape: **the assistant proposes, the repository (or the project's own memory) constrains, the human decides.** Not because a methodology told us to, but because every alternative we tried produced work we did not want to own. Scale changes the tooling; it does not change the discipline.
 
 ## Takeaways
 
