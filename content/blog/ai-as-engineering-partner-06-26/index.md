@@ -1,7 +1,7 @@
 ---
 title: "AI as an Engineering Partner — and How We Stay in Control"
 description: "How we equipped a real, complex cloud-native project so AI assistants help us think, plan, and build — without ever taking the wheel."
-summary: "Fred is a full cloud-native agentic platform: speed and batch layers, Temporal workflows, identity propagation, ReBAC authorization, observability. We use AI assistants everywhere — for code, but also for backlogs, RFCs, and PMO tracking. This post is an honest account of the guardrails we built into the repository so that the humans, not the assistants, stay in control of a robust, industrial, maintainable application."
+summary: "Fred is a full cloud-native agentic platform: speed and batch layers, Temporal workflows, identity propagation, ReBAC authorization, observability. We use AI assistants — for code, but also for backlogs, RFCs, and PMO tracking. This post is an honest account of the guardrails we built into the repository so that the humans, not the assistants, stay in control of a robust, industrial, maintainable application."
 date: 2026-07-08T00:00:00+02:00
 lastmod: 2026-07-08T00:00:00+02:00
 draft: false
@@ -78,7 +78,7 @@ seo:
   }
 </style>
 
-> *Co-authored by Dimitri Tombroff and Simon Cariou (Fred / Swift team) and Yahya Zaim Mounajed — two teams that independently converged on the same conviction: AI assistants have outgrown the code editor, and that is precisely why they need governance.*
+> *Co-authored by Dimitri Tombroff and Simon Cariou (Fred team) and Yahya Zaim Mounajed — two teams that independently converged on the same conviction: AI assistants have outgrown the code editor, and that is precisely why they need governance.*
 
 ---
 
