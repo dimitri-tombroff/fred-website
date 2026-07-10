@@ -3,7 +3,7 @@ title: "Continuous Evaluation, Made Visible: fred-agent-evaluator in Action"
 description: "Fred's open-source evaluation engine lets every team keep checking that its agents are still safe and correct — and now lets an Analyst define, in plain language, the specific checks that matter to their business."
 summary: "The Admin of a Fred team is accountable for how its agents behave — but accountability without visibility is just exposure. fred-agent-evaluator is what gives that accountability something to stand on, including custom, business-specific checks an Analyst can define just by describing them."
 date: 2026-07-09T10:00:00+02:00
-lastmod: 2026-07-10T10:00:00+02:00
+lastmod: 2026-07-09T10:00:00+02:00
 draft: false
 weight: 50
 categories: [agents, evaluation]
