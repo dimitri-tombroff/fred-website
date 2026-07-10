@@ -46,7 +46,7 @@ Swift 2.0 is being built around nine capabilities. Each one is described below w
 
 Every conversation in Swift flows through a standard HTTP streaming connection (`POST /agents/execute/stream`) served directly by the runtime pod. There is no WebSocket, no persistent connection to negotiate, and no dependency on `agentic-backend` in the browser-to-runtime path.
 
-The transport is secured end-to-end: the browser sends its bearer token together with a short-lived `ExecutionGrant` issued by the control plane. The runtime pod validates both before executing a single token. The frontend constructs no runtime URLs from cluster topology — it receives a prepared URL from the control plane and calls it.
+The transport is secured end-to-end, without the control plane ever minting a signed capability: the browser first calls the control plane to resolve which runtime pod and URL to use, then opens the SSE stream directly against that pod, presenting its own Keycloak bearer token. The pod authenticates that token and authorizes the request itself with a per-request ReBAC (OpenFGA) check — no callback to the control plane. An earlier design had the control plane issue a short-lived signed `ExecutionGrant` instead; it was withdrawn because it made the control plane a proprietary cryptographic root of trust, an unnecessary burden for a platform pursuing C3-grade homologation. The frontend still constructs no runtime URLs from cluster topology — it receives a prepared, ingress-relative URL from the control plane and calls it.
 
 This makes Swift compatible with standard HTTP infrastructure: CDNs, API gateways, load balancers, and OpenAPI tooling all work without special configuration.
 
@@ -64,7 +64,7 @@ This clean separation — control plane decides, runtime executes — makes it p
 
 **Status: shipped**
 
-`fred-sdk` gives agent authors a typed Python contract for writing agents: `AgentDefinition`, `ConversationalState`, `FieldSpec`, `ExecutionGrant`, and the full execution event model. Agents written against `fred-sdk` are installable Python packages — they have their own release cycle and can be registered with any running `fred-runtime` pod.
+`fred-sdk` gives agent authors a typed Python contract for writing agents: `AgentDefinition`, `ConversationalState`, `FieldSpec`, `PortableContext`, and the full execution event model. Agents written against `fred-sdk` are installable Python packages — they have their own release cycle and can be registered with any running `fred-runtime` pod.
 
 `fred-agents-cli` (`fred-runtime` package) provides a full terminal workflow without a browser:
 

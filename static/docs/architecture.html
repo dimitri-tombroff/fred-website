@@ -176,16 +176,19 @@
     <p>
       Above the physical topology, Fred separates <strong>management</strong> from
       <strong>execution</strong>. The <strong>Control Plane</strong> is the sole authority for
-      agentic-pod discovery, agent enrollment, session and metadata, and for issuing a team-scoped
-      <code>ExecutionGrant</code>. <strong>Agentic pods</strong> — the bundled <code>fred-agents</code>
-      and any custom team pods — run the agent logic and stream results back over SSE. Governance
-      policies and ReBAC authorization apply across the whole path.
+      agentic-pod discovery, agent enrollment, session and metadata, and for resolving the
+      execution URL the UI calls. <strong>Agentic pods</strong> — the bundled <code>fred-agents</code>
+      and any custom team pods — authenticate each request themselves against the caller's Keycloak
+      identity, run the agent logic, and stream results back over SSE. There is no signed grant or
+      capability token in this path: the control plane issues none, and each pod authorizes every
+      request itself with a per-request ReBAC (OpenFGA) check. Governance policies and ReBAC
+      authorization apply across the whole path.
     </p>
 
     <div class="diagram-wrap">
       <svg viewBox="0 0 860 470" xmlns="http://www.w3.org/2000/svg"
            font-family="system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif"
-           role="img" aria-label="Fred logical architecture: UI and Keycloak, a Control Plane that issues ExecutionGrants to agentic pods, governance policies, model routing to LLM providers, tools, Knowledge Flow with Temporal, and the shared stores.">
+           role="img" aria-label="Fred logical architecture: UI and Keycloak, a Control Plane that resolves execution URLs and enrollment for agentic pods (no signed grant — pods authorize each request themselves via Keycloak JWT and OpenFGA), governance policies, model routing to LLM providers, tools, Knowledge Flow with Temporal, and the shared stores.">
         <defs>
           <marker id="la" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#9ca3af"/></marker>
           <marker id="lau" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#94a3b8"/></marker>
@@ -200,7 +203,7 @@
         <rect x="40" y="104" width="360" height="86" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.6"/>
         <text x="56" y="127" font-size="13" font-weight="700" fill="#1d4ed8">Control Plane</text>
         <text x="56" y="145" font-size="9.5" fill="#3b82f6">pod discovery · agent enrollment</text>
-        <text x="56" y="161" font-size="9.5" fill="#3b82f6">ExecutionGrant · sessions &amp; metadata</text>
+        <text x="56" y="161" font-size="9.5" fill="#3b82f6">sessions &amp; metadata</text>
         <text x="56" y="177" font-size="9.5" fill="#3b82f6">Temporal lifecycle worker</text>
         <rect x="460" y="104" width="360" height="86" rx="8" fill="#fffbeb" stroke="#b45309" stroke-width="1.4"/>
         <text x="476" y="127" font-size="13" font-weight="700" fill="#92400e">Governance policies</text>
@@ -237,7 +240,7 @@
         <text x="18" y="164" font-size="8.5" fill="#6b7280" transform="rotate(-90 18 164)">SSE stream</text>
         <g font-size="8.5" fill="#6b7280">
           <text x="226" y="99">REST + bearer</text>
-          <text x="226" y="208">ExecutionGrant</text>
+          <text x="226" y="208">enrollment · policy</text>
           <text x="226" y="320">retrieval / ingestion</text>
           <text x="404" y="34">login (OIDC)</text>
           <text x="404" y="153">resolve policy</text>
@@ -249,10 +252,11 @@
 
     <h3>Conversation flow</h3>
     <ol class="body-list">
-      <li>The user authenticates through OIDC (Keycloak); the UI calls the Control Plane with a bearer token.</li>
-      <li>The Control Plane resolves the managed agent and issues a team-scoped <code>ExecutionGrant</code> for the target pod.</li>
+      <li>The user authenticates through OIDC (Keycloak); the UI calls the Control Plane's <code>prepare-execution</code> endpoint with its bearer token.</li>
+      <li>The Control Plane resolves the managed agent and returns an ingress-relative execution URL. No signed grant or capability token is issued — the control plane issues none.</li>
+      <li>The UI calls the agentic pod directly at that URL, presenting the same Keycloak bearer token. The pod authenticates the JWT and authorizes the request itself with a per-request ReBAC (OpenFGA) check on the caller's <code>team_id</code> — there is no callback to the Control Plane on this path.</li>
       <li>The agentic pod executes the agent (ReAct or Graph via <code>fred-runtime</code>), consulting governance and model-routing policies for the effective model and tool behavior.</li>
-      <li>Output and reasoning traces stream back to the UI over <strong>SSE</strong>; checkpoints and session history are persisted by the pod.</li>
+      <li>Output and reasoning traces stream back to the UI over <strong>SSE</strong>, directly from the pod; checkpoints and session history are persisted by the pod.</li>
     </ol>
 
     <h3>Processing flow</h3>
@@ -376,7 +380,7 @@
               font-weight="700" fill="#1d4ed8">control-plane-backend</text>
         <text x="406" y="187" text-anchor="middle" font-size="9" fill="#3b82f6">teams · agent instances</text>
         <text x="406" y="201" text-anchor="middle" font-size="9" fill="#3b82f6">sessions · prompts</text>
-        <text x="406" y="215" text-anchor="middle" font-size="9" fill="#3b82f6">issues ExecutionGrant</text>
+        <text x="406" y="215" text-anchor="middle" font-size="9" fill="#3b82f6">prepare-execution URLs</text>
         <text x="406" y="232" text-anchor="middle" font-size="8" fill="#93c5fd">· CP Temporal worker</text>
 
         <!-- Knowledge Flow Backend -->
@@ -396,7 +400,7 @@
               rx="7" fill="#f0fdf4" stroke="#16a34a"
               stroke-width="1.5" stroke-dasharray="6,3"/>
         <text x="135" y="281" font-size="9" font-weight="700"
-              fill="#15803d" letter-spacing="0.5">AGENT RUNTIME LAYER — isolated execution · ExecutionGrant validated per request</text>
+              fill="#15803d" letter-spacing="0.5">AGENT RUNTIME LAYER — isolated execution · Keycloak JWT + OpenFGA authorized per request</text>
 
         <!-- fred-agents pod (solid border = bundled) -->
         <rect x="133" y="288" width="225" height="130"
@@ -512,10 +516,18 @@
     <div class="callout ok" style="margin-top:1.5rem;">
       <strong>Reading the diagram.</strong>
       All traffic enters through the Kubernetes Ingress — there is no other exposed port.
-      When a user starts an agent session, the control plane issues a short-lived
-      <strong>ExecutionGrant</strong> (5 min, signed) that carries the user's team and session identity.
-      The frontend then opens an SSE stream directly to the agent pod at <code>/runtime/{id}/agents/execute/stream</code>,
-      passing the grant — the agent pod validates it without calling back to the control plane.
+      When a user starts an agent session, the frontend first calls the control plane's
+      <code>prepare-execution</code> endpoint, which resolves the managed agent and returns an
+      ingress-relative execution URL. <strong>There is no signed grant or capability token</strong> —
+      the control plane issues none. The frontend then opens an SSE stream directly to the agent
+      pod at <code>/runtime/{id}/agents/execute/stream</code>, presenting the user's own Keycloak
+      bearer token. The agent pod authenticates that JWT and authorizes the request itself with a
+      per-request ReBAC (OpenFGA) check on the caller's team — without calling back to the control
+      plane. This design was chosen deliberately: an earlier revision had the control plane mint a
+      signed <code>ExecutionGrant</code>, which was withdrawn because it made the control plane a
+      proprietary cryptographic root of trust — an unnecessary homologation burden for a C3
+      deployment. Identity and authorization now rest entirely on Keycloak and OpenFGA, the same
+      model already used elsewhere in the platform.
       The same flow applies to both the bundled <code>fred-agents</code> service and any custom agent pods.
       Agent pods are the only services that call external LLM APIs.
     </div>
