@@ -13,7 +13,7 @@ tags:
   - rag
   - continuous-evaluation
   - governance
-contributors: [Odelia Cohen, Dimitri Tombroff]
+contributors: [Odelia Cohen, Dimitri Tombroff, Thomas Delavallade]
 ---
 
 <div class="preliminary-note">
@@ -140,4 +140,4 @@ More on where this fits in Swift's rollout in the [roadmap](/releases/roadmap/);
 
 ---
 
-*Thanks to the Fred team, and to Marc Fawaz and Thomas Delavallade in particular, for their review and feedback on this work.*
+*Thanks to the Fred team, and to Marc Fawaz in particular, for review and feedback on this work.*
