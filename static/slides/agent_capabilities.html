@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capabilities — the platform view</title>
+<style>
+  :root {
+    --bg: #0b0f17;
+    --slide-bg: #0f1522;
+    --text: #e6edf5;
+    --muted: #8b96a8;
+    --faint: #55617a;
+    --accent: #2dd4bf;
+    --accent-dim: rgba(45, 212, 191, .12);
+    --amber: #fbbf24;
+    --red: #f87171;
+    --green: #4ade80;
+    --blue: #60a5fa;
+    --violet: #c084fc;
+    --line: #232c3f;
+    --code-bg: #0a0e16;
+    --chip-bg: #161e30;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  code, pre, .mono {
+    font-family: ui-monospace, "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  }
+
+  /* ---------- deck mechanics ---------- */
+  .slide {
+    position: absolute; top: 50%; left: 50%;
+    width: 1280px; height: 720px;
+    transform: translate(-50%, -50%);
+    background:
+      radial-gradient(1000px 600px at 85% -10%, rgba(45,212,191,.05), transparent 60%),
+      var(--slide-bg);
+    border-radius: 14px;
+    padding: 58px 76px 64px;
+    opacity: 0; visibility: hidden;
+    transition: opacity .22s ease;
+    display: flex; flex-direction: column;
+  }
+  .slide.active { opacity: 1; visibility: visible; }
+
+  #progress {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: var(--accent); width: 0; z-index: 10;
+    transition: width .25s ease;
+  }
+  #counter {
+    position: fixed; bottom: 14px; right: 20px; z-index: 10;
+    color: var(--faint); font-size: 13px; user-select: none;
+  }
+  #navhint {
+    position: fixed; bottom: 14px; left: 20px; z-index: 10;
+    color: var(--faint); font-size: 13px; user-select: none;
+  }
+  .navbtn {
+    position: fixed; top: 0; bottom: 0; width: 12%; z-index: 5;
+    background: transparent; border: 0; cursor: pointer;
+  }
+  #prevzone { left: 0; } #nextzone { right: 0; }
+
+  /* ---------- typography ---------- */
+  .kicker {
+    font-size: 15px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px; font-weight: 600;
+  }
+  h1 { font-size: 60px; line-height: 1.1; font-weight: 700; }
+  h2 { font-size: 40px; line-height: 1.15; font-weight: 700; margin-bottom: 26px; }
+  .sub { color: var(--muted); font-size: 24px; line-height: 1.5; }
+  .body, li { font-size: 23px; line-height: 1.55; }
+  ul { list-style: none; }
+  ul li { padding-left: 30px; position: relative; margin-bottom: 14px; }
+  ul li::before { content: "—"; position: absolute; left: 0; color: var(--accent); }
+  ul.tight li { margin-bottom: 8px; font-size: 21px; }
+  strong { color: #fff; }
+  em { color: var(--amber); font-style: normal; }
+  .muted { color: var(--muted); }
+  .punch {
+    margin-top: auto; padding-top: 18px; border-top: 1px solid var(--line);
+    font-size: 24px; color: var(--amber); font-weight: 600;
+  }
+  .cols { display: flex; gap: 48px; flex: 1; min-height: 0; }
+  .col { flex: 1; min-width: 0; }
+
+  /* ---------- code ---------- */
+  pre {
+    background: var(--code-bg); border: 1px solid var(--line); border-radius: 10px;
+    padding: 20px 24px; font-size: 17.5px; line-height: 1.52; overflow: hidden;
+  }
+  pre.small { font-size: 16px; }
+  .k { color: #f472b6; }            /* keyword */
+  .t { color: #7dd3fc; }            /* type */
+  .s { color: #bef264; }            /* string */
+  .c { color: #5b6b84; }            /* comment */
+  .f { color: #fbbf24; }            /* field / function name */
+
+  /* ---------- tables ---------- */
+  table { border-collapse: collapse; width: 100%; font-size: 20px; }
+  th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: 16px; text-transform: uppercase; letter-spacing: .06em; }
+  td { line-height: 1.4; vertical-align: top; }
+  td code { font-size: 17px; color: var(--blue); }
+
+  /* ---------- pills / chips ---------- */
+  .pill {
+    display: inline-block; padding: 3px 14px; border-radius: 999px;
+    font-size: 15px; font-weight: 600; vertical-align: middle; margin-left: 14px;
+  }
+  .pill.shipped { background: rgba(74,222,128,.14); color: var(--green); }
+  .pill.rfc     { background: rgba(96,165,250,.14); color: var(--blue); }
+  .pill.future  { background: rgba(251,191,36,.14); color: var(--amber); }
+  .pill.horizon { background: rgba(192,132,252,.14); color: var(--violet); }
+
+  /* before / after */
+  .ba { display: flex; gap: 34px; flex: 1; align-items: stretch; }
+  .ba-panel {
+    flex: 1; border-radius: 12px; padding: 22px 26px;
+    border: 1px solid var(--line); background: var(--chip-bg);
+    display: flex; flex-direction: column;
+  }
+  .ba-panel h3 { font-size: 20px; margin-bottom: 6px; }
+  .ba-panel .cap { font-size: 17px; color: var(--muted); margin-bottom: 18px; }
+  .vmod {
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 12px;
+    font-family: ui-monospace, Consolas, monospace; font-size: 16px;
+  }
+  .vmod b { display: block; font-size: 18px; margin-bottom: 6px; font-family: "Segoe UI", system-ui, sans-serif; }
+  .vmod span { color: var(--muted); font-size: 15px; display: block; line-height: 1.55; font-family: "Segoe UI", system-ui, sans-serif; }
+  .v1 { background: rgba(248,113,113,.08); border: 1px solid rgba(248,113,113,.35); }
+  .v1 b { color: var(--red); }
+  .v2 { background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.35); }
+  .v2 b { color: var(--amber); }
+  .v3 { background: rgba(96,165,250,.08); border: 1px solid rgba(96,165,250,.35); }
+  .v3 b { color: var(--blue); }
+
+  h4.colhead {
+    font-size: 15px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 14px; font-weight: 600;
+  }
+
+  /* admin UI mock */
+  .adminui {
+    border: 1px solid var(--line); background: var(--code-bg);
+    border-radius: 14px; overflow: hidden; max-width: 1020px;
+    margin: 4px auto 0; box-shadow: 0 22px 60px rgba(0,0,0,.4);
+  }
+  .adminui-bar {
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 20px; background: var(--chip-bg);
+    border-bottom: 1px solid var(--line);
+    font-size: 15px; color: var(--muted);
+  }
+  .adminui-bar .win { display: flex; gap: 6px; }
+  .adminui-bar .win i { width: 10px; height: 10px; border-radius: 50%; background: var(--faint); opacity: .45; display: block; }
+  .adminui table { font-size: 18px; }
+  .adminui th { font-size: 14px; padding: 10px 18px; }
+  .adminui td { padding: 11px 18px; vertical-align: middle; }
+  .adminui th:not(:first-child), .adminui td:not(:first-child) { text-align: center; width: 152px; }
+  .adminui tr:last-child td { border-bottom: 0; }
+  .capname b { display: block; font-size: 18px; color: var(--text); }
+  .capname span { font-size: 14px; color: var(--faint); }
+  .captype {
+    display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: 2px;
+  }
+  .captype.tool  { background: rgba(96,165,250,.14); color: var(--blue); }
+  .captype.agent { background: rgba(192,132,252,.14); color: var(--violet); }
+  .tgl {
+    display: inline-block; width: 44px; height: 24px; border-radius: 999px;
+    background: #222b3f; border: 1px solid var(--line); position: relative;
+  }
+  .tgl::after {
+    content: ""; position: absolute; top: 2px; left: 2px;
+    width: 18px; height: 18px; border-radius: 50%; background: var(--faint);
+  }
+  .tgl.on { background: rgba(45,212,191,.22); border-color: rgba(45,212,191,.6); }
+  .tgl.on::after { left: auto; right: 2px; background: var(--accent); }
+
+  /* divider slide */
+  .divider { justify-content: center; align-items: flex-start; }
+  .divider h1 { font-size: 54px; }
+
+  /* roadmap */
+  .road { display: flex; align-items: center; gap: 0; margin: 30px 0 34px; }
+  .road-step {
+    background: var(--chip-bg); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px 22px; flex: 1;
+  }
+  .road-step b { display: block; font-size: 21px; margin-bottom: 6px; }
+  .road-step span { color: var(--muted); font-size: 16.5px; line-height: 1.45; display: block; }
+  .road-arrow { font-size: 30px; color: var(--accent); padding: 0 14px; flex: 0 0 auto; }
+  .road-step.hot { border-color: rgba(45,212,191,.55); }
+  .road-step.hot b { color: var(--accent); }
+  .road-step.horizon { border-color: rgba(192,132,252,.5); }
+  .road-step.horizon b { color: var(--violet); }
+
+  @media print {
+    html, body { overflow: visible; background: #fff; }
+    .slide { position: relative; top: 0; left: 0; transform: none !important; opacity: 1; visibility: visible; page-break-after: always; margin: 0 auto; }
+    #progress, #counter, #navhint, .navbtn { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div id="counter"></div>
+<div id="navhint">← → to navigate</div>
+<button id="prevzone" class="navbtn" aria-label="previous slide"></button>
+<button id="nextzone" class="navbtn" aria-label="next slide"></button>
+
+<!-- ============ 1 · TITLE ============ -->
+<section class="slide">
+  <div style="margin: auto 0;">
+    <div class="kicker">Fred · Swift platform · Capabilities, for teams &amp; architects</div>
+    <h1>One Switch For Everything An Agent Can Do</h1>
+    <p class="sub" style="margin-top:22px; max-width: 920px;">
+      A tool. A whole agent. Soon, a packaged bundle of several agents plus their
+      supporting pieces. Different sizes, <strong>same abstraction</strong> — turned on
+      or off per team, the same way, enforced the same way.
+    </p>
+    <p class="muted" style="margin-top:60px; font-size:19px;">
+      Fred · July 2026 · verified against branch <code class="mono" style="color:var(--accent); font-size:17px;">consolidation-22-07</code><br>
+      Engineering detail: <code class="mono" style="color:var(--accent); font-size:17px;">docs/swift/rfc/AGENT-CAPABILITY-RFC.md</code>
+      and the CAPAB-01 team deck
+    </p>
+  </div>
+</section>
+
+<!-- ============ 2 · THE IDEA ============ -->
+<section class="slide">
+  <div class="kicker">The idea, in one line</div>
+  <h2>A capability is anything you can turn on for an agent.</h2>
+  <div style="border:1px solid rgba(45,212,191,.4); background:var(--accent-dim); border-radius:12px; padding:26px 32px; margin-bottom:30px;">
+    <p style="font-size:27px; line-height:1.5;">
+      A search tool. A document editor. A whole specialist agent. Eventually, a bundle
+      of several agents working together. <strong>It doesn't matter which</strong> —
+      granting one to a team is the same click, in the same place.
+    </p>
+  </div>
+  <ul>
+    <li>Every capability has a name, a description, and <strong>one switch</strong> a platform or team admin controls.</li>
+    <li>That switch is enforced the same way everywhere — the same permission check, whether it gates a tool or an entire agent.</li>
+    <li>This deck walks through what's shipped today, why the switch matters, and where the same idea is headed next.</li>
+  </ul>
+</section>
+
+<!-- ============ 3 · SHIPPED: TOOLS ============ -->
+<section class="slide">
+  <div class="kicker">Shipped today · 1 of 2</div>
+  <h2>Tools your agents can use — one switch each</h2>
+  <div class="vmod v1">
+    <b>Document access <span class="pill shipped">shipped</span></b>
+    <span>Semantic search over your team's document library (RAG) — the agent cites what's actually in your files, not what it remembers.</span>
+  </div>
+  <div class="vmod v2">
+    <b>Writable document <span class="pill shipped">shipped</span></b>
+    <span>Co-write a document with the agent in a side-by-side editor, and export it to Word or Markdown when it's ready.</span>
+  </div>
+  <div class="vmod v3">
+    <b>PowerPoint generator <span class="pill shipped">shipped</span></b>
+    <span>Upload your own template — the agent extracts the right values from the conversation and returns a finished deck.</span>
+  </div>
+  <p class="punch">Three very different features. One shape underneath: a capability with a name, a description, and a switch.</p>
+</section>
+
+<!-- ============ 4 · SHIPPED: AGENTS ============ -->
+<section class="slide">
+  <div class="kicker">Shipped today · 2 of 2 — the new part</div>
+  <h2 style="margin-bottom:14px;">Whole agents now live in the same catalog</h2>
+  <p class="sub" style="margin-bottom:16px; font-size:20px;">
+    Specialist agents — <strong>Mindmap</strong>, <strong>Document Comparison</strong>,
+    a SQL expert, a general assistant — now show up as entries in the
+    <strong>exact same capability catalog</strong> as the tools on the previous slide,
+    behind the <strong>exact same admin switch</strong>.
+  </p>
+  <div class="adminui">
+    <div class="adminui-bar">
+      <span class="win"><i></i><i></i><i></i></span>
+      Fred · Administration &rsaquo; <strong style="color:var(--text);">Capabilities</strong>
+    </div>
+    <table>
+      <tr><th>Capability</th><th>Team Alpha</th><th>Team Beta</th><th>Team Gamma</th></tr>
+      <tr>
+        <td class="capname"><b>Document access<span class="captype tool">tool</span></b><span>search &amp; cite the document library</span></td>
+        <td><span class="tgl on"></span></td>
+        <td><span class="tgl on"></span></td>
+        <td><span class="tgl"></span></td>
+      </tr>
+      <tr>
+        <td class="capname"><b>PowerPoint generator<span class="captype tool">tool</span></b><span>fill slide decks from a template</span></td>
+        <td><span class="tgl on"></span></td>
+        <td><span class="tgl"></span></td>
+        <td><span class="tgl"></span></td>
+      </tr>
+      <tr>
+        <td class="capname"><b>Mindmap<span class="captype agent">agent</span></b><span>visualize a transcript or document as a knowledge map</span></td>
+        <td><span class="tgl on"></span></td>
+        <td><span class="tgl on"></span></td>
+        <td><span class="tgl"></span></td>
+      </tr>
+      <tr>
+        <td class="capname"><b>SQL expert<span class="captype agent">agent</span></b><span>query structured/tabular data sources</span></td>
+        <td><span class="tgl"></span></td>
+        <td><span class="tgl on"></span></td>
+        <td><span class="tgl"></span></td>
+      </tr>
+    </table>
+  </div>
+  <p class="punch">Same screen, same switch, same permission model — whether the row is a tool or a whole agent.</p>
+</section>
+
+<!-- ============ 5 · WHY IT MATTERS ============ -->
+<section class="slide">
+  <div class="kicker">Why this matters</div>
+  <h2>The switch is the security boundary</h2>
+  <div class="cols">
+    <div class="col">
+      <h4 class="colhead">Flexibility</h4>
+      <ul class="tight">
+        <li>Give Finance the PowerPoint generator and Document access, nothing else.</li>
+        <li>Give the Platform team the SQL expert and Mindmap, not Finance's tools.</li>
+        <li>Composing a team's agent lineup is a handful of clicks in an admin screen — not a deployment, not a code change.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4 class="colhead">Security</h4>
+      <ul class="tight">
+        <li>Nothing is available to a team unless it was explicitly granted — enforced the same way (one permission check) whether it's a tool or a whole agent.</li>
+        <li>A capability a team was never granted isn't just hidden in the menu — it isn't reachable by that team's agents at all.</li>
+        <li>One model to audit, one model to reason about — not a different story for tools than for agents.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="punch">One lever, two payoffs: teams get exactly the surface they need — and nothing they don't.</p>
+</section>
+
+<!-- ============ 6 · NEXT HORIZON ============ -->
+<section class="slide">
+  <div class="kicker">Next horizon · a direction, not a shipped feature</div>
+  <h2 style="margin-bottom:14px;">A capability doesn't have to stop at one agent</h2>
+  <p class="sub" style="margin-bottom:20px; font-size:20px;">
+    Worked example: <strong>"Move to cloud"</strong> — packaged as one capability,
+    one switch, one thing a team turns on. Underneath, it's an assembly:
+  </p>
+  <div class="vmod v1">
+    <b>Five collaborating agents</b>
+    <span>discovery, cost estimation, migration planning, execution, validation — the kind of multi-agent crew the platform's agent-composition model already builds today.</span>
+  </div>
+  <div class="vmod v2">
+    <b>A processor</b>
+    <span>the background work behind the scenes — scanning inventory, running migration steps — the same kind of job a capability's own backend route already does for the PowerPoint generator.</span>
+  </div>
+  <div class="vmod v3">
+    <b>A UI</b>
+    <span>a dedicated panel for the whole workflow — the same side-panel slot a capability already gets today for its own view.</span>
+  </div>
+  <p class="punch">Nothing here is a new mechanism — an agent is already a capability; a capability already gets its own backend and its own panel. "Move to cloud" is what happens when we package those existing pieces as <strong style="color:var(--amber);">one switchable product</strong> instead of five separate things a team has to assemble by hand.</p>
+</section>
+
+<!-- ============ 7 · TAKEAWAY ============ -->
+<section class="slide">
+  <div style="margin:auto 0; width:100%;">
+    <div class="kicker">Take away</div>
+    <h2>Same idea, three sizes</h2>
+    <div class="road">
+      <div class="road-step">
+        <b>A tool</b>
+        <span>Document access, Writable document, PowerPoint generator — shipped</span>
+      </div>
+      <div class="road-arrow">→</div>
+      <div class="road-step hot">
+        <b>A whole agent</b>
+        <span>Mindmap, SQL expert, and others — now in the same catalog, same switch, shipped</span>
+      </div>
+      <div class="road-arrow">→</div>
+      <div class="road-step horizon">
+        <b>A packaged assembly</b>
+        <span>"Move to cloud" — several agents + a processor + a UI, as one switch — next horizon</span>
+      </div>
+    </div>
+    <p style="font-size:24px; line-height:1.5;">
+      Every size is the <strong>same underlying model</strong>: a capability, with a manifest
+      and a switch a team admin controls. That's what makes the next size — assemblies —
+      reachable without reinventing anything.
+    </p>
+    <p class="muted" style="margin-top:40px; font-size:19px;">
+      Engineering detail: <code class="mono" style="color:var(--accent); font-size:17px;">docs/swift/rfc/AGENT-CAPABILITY-RFC.md</code>
+      and the CAPAB-01 team presentation deck
+    </p>
+  </div>
+</section>
+
+<script>
+(function () {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const progress = document.getElementById('progress');
+  const counter = document.getElementById('counter');
+  let idx = 0;
+
+  const fromHash = parseInt(location.hash.slice(1), 10);
+  if (!isNaN(fromHash) && fromHash >= 1 && fromHash <= slides.length) idx = fromHash - 1;
+
+  function show(i) {
+    idx = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, j) => s.classList.toggle('active', j === idx));
+    progress.style.width = ((idx + 1) / slides.length * 100) + '%';
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+    history.replaceState(null, '', '#' + (idx + 1));
+  }
+
+  function fit() {
+    const scale = Math.min(window.innerWidth / 1320, window.innerHeight / 760);
+    slides.forEach(s => { s.style.transform = 'translate(-50%, -50%) scale(' + scale + ')'; });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(idx + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(idx - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); show(0); }
+    else if (e.key === 'End') { e.preventDefault(); show(slides.length - 1); }
+  });
+  document.getElementById('prevzone').addEventListener('click', () => show(idx - 1));
+  document.getElementById('nextzone').addEventListener('click', () => show(idx + 1));
+  window.addEventListener('resize', fit);
+
+  fit();
+  show(idx);
+})();
+</script>
+</body>
+</html>
