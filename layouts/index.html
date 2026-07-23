@@ -9,7 +9,10 @@
     </div>
     <div class="col-lg-9 col-xl-8 text-center">
       <p class="lead">{{ .Params.lead | safeHTML }}</p>
-      <a class="btn btn-primary btn-cta rounded-pill btn-lg my-3" href="/docs/getting-started.html" role="button">Get Started</a>
+      <div class="my-3">
+        <a class="btn btn-primary btn-cta rounded-pill btn-lg mx-1" href="/docs/getting-started.html" role="button">Get Started</a>
+        <a class="btn btn-outline-secondary rounded-pill btn-lg mx-1" href="/docs/what-is-fred.html" role="button">What is Fred?</a>
+      </div>
       {{ .Content }}
     </div>
   </div>

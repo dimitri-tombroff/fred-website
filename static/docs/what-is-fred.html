@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!-- Verified against the `fred` monorepo, branch consolidation-22-07, and this
+     site's own roadmap.md / capability slide deck research (2026-07-23). This
+     page is the non-technical companion to the homepage claim ("Governed.
+     Powerful. Composable.") — it exists to answer "what is this, really"
+     before a visitor commits to the developer-oriented Getting Started page.
+     No install steps, no code — that's what Getting Started is for. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — What is Fred?</title>
+  <meta name="description" content="A high-level answer to what Fred actually is: governed by a real role and audit model, powerful because of a Temporal-backed async engine, and composable down to individual tools and agents.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    212px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+      --govern: #6b3f92;  --power: #b8548f;  --compose: #3f6ec9;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+        --govern: #c6a3ea;  --power: #f0a9cf;  --compose: #9ec0f5;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    main { width: 100%; max-width: 900px; margin: 0 auto; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
+
+    .hd { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 1.1rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 620px; }
+
+    .claim { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.6rem 1rem; margin: 1.3rem 0 1.5rem; }
+    .claim span { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .claim .sep { color: var(--border); font-weight: 400; font-size: 1.6rem; }
+    .c-govern { color: var(--govern); }
+    .c-power { color: var(--power); }
+    .c-compose { color: var(--compose); }
+
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.6rem; }
+    h2 .dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; flex: 0 0 auto; }
+    h2.govern .dot { background: var(--govern); }
+    h2.power .dot { background: var(--power); }
+    h2.compose .dot { background: var(--compose); }
+    .pillar-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.1rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--border); max-width: 680px; }
+    p { font-size: 0.92rem; margin-bottom: 0.8rem; max-width: 680px; }
+    p strong { color: var(--text); font-weight: 650; }
+    ul { font-size: 0.92rem; margin: 0.4rem 0 0.8rem 1.2rem; max-width: 680px; }
+    li { margin-bottom: 0.5rem; }
+
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.86rem; color: var(--muted); margin: 0.9rem 0; max-width: 680px; }
+    .callout strong { color: var(--text); }
+
+    code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
+
+    .who-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin: 1rem 0; }
+    @media (max-width: 640px) { .who-grid { grid-template-columns: 1fr; } }
+    .who-card { border: 1px solid var(--border); border-radius: var(--rad); padding: 1rem 1.15rem; background: var(--bg2); }
+    .who-card b { display: block; font-size: 0.88rem; margin-bottom: 0.3rem; }
+    .who-card span { font-size: 0.83rem; color: var(--muted); }
+
+    .cta-row { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-top: 1.2rem; }
+    .cta { display: inline-block; padding: 0.6rem 1.3rem; border-radius: 999px; font-size: 0.88rem; font-weight: 650; text-decoration: none; }
+    .cta.primary { background: var(--text); color: var(--bg); }
+    .cta.ghost { border: 1px solid var(--border); color: var(--text); }
+
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-path { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+    a.inline { color: var(--c); text-decoration: none; font-weight: 600; }
+    a.inline:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">What is Fred?</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#governed">Governed</a></li>
+    <li><a href="#powerful">Powerful</a></li>
+    <li><a href="#composable">Composable</a></li>
+    <li><a href="#who">Who this is for</a></li>
+    <li><a href="#related">Go further</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">fredk8.dev / what is fred</div>
+    <h1>What is Fred?</h1>
+    <p class="hd-lead">
+      Fred is an open-source platform for building and operating AI agents that
+      work with your team's real data — in production, on Kubernetes, under
+      real operational and compliance constraints. The homepage puts it in
+      three words:
+    </p>
+    <div class="claim">
+      <span class="c-govern">Governed</span><span class="sep">·</span>
+      <span class="c-power">Powerful</span><span class="sep">·</span>
+      <span class="c-compose">Composable</span>
+    </div>
+    <p class="hd-lead">This page says what each of those actually means.</p>
+  </div>
+
+  <!-- ── Governed ───────────────────────────────────────── -->
+  <section id="governed">
+    <h2 class="govern"><span class="dot"></span>Governed</h2>
+    <p class="pillar-sub">Nobody in your organization gets more access than they were explicitly given — and every decision that grants access is provable after the fact.</p>
+    <p>
+      Fred separates <strong>who runs the platform</strong> from <strong>who uses it</strong>.
+      A Cloud Ops / Platform role manages the infrastructure Fred runs on. Separate,
+      per-team roles (Admin, Editor, Analyst, Member) govern what a business team can
+      do with Fred itself — configure agents, review usage, or just chat. Neither role
+      can silently expand into the other's territory.
+    </p>
+    <p>
+      Every one of those permissions is enforced by a real authorization engine
+      (ReBAC, via OpenFGA) — not a scattering of <code>if user.role == "admin"</code>
+      checks across the codebase. That matters because it means access decisions are
+      declared in one place, auditable, and consistent everywhere they're checked.
+    </p>
+    <p>
+      This extends down to the tool and agent level: nothing an agent can do —
+      no search tool, no document editor, no specialist agent — is available to a
+      team unless a platform or team admin explicitly turned it on for that team.
+      Every authorization boundary (a grant, a denial, a mismatch) is written to a
+      dedicated security audit trail, queryable in real time.
+    </p>
+    <div class="callout">
+      <strong>In practice:</strong> a team's Analyst role exists specifically so that
+      team can review how its own agents are being used, without needing
+      infrastructure-level monitoring access. Governance isn't just restriction —
+      it's giving each role the visibility it's responsible for.
+    </div>
+  </section>
+
+  <!-- ── Powerful ───────────────────────────────────────── -->
+  <section id="powerful">
+    <h2 class="power"><span class="dot"></span>Powerful</h2>
+    <p class="pillar-sub">Underneath the chat interface is a durable, fault-tolerant execution engine, not a script that happens to work in a demo.</p>
+    <p>
+      Every Fred service — document ingestion, agent evaluation, agent execution
+      itself — pairs a fast, synchronous API with a <strong>Temporal-backed
+      worker</strong> for the heavy, long-running work behind it. Uploading a document
+      doesn't block on OCR, chunking, and embedding happening inline; a durable
+      workflow does that work in the background and survives a crash mid-way through.
+    </p>
+    <p>
+      That same pattern extends to evaluation: Fred runs <strong>recurring evaluation
+      campaigns</strong> against your team's agents on a schedule, in production — not
+      a one-off test suite that only ran the day someone remembered to run it. If an
+      agent's behavior drifts, you find out from a scheduled check, not a support
+      ticket.
+    </p>
+    <p>
+      Conversations themselves stream over a standard HTTP connection directly
+      between the browser and the runtime pod running the agent — no broker in the
+      middle relaying every token, secured by the same per-request authorization
+      described above rather than a fragile session-affinity trick.
+    </p>
+    <div class="callout">
+      <strong>In practice:</strong> this is what lets ingestion, evaluation, and
+      execution keep working at real document volumes and real usage levels — the
+      kind of load a weekend prototype never has to survive.
+    </div>
+  </section>
+
+  <!-- ── Composable ─────────────────────────────────────── -->
+  <section id="composable">
+    <h2 class="compose"><span class="dot"></span>Composable</h2>
+    <p class="pillar-sub">A tool, a whole specialist agent, or eventually a packaged bundle of several agents — all the same kind of thing, added or removed with one switch.</p>
+    <p>
+      Everything an agent can do beyond its base instructions is a
+      <strong>capability</strong> — a self-contained module with a name, a description,
+      and an on/off switch a team admin controls. A document-search tool is a
+      capability. A PowerPoint generator is a capability. A specialist agent — a
+      SQL expert, a document-comparison agent — is <em>also</em> a capability, living
+      in the exact same catalog, toggled the exact same way.
+    </p>
+    <p>
+      That uniformity is what makes Fred extensible without forking it: a team ships
+      its own capability as an installable package, registers it, and it shows up
+      in the same admin screen as everything built-in — no platform release required
+      to add it, no platform release required to take it away.
+    </p>
+    <p>
+      Where this is heading: a capability doesn't have to stop at one tool or one
+      agent. A whole workflow — several collaborating agents, the background
+      processing behind them, and a dedicated UI — can be packaged and switched on
+      as <strong>one</strong> capability, the same way a single tool is today.
+    </p>
+    <div class="callout">
+      <strong>In practice:</strong> give Finance exactly the tools and agents it
+      needs and nothing else; give the Platform team a different set — composed in
+      an admin screen, not negotiated as a code change.
+    </div>
+  </section>
+
+  <!-- ── Who ────────────────────────────────────────────── -->
+  <section id="who">
+    <h2>Who this is for</h2>
+    <div class="who-grid">
+      <div class="who-card">
+        <b>Platform and development teams</b>
+        <span>building and operating AI agents in Python, on Kubernetes, without vendor lock-in.</span>
+      </div>
+      <div class="who-card">
+        <b>Infrastructure and security architects</b>
+        <span>evaluating agentic infrastructure where governance and auditability are selection criteria, not an afterthought.</span>
+      </div>
+      <div class="who-card">
+        <b>Product and business stakeholders</b>
+        <span>who need a foundation that works for early experimentation and holds up in long-term production.</span>
+      </div>
+      <div class="who-card">
+        <b>Regulated organizations</b>
+        <span>where data sovereignty, access control, and audit trails are non-negotiable requirements, not nice-to-haves.</span>
+      </div>
+    </div>
+    <div class="cta-row">
+      <a class="cta primary" href="getting-started.html">Get Started →</a>
+      <a class="cta ghost" href="architecture.html">Read the architecture</a>
+    </div>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Go further</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="getting-started.html">
+        <div class="ref-topic">Getting Started →</div>
+        <div class="ref-path">a running chat UI in a few minutes</div>
+      </a>
+      <a class="ref-card" href="architecture.html">
+        <div class="ref-topic">Platform Architecture →</div>
+        <div class="ref-path">what each component does, how they talk</div>
+      </a>
+      <a class="ref-card" href="/learn/">
+        <div class="ref-topic">About Fred →</div>
+        <div class="ref-path">the fuller case for Fred, design principles</div>
+      </a>
+      <a class="ref-card" href="https://github.com/ThalesGroup/fred">
+        <div class="ref-topic">Fred on GitHub →</div>
+        <div class="ref-path">source, full README, issues</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
