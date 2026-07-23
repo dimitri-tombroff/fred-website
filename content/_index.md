@@ -11,3 +11,12 @@ seo:
   canonical: "" # custom canonical URL (optional)
   robots: "" # custom robot tags (optional)
 ---
+
+<div class="fred-claim">
+  <span class="fred-claim-word is-govern">Governed</span>
+  <span class="fred-claim-rule"></span>
+  <span class="fred-claim-word is-power">Powerful</span>
+  <span class="fred-claim-rule"></span>
+  <span class="fred-claim-word is-compose">Composable</span>
+</div>
+<p class="fred-claim-sub">Your data and your AI — held to the rules that matter, running on real infrastructure, and shaped exactly the way your team needs it.</p>

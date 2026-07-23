@@ -56,3 +56,81 @@
     color: #a5b4fc;
   }
 }
+
+// Homepage claim: "Governed · Powerful · Composable"
+.fred-claim {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
+  margin: 2.75rem 0 1.75rem;
+}
+
+.fred-claim-word {
+  font-family: $headings-font-family;
+  font-weight: 700;
+  font-size: 2.6rem;
+  letter-spacing: -0.025em;
+  padding: 0 1.5rem;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.fred-claim-word.is-govern {
+  background-image: linear-gradient(95deg, #3d2159, #6b3f92);
+}
+
+.fred-claim-word.is-power {
+  background-image: linear-gradient(95deg, #7a2f6b, #b8548f);
+}
+
+.fred-claim-word.is-compose {
+  background-image: linear-gradient(95deg, #2f4a8f, #5a8fd6);
+}
+
+.fred-claim-rule {
+  width: 1px;
+  height: 2.25rem;
+  background-color: var(--bs-border-color);
+  flex: 0 0 auto;
+}
+
+.fred-claim-sub {
+  max-width: 34rem;
+  margin: 0 auto 1.5rem;
+  color: var(--bs-secondary-color);
+}
+
+[data-bs-theme="dark"] .fred-claim-word.is-govern,
+.dark .fred-claim-word.is-govern {
+  background-image: linear-gradient(95deg, #a980d6, #d6b6f0);
+}
+
+[data-bs-theme="dark"] .fred-claim-word.is-power,
+.dark .fred-claim-word.is-power {
+  background-image: linear-gradient(95deg, #e08fc0, #f5c8e0);
+}
+
+[data-bs-theme="dark"] .fred-claim-word.is-compose,
+.dark .fred-claim-word.is-compose {
+  background-image: linear-gradient(95deg, #8ab0ec, #c6dcfb);
+}
+
+@media (max-width: 575.98px) {
+  .fred-claim {
+    flex-direction: column;
+    row-gap: 0.15rem;
+  }
+
+  .fred-claim-word {
+    font-size: 1.9rem;
+    padding: 0.15rem 0;
+  }
+
+  .fred-claim-rule {
+    display: none;
+  }
+}
