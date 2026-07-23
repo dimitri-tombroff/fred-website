@@ -93,19 +93,24 @@
 # Each entry links to a standalone HTML topic page in static/docs/.
 # Add the most important feature / technology topics here.
 [[docs_highlights]]
-  name = "Erasure you can prove"
-  url = "/docs/erasure-you-can-prove.html"
+  name = "Platform Architecture"
+  url = "/docs/architecture.html"
   weight = 10
 
 [[docs_highlights]]
-  name = "Platform Architecture"
-  url = "/docs/architecture.html"
+  name = "Erasure you can prove"
+  url = "/docs/erasure-you-can-prove.html"
   weight = 20
 
 [[docs_highlights]]
   name = "Deploying on GCP / GKE"
   url = "/docs/deploy-gke.html"
   weight = 30
+
+[[docs_highlights]]
+  name = "Bootstrap, capabilities & teams"
+  url = "/docs/nothing-enabled-by-default.html"
+  weight = 35
 
 [[docs_highlights]]
   name = "Add your agent"
@@ -121,6 +126,11 @@
   name = "Policy-based LLM routing"
   url = "/docs/llm-routing.html"
   weight = 60
+
+[[docs_highlights]]
+  name = "Observability & KPIs"
+  url = "/docs/observability-and-kpis.html"
+  weight = 70
 
 # [[sidebar_docs]]
 #   name = "Guides"

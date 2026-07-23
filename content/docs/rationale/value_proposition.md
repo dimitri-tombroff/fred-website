@@ -75,6 +75,12 @@ This model keeps the platform team focused on reusable capabilities while allowi
 4. Let business teams configure and build domain assistants.
 5. Feed reusable improvements back into the platform.
 
+Each deployed instance starts the same way regardless of who runs it: zero admins and nothing
+enabled, until a one-shot, secret-gated bootstrap creates the first platform admin, who then
+deliberately turns on the tools and agent templates that instance is allowed to run before any
+team is created around them. See [Bootstrap, capabilities & teams](/docs/nothing-enabled-by-default.html)
+for the full sequence — it's the mechanism that makes step 3 safe for sovereign and air-gapped deployments.
+
 ## Why This Matters
 
 Without a platform-centered model, organizations often mix:
@@ -91,4 +97,5 @@ Fred helps establish this separation with an open, modular, and governance-ready
 - [Deployment Factory on GitHub](https://github.com/ThalesGroup/fred-deployment-factory)
 - [Architecture](/docs/architecture.html)
 - [Deploying on GCP / GKE](/docs/deploy-gke.html)
+- [Bootstrap, capabilities & teams](/docs/nothing-enabled-by-default.html)
 - [Security](/docs/reference/security/)
