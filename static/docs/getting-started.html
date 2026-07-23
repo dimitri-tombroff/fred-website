@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<!-- Verified against the `fred` monorepo, branch consolidation-22-07, by reading
+     README.md ("Getting started", "Start Fred components", "k3d Local Deployment")
+     and docs/swift/TESTING.md. This page covers the fast local-dev path (mocked
+     auth, SQLite/ChromaDB, no external infra) — not the full production/authz
+     validation walkthrough in TESTING.md, which is aimed at engineers verifying
+     a release candidate, not first-time visitors. 2026-07-23. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Getting Started</title>
+  <meta name="description" content="From a fresh clone to a running Fred chat UI in a few minutes — local dev mode needs no external infrastructure beyond an LLM API key.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    212px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    main { width: 100%; max-width: 900px; margin: 0 auto; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
+
+    .hd { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 620px; }
+
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+    h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    p { font-size: 0.9rem; margin-bottom: 0.7rem; max-width: 680px; }
+    p strong { color: var(--text); font-weight: 650; }
+    ol, ul { font-size: 0.9rem; margin: 0.4rem 0 0.7rem 1.2rem; max-width: 680px; }
+    ol li, ul li { margin-bottom: 0.5rem; }
+    .src { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.6rem; }
+
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 700px; }
+    .callout strong { color: var(--text); }
+    .callout.warn  { border-left-color: var(--s); }
+    .callout.info  { border-left-color: var(--c); }
+    .callout.ok    { border-left-color: var(--r); }
+
+    .tablewrap { overflow-x: auto; margin: 0.85rem 0; max-width: 100%; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.82rem; min-width: 420px; }
+    th, td { text-align: left; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; background: var(--bg2); }
+    td.k, th.k { font-family: var(--mono); font-size: 0.76rem; white-space: nowrap; }
+    tbody tr:hover { background: var(--bg2); }
+
+    code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
+    pre { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rad); padding: 0.9rem 1rem; margin: 0.85rem 0; overflow-x: auto; max-width: 700px; }
+    pre code { background: none; border: none; padding: 0; font-size: 0.78rem; line-height: 1.6; }
+
+    .steps { counter-reset: step; list-style: none; margin: 1rem 0; max-width: 700px; }
+    .steps > li { counter-increment: step; position: relative; padding-left: 2.6rem; margin-bottom: 1.6rem; }
+    .steps > li::before {
+      content: counter(step); position: absolute; left: 0; top: 0.05rem;
+      width: 1.8rem; height: 1.8rem; border-radius: 50%; background: var(--c-bg); color: var(--c);
+      font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; justify-content: center;
+    }
+    .steps h3 { margin: 0 0 0.4rem; }
+
+    .cols { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .path-card { flex: 1; min-width: 260px; border: 1px solid var(--border); border-radius: var(--rad); padding: 1.1rem 1.25rem; background: var(--bg2); }
+    .path-card.recommended { border-color: var(--r); }
+    .path-card h3 { margin-top: 0; display: flex; align-items: center; gap: 0.5rem; }
+    .path-badge { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.5rem; border-radius: 999px; background: var(--r-bg); color: var(--r); }
+    .path-card ul { margin-left: 1.1rem; }
+    .path-card li { font-size: 0.83rem; margin-bottom: 0.35rem; }
+
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-path { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+    a.inline { color: var(--c); text-decoration: none; font-weight: 600; }
+    a.inline:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Getting Started</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#running">What you'll have running</a></li>
+    <li><a href="#choose">Choose your setup</a></li>
+    <li><a href="#model">Point Fred at a model</a></li>
+    <li><a href="#run">Run it</a></li>
+    <li><a href="#prod">Closer to production</a></li>
+    <li><a href="#related">Related documents</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">docs / quickstart</div>
+    <h1>Getting Started</h1>
+    <p class="hd-lead">
+      From a fresh clone to a running chat UI in a few minutes. Local dev mode needs
+      no external infrastructure — no Keycloak, no Postgres, no OpenSearch — just
+      an LLM API key.
+    </p>
+  </div>
+
+  <!-- ── What's running ─────────────────────────────────── -->
+  <section id="running">
+    <h2>What you'll have running</h2>
+    <p>
+      Local dev mode starts four processes: <strong>control-plane-backend</strong> (teams,
+      sessions, agent enrollment), <strong>knowledge-flow-backend</strong> (document ingestion
+      and retrieval), <strong>fred-agents</strong> (the agent pod that actually runs
+      conversations), and the <strong>frontend</strong> (the chat UI you'll open in your
+      browser).
+    </p>
+    <p>
+      By default, all data — chat history, documents, embeddings, metrics — is stored
+      locally: <strong>SQLite</strong> for SQL/metadata, <strong>ChromaDB</strong> for
+      vectors. Authentication is mocked, so there's no identity provider to stand up first.
+    </p>
+    <div class="callout info">
+      This is the fast path for trying Fred and building agents, not a production
+      topology. For something closer to a real deployment — Keycloak, OpenFGA,
+      Postgres, OpenSearch, Temporal, all for real — see
+      <a class="inline" href="#prod">Closer to production</a> below.
+    </div>
+    <p class="src">Source: <code>README.md</code> "Getting started" and "How Fred is structured"</p>
+  </section>
+
+  <!-- ── Choose your setup ──────────────────────────────── -->
+  <section id="choose">
+    <h2>Choose your setup</h2>
+    <div class="cols">
+      <div class="path-card recommended">
+        <h3>Dev Container <span class="path-badge">recommended</span></h3>
+        <p style="font-size:0.85rem;">Everything pre-installed, in an isolated container. No local Python/Node version juggling.</p>
+        <ul>
+          <li>Docker / Docker Desktop</li>
+          <li>VS Code + the Dev Containers extension</li>
+          <li>Clone the repo, open in VS Code, <code style="font-size:0.78rem;">F1</code> → <em>Dev Containers: Reopen in Container</em></li>
+        </ul>
+        <p style="font-size:0.8rem; color:var(--muted);">Ports 8000, 8111, 8222, and 5173 are forwarded to your host automatically.</p>
+      </div>
+      <div class="path-card">
+        <h3>Native</h3>
+        <p style="font-size:0.85rem;">Everything installed directly on your machine. Unix-based OS only (Mac/Linux).</p>
+        <ul>
+          <li>Python 3.12.8 (via <code style="font-size:0.78rem;">pyenv</code>) + <code style="font-size:0.78rem;">python3-venv</code></li>
+          <li>Node.js 22.13.0 (via <code style="font-size:0.78rem;">nvm</code>)</li>
+          <li><code style="font-size:0.78rem;">make</code>, <code style="font-size:0.78rem;">yq</code>, SQLite ≥ 3.35</li>
+          <li>Pandoc + LibreOffice (document ingestion) · libmagic (file-type detection)</li>
+        </ul>
+      </div>
+    </div>
+    <p class="src">Source: <code>README.md</code> "Development environment setup" (Option 1 / Option 2)</p>
+  </section>
+
+  <!-- ── Model ──────────────────────────────────────────── -->
+  <section id="model">
+    <h2>Point Fred at a model</h2>
+    <p>
+      Out of the box, Fred is configured for <strong>OpenAI's public API</strong> —
+      <code>gpt-4o</code> for the agent pod, <code>gpt-4o-mini</code> chat +
+      <code>text-embedding-3-large</code> embeddings for knowledge-flow. If that's what
+      you're using, all you need is your key. <strong>Ollama</strong> (local/shared open
+      models) and <strong>Azure OpenAI</strong> are also supported — swapping provider means
+      editing a couple of fields in each backend's <code>configuration.yaml</code>, detailed
+      in the README.
+    </p>
+    <div class="callout warn">
+      Whichever provider you pick, the API key goes in <code>.env</code>, never in
+      <code>configuration.yaml</code> — that file is committed, <code>.env</code> is not.
+    </div>
+    <p class="src">Source: <code>README.md</code> "Model configuration"</p>
+  </section>
+
+  <!-- ── Run it ─────────────────────────────────────────── -->
+  <section id="run">
+    <h2>Run it</h2>
+    <ol class="steps">
+      <li>
+        <h3>Copy the environment templates</h3>
+        <pre><code>cp apps/fred-agents/config/.env.template apps/fred-agents/config/.env
+cp apps/knowledge-flow-backend/config/.env.template apps/knowledge-flow-backend/config/.env
+cp apps/control-plane-backend/config/.env.template apps/control-plane-backend/config/.env</code></pre>
+        <p>Then edit each one to add your <code>OPENAI_API_KEY</code> (or your chosen provider's key).</p>
+      </li>
+      <li>
+        <h3>Start everything</h3>
+        <pre><code># default — single process, everything in one place
+make run
+
+# or: split into separate API processes on their own ports
+make run-multi</code></pre>
+      </li>
+      <li>
+        <h3>Open the UI</h3>
+        <p>Head to <code>http://localhost:5173</code> — that's it.</p>
+      </li>
+    </ol>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Component</th><th class="k">Port</th></tr></thead>
+        <tbody>
+          <tr><td class="k">frontend</td><td class="k">5173</td></tr>
+          <tr><td class="k">fred-agents (agent pod)</td><td class="k">8000</td></tr>
+          <tr><td class="k">knowledge-flow-backend</td><td class="k">8111</td></tr>
+          <tr><td class="k">control-plane-backend</td><td class="k">8222</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="src">Source: <code>README.md</code> "Start Fred components", "Head for the Fred UI!"</p>
+  </section>
+
+  <!-- ── Prod ───────────────────────────────────────────── -->
+  <section id="prod">
+    <h2>Closer to production</h2>
+    <p>
+      When you're ready to see Fred run the way it actually deploys — Keycloak, OpenFGA,
+      Postgres, OpenSearch, and Temporal, all real — the README's
+      <a class="inline" href="https://github.com/ThalesGroup/fred#k3d-local-deployment">k3d Local Deployment</a>
+      section walks through a local Kubernetes cluster via Helm, using the backing
+      services from <a class="inline" href="https://github.com/ThalesGroup/fred-deployment-factory">fred-deployment-factory</a>.
+      One command builds, imports, and deploys: <code>make k3d-deploy</code>.
+    </p>
+    <p class="src">Source: <code>README.md</code> "k3d Local Deployment"</p>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Related documents</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="architecture.html">
+        <div class="ref-topic">Platform Architecture →</div>
+        <div class="ref-path">what each component does, how they talk</div>
+      </a>
+      <a class="ref-card" href="add-your-agent.html">
+        <div class="ref-topic">Add your agent →</div>
+        <div class="ref-path">write an agent against fred-sdk</div>
+      </a>
+      <a class="ref-card" href="deploy-gke.html">
+        <div class="ref-topic">Deploying on GCP / GKE →</div>
+        <div class="ref-path">the reference production deployment</div>
+      </a>
+      <a class="ref-card" href="https://github.com/ThalesGroup/fred">
+        <div class="ref-topic">Fred on GitHub →</div>
+        <div class="ref-path">source, full README, issues</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

@@ -41,15 +41,13 @@ Fred was built to address these challenges as a platform, not as a collection of
 
 ## Architecture Overview
 
-Fred is composed of three independently deployable components, each with a well-defined API surface.
+Fred is built around three platform applications, an independently deployable agent pod, and a publishable SDK stack — each with a well-defined API surface.
 
-**Agentic Backend** orchestrates AI agents, manages user sessions, routes requests to the appropriate model, and handles tool invocation. Agent logic is expressed as explicit, testable state machines using LangGraph. Tools — whether built-in, MCP-based, or custom — are typed and auditable.
+**Control Plane** owns teams, sessions, agent enrollment, permissions, and product/admin APIs — the platform's sole authority for who can do what, and which agents are reachable. **Knowledge Flow** manages the complete document lifecycle: ingestion, format conversion, OCR, vectorization, metadata enrichment, and semantic retrieval. The **frontend** provides a production-ready chat interface with SSE streaming, source citations, document libraries, and agent/team management — a functional starting point, not a demo.
 
-**Knowledge Flow Backend** manages the complete document lifecycle: ingestion, format conversion, OCR, vectorization, metadata enrichment, and semantic retrieval. It supports heterogeneous document corpora at scale and is designed to be extended with custom processing pipelines.
+Agent execution itself lives outside the platform core: **fred-agents** is Fred's first-party agent pod, built on **`fred-sdk`** (the typed agent-authoring contract — ReAct and graph agents, tools, human-in-the-loop) and **`fred-runtime`** (the pod factory — FastAPI, SSE streaming, checkpointing). Any team can ship its own agent pod the same way, register it with the control plane, and run it independently without forking the platform.
 
-**React Frontend** provides a production-ready interface for end users and administrators: session history, inline source citations, document libraries, and configuration panels. It is a functional starting point, not a demo.
-
-All three components run as containerized services on Kubernetes. Temporal handles durable, fault-tolerant workflow execution. Standard observability integrations (metrics, logs, traces) are included by design.
+All components run as containerized services on Kubernetes. Temporal handles durable, fault-tolerant workflow execution for ingestion and other long-running work. Standard observability integrations (metrics, logs, traces) are included by design.
 
 ---
 
@@ -83,7 +81,7 @@ Fred is built around a small number of consistent principles that distinguish it
 
 ## Go further
 
-- [Getting started](/docs/quickstart/getting-started/) — deploy Fred locally in minutes
+- [Getting started](/docs/getting-started.html) — deploy Fred locally in minutes
 - [Configuration guide](/guides/configuration/ingestion-profiles/) — tune ingestion profiles for your documents
 - [Architecture](/docs/architecture.html) — understand how the platform components fit together
 - [Fred on GitHub](https://github.com/ThalesGroup/fred) — source code, issues, and contributions
