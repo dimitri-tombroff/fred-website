@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- verified against fred monorepo branch consolidation-22-07; WeatherAgent example corrected 2026-07-23 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -230,20 +231,22 @@
     <h2>Author with fred-sdk</h2>
     <p>
       Install the SDK (Python 3.12) and write an agent. A ReAct agent is a class with an id, a role,
-      a description, a system prompt, and one or more <code>@tool</code> methods:
+      a description, a system prompt, and one or more <code>@tool</code>-decorated functions
+      collected in a <code>tools = (...)</code> tuple:
     </p>
     <pre><code>pip install "fred-runtime[app]" fred-sdk</code></pre>
     <pre><code>from fred_sdk import ReActAgent, tool, ToolContext, ToolOutput
+
+@tool("weather.get_weather", description="Get current weather for a city")
+async def get_weather(ctx: ToolContext, city: str) -> ToolOutput:
+    return ctx.text(f"It is sunny in {city}.")
 
 class WeatherAgent(ReActAgent):
     agent_id = "my.weather.agent"
     role = "Weather assistant"
     description = "Answers weather questions using the get_weather tool."
     system_prompt_template = "You are a helpful weather assistant."
-
-    @tool("Get current weather for a city")
-    async def get_weather(self, city: str, ctx: ToolContext) -> ToolOutput:
-        return ToolOutput.text(f"It is sunny in {city}.")
+    tools = (get_weather,)
 
 WEATHER_AGENT = WeatherAgent()</code></pre>
     <p>
@@ -387,6 +390,10 @@ platform:
       <a class="ref-card" href="deploy-gke.html">
         <div class="ref-topic">Deploying on GCP / GKE →</div>
         <div class="ref-path">run the platform &amp; your pod</div>
+      </a>
+      <a class="ref-card" href="nothing-enabled-by-default.html">
+        <div class="ref-topic">Bootstrap, capabilities &amp; teams →</div>
+        <div class="ref-path">how a template gets admitted &amp; enabled</div>
       </a>
       <a class="ref-card" href="https://github.com/fred-agent/fred-samples">
         <div class="ref-topic">fred-samples →</div>

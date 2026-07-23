@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<!-- Verified against fred monorepo branch consolidation-22-07, corrected 2026-07-23:
+     the "capabilities" section previously claimed no capability is ever
+     default-on as a build-time invariant. That invariant is real but only
+     covers the static MCP tool catalog (test_capability_team_scope_policy.py).
+     The in-code fred_runtime capability `document_access` sets
+     team_scope=TeamScopePolicy.DEFAULT_ON and is auto-granted platform-wide
+     via the control-plane's default `capabilities.default_policy: "seed"`
+     (config/models.py, capabilities/seeding.py). Corrected to state this as a
+     known, deliberate exception the guard test does not cover. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Bootstrap, capabilities &amp; teams</title>
+  <meta name="description" content="How a fresh Fred deployment goes from zero admins to a running platform: a one-shot secret-gated bootstrap, deliberate capability enablement, and admin-first team creation. No vendor-chosen default surface.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    212px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    main { width: 100%; max-width: 900px; margin: 0 auto; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
+
+    .hd { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 580px; }
+
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+    h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    p { font-size: 0.9rem; margin-bottom: 0.7rem; max-width: 680px; }
+    p strong { color: var(--text); font-weight: 650; }
+    ol, ul { font-size: 0.9rem; margin: 0.4rem 0 0.7rem 1.2rem; max-width: 680px; }
+    ol li, ul li { margin-bottom: 0.4rem; }
+    .src { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.6rem; }
+
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 700px; }
+    .callout strong { color: var(--text); }
+    .callout.warn  { border-left-color: var(--s); }
+    .callout.info  { border-left-color: var(--c); }
+    .callout.ok    { border-left-color: var(--r); }
+
+    .tablewrap { overflow-x: auto; margin: 0.85rem 0; max-width: 100%; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.82rem; min-width: 460px; }
+    th, td { text-align: left; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; background: var(--bg2); }
+    td.k, th.k { font-family: var(--mono); font-size: 0.76rem; white-space: nowrap; }
+    tbody tr:hover { background: var(--bg2); }
+
+    code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
+    pre { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rad); padding: 0.9rem 1rem; margin: 0.85rem 0; overflow-x: auto; max-width: 700px; }
+    pre code { background: none; border: none; padding: 0; font-size: 0.78rem; line-height: 1.6; }
+
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-path { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+    a.inline { color: var(--c); text-decoration: none; font-weight: 600; }
+    a.inline:hover { text-decoration: underline; }
+
+    .steps { counter-reset: step; list-style: none; margin: 1rem 0 1.5rem; padding: 0; max-width: 700px; }
+    .steps li { counter-increment: step; position: relative; padding: 0 0 1.1rem 2.4rem; font-size: 0.88rem; }
+    .steps li::before { content: counter(step); position: absolute; left: 0; top: -0.05rem; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--c-bg); color: var(--c); font-weight: 700; font-size: 0.78rem; display: flex; align-items: center; justify-content: center; }
+    .steps li strong { display: block; color: var(--text); margin-bottom: 0.15rem; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Bootstrap, capabilities &amp; teams</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#happy-path">The shortest path</a></li>
+    <li><a href="#zero">Install with nothing enabled</a></li>
+    <li><a href="#bootstrap">The one-shot bootstrap</a></li>
+    <li><a href="#capabilities">Turning on what's allowed</a></li>
+    <li><a href="#teams">Teams are created admin-first</a></li>
+    <li><a href="#scoped">Users see only what their team was granted</a></li>
+    <li><a href="#why">Why this is the sovereignty story</a></li>
+    <li><a href="#related">Related documents</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">docs / onboarding</div>
+    <h1>Bootstrap, capabilities &amp; teams</h1>
+    <p class="hd-lead">
+      A fresh Fred deployment starts with zero admins and zero enabled tools or agents. Nothing
+      is on by default — every capability a team ends up with is a deliberate, auditable decision
+      by whoever holds the one secret that starts the platform.
+    </p>
+  </div>
+
+  <!-- ── Happy path ─────────────────────────────────────── -->
+  <section id="happy-path">
+    <h2>The shortest path</h2>
+    <p>Four steps get you from a fresh install to a working, team-scoped chat experience:</p>
+    <ol class="steps">
+      <li><strong>Bootstrap yourself as the first platform admin.</strong> One call, gated on your login and the deployment's bootstrap secret. Works exactly once.</li>
+      <li><strong>Enable the tools and agent templates this deployment may run.</strong> Nothing is available platform-wide until you say so.</li>
+      <li><strong>Create a team, naming its first admin(s) in the same call.</strong> No team ever exists without an owner.</li>
+      <li><strong>Grant that team a subset of what you enabled.</strong> Its members see exactly that, and nothing else.</li>
+    </ol>
+    <div class="callout info">
+      This is live, implemented behavior today — not a roadmap item. The sections below walk
+      through why each step is gated the way it is.
+    </div>
+  </section>
+
+  <!-- ── Zero admins ────────────────────────────────────── -->
+  <section id="zero">
+    <h2>Install with nothing enabled</h2>
+    <p>
+      A newly deployed Fred platform has <strong>no <code>platform_admin</code>, no enabled tool,
+      and no enabled agent template</strong>. There is no default account to log into, no vendor
+      preset to review and strip down, and no starter kit of tools quietly switched on. Every
+      authenticated user can reach the platform, but there is nothing yet for them to use.
+    </p>
+    <p>
+      This is a deliberate inversion of the usual SaaS posture, where a new tenant ships with a
+      broad default surface and the operator's job is to opt out of what they don't want. Here,
+      the operator opts <em>in</em>, one capability at a time — the natural fit for an
+      on-premise, air-gapped, or classified deployment where "what could this platform possibly
+      do" needs to have a short, exact answer.
+    </p>
+  </section>
+
+  <!-- ── Bootstrap ──────────────────────────────────────── -->
+  <section id="bootstrap">
+    <h2>The one-shot bootstrap</h2>
+    <p>
+      The first <code>platform_admin</code> is created by a single self-promotion call, gated on
+      <strong>two independent proofs</strong> — a real authenticated identity (a valid login) and
+      a deploy-time secret that Fred never generates or logs itself. In production that secret
+      comes from the deployment's normal Kubernetes secrets pipeline; for local development it's a
+      file created on demand. Neither proof alone is enough.
+    </p>
+    <pre><code>POST /bootstrap/platform-admin
+{ "token": "&lt;deploy-time secret&gt;" }
+
+→ grants platform_admin to the caller's own identity — never a third party</code></pre>
+    <p>
+      The call always targets the caller's <em>own</em> identity — there's no field to name someone
+      else, so it can't be used to plant an admin account for a person who isn't the one holding
+      the secret and doing the bootstrapping. And it's genuinely one-shot: once any platform admin
+      has ever been bootstrapped this way, the endpoint refuses permanently. There's no standing
+      default-admin account left behind to rotate or forget about, and no route back in once it's
+      done except through a separate, deliberate recovery procedure.
+    </p>
+    <p>
+      The resulting <code>platform_admin</code> carries <strong>no team relation of any kind</strong> —
+      being able to bootstrap the platform doesn't grant access to any team's data, conversations,
+      or content. That access, if any, is a separate and explicit decision (see below).
+    </p>
+    <p class="src">Source: fred docs <code>docs/swift/platform/REBAC.md</code> — "Team bootstrap" · control-plane <code>bootstrap/api.py</code></p>
+  </section>
+
+  <!-- ── Capabilities ───────────────────────────────────── -->
+  <section id="capabilities">
+    <h2>Turning on what's allowed</h2>
+    <p>
+      Once bootstrapped, the platform admin decides what this deployment is allowed to run.
+      "Capability" covers two kinds of thing through the exact same mechanism: an individual tool
+      (an MCP-style integration) and a whole agent template. Enabling a template doesn't
+      side-step the tool-level decision — a template is admitted through the identical
+      admin-only enable/disable action as a single tool, not a separate, looser path.
+    </p>
+    <p>Enablement has a scope, most-specific wins:</p>
+    <ul>
+      <li><strong>Per team</strong> — grant or revoke a specific tool or template for one team.</li>
+      <li><strong>Platform-wide default</strong> — mark a capability as available to every team without a per-team grant, for the rare case where a capability author intended that.</li>
+      <li><strong>Personal spaces</strong> — a single toggle that applies to every individual's personal workspace at once.</li>
+    </ul>
+    <div class="callout ok">
+      <strong>This deployment's policy is to reject the platform-wide-default option.</strong> The
+      MCP tool catalog — every third-party and internal tool a deployment can wire in — is guarded
+      by a scan test: no server may declare <code>team_scope: default_on</code> without a
+      security-reviewed waiver, and today that waiver list is empty. So for the tool catalog, the
+      "no default-on surface" claim is a checked invariant, not just a convention.
+    </div>
+    <div class="callout warn">
+      <strong>One built-in capability is a deliberate exception to that policy:</strong>
+      <code>document_access</code> (the baseline RAG/document-search capability shipped in
+      <code>fred_runtime</code>, not the MCP catalog) declares
+      <code>team_scope=TeamScopePolicy.DEFAULT_ON</code> in its own manifest — "baseline document
+      access should work without a per-team admin gate." With the control-plane's default
+      <code>capabilities.default_policy: "seed"</code>, that seed is honored automatically: the
+      first time <code>document_access</code> registers, it is granted platform-wide to every
+      team, no admin action required. An admin can flip <code>default_policy</code> to
+      <code>"explicit"</code> deployment-wide to suppress all such seeds, or revoke the grant
+      afterwards — but out of the box, this one capability <em>is</em> on by default. The scan test
+      above only reads the static MCP catalog YAML; it does not — and by design cannot — see
+      in-code <code>fred_runtime</code> manifests like this one, so <code>document_access</code>
+      is not something that guard catches or prevents.
+    </div>
+    <p>
+      Team admins and editors have no say in any of this — enabling a capability for their team
+      (or overriding <code>document_access</code>'s default grant) is exclusively a platform-admin
+      action. What a team's own roles control is what that team <em>does</em> with what's already
+      been granted to it: configuring it, using it, building agent instances from an enabled
+      template.
+    </p>
+    <p class="src">Source: fred docs <code>docs/swift/rfc/AGENT-CAPABILITY-RFC.md</code> §8 · control-plane <code>capabilities/api.py</code>, <code>config/models.py</code> (<code>CapabilitiesConfig.default_policy</code>), <code>capabilities/seeding.py</code> · runtime <code>fred_runtime/capabilities/document_access/capability.py</code> · guard test <code>apps/fred-agents/tests/test_capability_team_scope_policy.py</code></p>
+  </section>
+
+  <!-- ── Teams ──────────────────────────────────────────── -->
+  <section id="teams">
+    <h2>Teams are created admin-first</h2>
+    <p>
+      Team creation is a separate one-shot, platform-admin-gated action: it names the team's
+      first admin(s) in the same call that creates it.
+    </p>
+    <pre><code>POST /teams
+{ "name": "finance", "initial_team_admin_ids": ["alice"] }
+
+→ creates the team and its first team_admin(s) — nothing else</code></pre>
+    <p>
+      There is no path to a team that exists with zero admins, and no post-install script left to
+      guess at ownership. The platform admin who creates a team gets no access to it themselves
+      unless they explicitly name their own account in that same call — an explicit, visible,
+      revocable choice, never an implicit side effect of being able to create teams at all.
+    </p>
+  </section>
+
+  <!-- ── Scoped ─────────────────────────────────────────── -->
+  <section id="scoped">
+    <h2>Users see only what their team was granted</h2>
+    <p>
+      From here it's ordinary team-role administration: a team admin brings in members and assigns
+      them roles, and each member's chat experience is scoped to the subset of platform-enabled
+      capabilities their team was actually granted. A capability the platform admin never enabled
+      doesn't exist for anyone. A capability enabled platform-wide but never granted to a specific
+      team doesn't appear for that team either. The full relation model behind this — how a
+      person's team roles resolve into what they can read, update, or run — is covered in
+      <a class="inline" href="access-model.html">Access model</a>.
+    </p>
+  </section>
+
+  <!-- ── Why ────────────────────────────────────────────── -->
+  <section id="why">
+    <h2>Why this is the sovereignty story</h2>
+    <p>
+      Every enabled capability in a Fred deployment traces back to one auditable decision, made by
+      whoever held the bootstrap secret at install time and every platform admin they've since
+      trusted. Nothing is enabled because a vendor shipped it that way. Nothing is enabled because
+      a default was never reviewed. For an on-premise, air-gapped, or otherwise sovereignty-sensitive
+      deployment, that turns "what can this platform possibly do" from a question you answer by
+      auditing a vendor's defaults into a question you answer by reading your own admin's grant
+      history — and it means revoking a capability is the same one auditable action as granting it.
+    </p>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Related documents</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="access-model.html">
+        <div class="ref-topic">Access model →</div>
+        <div class="ref-path">the ReBAC relations behind team scoping</div>
+      </a>
+      <a class="ref-card" href="add-your-agent.html">
+        <div class="ref-topic">Add your agent →</div>
+        <div class="ref-path">authoring a template that gets enabled</div>
+      </a>
+      <a class="ref-card" href="deploy-gke.html">
+        <div class="ref-topic">Deploying on GCP / GKE →</div>
+        <div class="ref-path">the secrets pipeline the bootstrap token comes from</div>
+      </a>
+      <a class="ref-card" href="observability-and-kpis.html">
+        <div class="ref-topic">Observability &amp; KPIs →</div>
+        <div class="ref-path">what a platform admin's actions look like operationally</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

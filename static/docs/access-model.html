@@ -1,3 +1,16 @@
+<!--
+  Verified against fred monorepo (ThalesGroup/fred), branch consolidation-22-07.
+  Corrected 2026-07-23 for AUTHZ-05 role-model drift. Checked:
+  libs/fred-core/fred_core/security/rebac/schema.fga,
+  libs/fred-core/fred_core/security/structure.py,
+  libs/fred-core/fred_core/security/models.py,
+  docs/swift/platform/REBAC.md, docs/swift/platform/FRONTEND-AUTHZ-PATTERN.md.
+  permission_catalog.py / ROLE_CAPABILITIES no longer exist (zero hits in the
+  main tree); organization roles are platform_admin/platform_observer; team
+  roles are team_admin/team_editor/team_analyst/team_member (team_admin and
+  team_editor are orthogonal, not hierarchical); KeycloakUser has no `groups`
+  field; the `neo4j` resource was removed with the knowledge-graph feature.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,7 +119,7 @@
     <li><a href="#model">Authorization in one line</a></li>
     <li><a href="#identity">Identity &amp; claims</a></li>
     <li><a href="#rebac">ReBAC — the enforcement model</a></li>
-    <li><a href="#catalog">The RBAC display catalog</a></li>
+    <li><a href="#catalog">Frontend capability flags</a></li>
     <li><a href="#enforcement">Endpoint enforcement</a></li>
     <li><a href="#execution">Execution authorization</a></li>
     <li><a href="#noop">ReBAC-disabled mode</a></li>
@@ -136,12 +149,12 @@
       the tag hierarchy).
     </p>
     <div class="callout warn">
-      <strong>Roles are not the enforcement layer.</strong> The RBAC roles and resource matrix further
-      down are a <strong>display-only catalog</strong>: the frontend uses them to gate which menus and
-      buttons a user sees. They are never used to allow or deny an operation on the server — that is
-      done exclusively by a ReBAC check. (The former RBAC enforcement path was removed under AUTHZ-01.)
+      <strong>Roles are not the enforcement layer.</strong> The capability flags further down are
+      <strong>display-only</strong>: the frontend uses them to gate which menus and buttons a user
+      sees. They are never used to allow or deny an operation on the server — that is done
+      exclusively by a ReBAC check. (The former RBAC enforcement path was removed under AUTHZ-01.)
     </div>
-    <p class="src">Source: fred-core <code>security/authorization.py</code> · <code>security/permission_catalog.py</code></p>
+    <p class="src">Source: fred-core <code>security/authorization.py</code> · <code>security/rebac/schema.fga</code></p>
   </section>
 
   <!-- ── Identity ───────────────────────────────────────── -->
@@ -155,11 +168,17 @@
           <tr><td class="k">sub</td><td class="k">uid</td><td>Stable user identity key</td></tr>
           <tr><td class="k">preferred_username</td><td class="k">username</td><td>Display and tracing</td></tr>
           <tr><td class="k">email</td><td class="k">email</td><td>User profile</td></tr>
-          <tr><td class="k">resource_access[client].roles</td><td class="k">roles</td><td>Role labels — feed the display catalog</td></tr>
-          <tr><td class="k">groups</td><td class="k">groups</td><td>Team membership — drives ReBAC relations</td></tr>
+          <tr><td class="k">resource_access[client].roles</td><td class="k">roles</td><td>Identity marker only — used to recognize <code>service_agent</code> (the evaluation worker); org/team roles are never derived from this claim</td></tr>
         </tbody>
       </table>
     </div>
+    <p>
+      There is no <code>groups</code> claim on <code>KeycloakUser</code>. Team membership is not
+      derived from the JWT at all — <code>platform_admin</code>/<code>platform_observer</code> and
+      <code>team_admin</code>/<code>team_editor</code>/<code>team_analyst</code>/<code>team_member</code>
+      are stored OpenFGA relations, granted through the bootstrap endpoint or an explicit admin
+      action (see <a class="inline" href="#rebac">ReBAC</a> below).
+    </p>
     <p class="src">Source: fred-core <code>security/oidc.py</code> (<code>decode_jwt</code>) · <code>security/structure.py</code> (<code>KeycloakUser</code>)</p>
   </section>
 
@@ -172,29 +191,52 @@
     </p>
 
     <h3>Organization</h3>
-    <p>Relations: <code>admin</code>, <code>editor</code> (= <code>[user] or admin</code>), <code>viewer</code> (= <code>[user] or editor</code>). Keycloak roles map onto these three. Global capabilities are organization permissions:</p>
+    <p>Relations: <code>platform_admin</code>, <code>platform_observer</code> (= <code>[user] or platform_admin</code>).
+    Both are stored tuples only — granted through the one-time root bootstrap (<code>POST
+    /bootstrap/platform-admin</code>) or an explicit admin action — <strong>never derived from a
+    Keycloak role or group</strong>. Global capabilities are organization permissions:</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th class="k">Permission</th><th class="k">Granted to</th></tr></thead>
         <tbody>
-          <tr><td class="k">can_create_team</td><td class="k">admin</td></tr>
-          <tr><td class="k">can_create_agent</td><td class="k">editor</td></tr>
-          <tr><td class="k">can_edit_agent_class_path</td><td class="k">admin</td></tr>
-          <tr><td class="k">can_manage_platform · can_administer_users · can_run_benchmark</td><td class="k">admin</td></tr>
-          <tr><td class="k">can_read_kpi_global</td><td class="k">admin</td></tr>
-          <tr><td class="k">can_read_kpi · can_read_logs · can_read_metrics</td><td class="k">viewer</td></tr>
-          <tr><td class="k">can_read_opensearch · can_read_knowledge_graph · can_read_content</td><td class="k">viewer</td></tr>
-          <tr><td class="k">can_process_content</td><td class="k">editor</td></tr>
+          <tr><td class="k">can_create_team · can_list_all_teams · can_delete_team · can_rescue_team_admin</td><td class="k">platform_admin</td></tr>
+          <tr><td class="k">can_edit_agent_class_path</td><td class="k">platform_admin</td></tr>
+          <tr><td class="k">can_manage_platform · can_administer_users · can_run_benchmark</td><td class="k">platform_admin</td></tr>
+          <tr><td class="k">can_observe_platform</td><td class="k">platform_observer</td></tr>
         </tbody>
       </table>
     </div>
+    <div class="callout info">
+      AUTHZ-05 removed the legacy Keycloak <code>admin</code>/<code>editor</code>/<code>viewer</code> bridge
+      and the "any connected user" organization tier (<code>can_create_agent</code>,
+      <code>can_read_kpi</code>, <code>can_read_logs</code>, <code>can_read_metrics</code>,
+      <code>can_read_opensearch</code>, <code>can_read_content</code>, <code>can_process_content</code>)
+      outright — those call sites now rely on authentication alone, not an organization-level ReBAC
+      check. A separate <code>can_read_kpi_global</code> was also retired as a duplicate of
+      <code>can_observe_platform</code>.
+    </div>
 
     <h3>Team</h3>
-    <p>Relations form an owner → manager → member hierarchy, plus an optional <code>public</code> marker:</p>
+    <p><code>team_admin</code> and <code>team_editor</code> are <strong>orthogonal, not hierarchical</strong>:
+    <code>team_admin</code> has full governance authority (membership, roles) and no agent/prompt
+    authority by default; <code>team_editor</code> is the reverse. <code>team_analyst</code> is a separate,
+    narrower role for evaluation work. A <code>public</code> marker grants read-only team-info
+    visibility to anyone, never data/agent/conversation access.</p>
     <ul>
-      <li><code>owner</code> = <code>[user] or admin from organization</code>; <code>manager</code> = <code>[user] or owner</code>; <code>member</code> = <code>[user] or manager</code>; <code>public</code> = <code>[user:*]</code>.</li>
-      <li><code>can_read</code> = <code>member or public</code>; <code>can_update_info</code>, <code>can_administer_members/managers/owners</code> = <code>owner</code>; <code>can_read_members</code>, <code>can_read_conversations</code> = <code>member</code>.</li>
-      <li>Helper permissions <code>can_update_resources</code> and <code>can_update_agents</code> = <code>manager</code> — these flow into the object types below.</li>
+      <li><code>team_admin</code>, <code>team_editor</code>, <code>team_analyst</code> = <code>[user]</code>;
+      <code>team_member</code> = <code>[user] or team_admin or team_editor or team_analyst</code>;
+      <code>public</code> = <code>[user:*]</code>. None of these is ever derived from a platform role —
+      a team's first <code>team_admin</code> is granted only by the platform-admin-gated
+      <code>POST /teams</code> bootstrap, never a standing relation.</li>
+      <li><code>can_read</code> = <code>team_member or public</code>; <code>can_update_info</code>,
+      <code>can_administer_members/editors/analysts/admins</code> = <code>team_admin</code>;
+      <code>can_read_members</code>, <code>can_read_conversations</code>, <code>can_use_team_agents</code> =
+      <code>team_member</code>.</li>
+      <li>Team-scoped evaluation permissions: <code>can_run_evaluations</code>,
+      <code>can_manage_evaluation_corpus</code> = <code>team_analyst or team_admin</code>;
+      <code>can_read_conversations_for_evaluation</code> = <code>team_analyst</code> only.</li>
+      <li>Helper permissions <code>can_update_resources</code> and <code>can_update_agents</code> =
+      <code>team_editor</code> — these flow into the object types below.</li>
     </ul>
 
     <h3>Agent, tag, document, resource</h3>
@@ -207,55 +249,37 @@
     <p class="src">Source: fred-core <code>security/rebac/schema.fga</code> · <code>security/rebac/rebac_engine.py</code></p>
   </section>
 
-  <!-- ── RBAC catalog ───────────────────────────────────── -->
+  <!-- ── Frontend capabilities ──────────────────────────── -->
   <section id="catalog">
-    <h2>The RBAC display catalog</h2>
+    <h2>Frontend capability flags</h2>
     <div class="callout info">
-      Everything in this section is a <strong>frontend display hint</strong>, not server-side
-      enforcement. It decides what the UI offers; ReBAC decides what actually happens.
+      There is no server-side "display catalog" table anymore. <code>permission_catalog.py</code>
+      and its static <code>ROLE_CAPABILITIES</code> role→resource matrix were removed under AUTHZ-05
+      — they mirrored Keycloak role names (<code>admin</code>/<code>editor</code>/<code>viewer</code>)
+      that no longer exist. The frontend now derives capability booleans directly, per request,
+      from the same OpenFGA relations described above.
     </div>
-    <h3>Actions &amp; roles</h3>
-    <p>Actions: <code>create</code> (C), <code>read</code> (R), <code>update</code> (U), <code>delete</code> (D), <code>read:global</code> (G), <code>process</code> (P). Roles:</p>
+    <h3>Two hooks, no matrix</h3>
     <ul>
-      <li><code>admin</code> — every action on every resource.</li>
-      <li><code>editor</code> — an allowlist per resource (matrix below).</li>
-      <li><code>viewer</code> — baseline <code>read</code>, with a few explicit overrides.</li>
-      <li><code>service_agent</code> — a narrow read-only subset; also an identity marker (not a ReBAC relation) that lets the evaluation worker act within a scoped <code>team_id</code>.</li>
+      <li><strong>Org-level</strong> — <code>useUserCapabilities()</code> reads <code>canAdmin</code> /
+      <code>canObservePlatform</code> off <code>FrontendBootstrap.permissions</code>
+      (<code>is_platform_admin</code> / <code>is_platform_observer</code>, both OpenFGA-derived).</li>
+      <li><strong>Team-level</strong> — <code>useTeamCapabilities(team)</code> reads <code>canRead</code>,
+      <code>canUpdateInfo</code>, <code>canUpdateResources</code>, <code>canUpdateAgents</code>,
+      <code>canReadMembers</code>, <code>canAdministerMembers/Editors/Analysts/Admins</code>,
+      <code>canReadConversations</code>, <code>canUseTeamAgents</code>, <code>canRunEvaluations</code>,
+      <code>canManageEvaluationCorpus</code>, <code>canReadConversationsForEvaluation</code> off
+      <code>TeamWithPermissions.permissions</code> — computed per team by
+      <code>teams/service.py::_get_team_permissions_for_user</code>, not a static table.</li>
     </ul>
-    <p>Keycloak roles <code>admin</code>/<code>editor</code>/<code>viewer</code> are mapped onto the OpenFGA <em>organization</em> relations above; that mapping — not this table — is what enforces.</p>
-
-    <h3>Resource matrix</h3>
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th class="k">Resource</th><th>admin</th><th>editor</th><th>viewer</th><th>service_agent</th></tr></thead>
-        <tbody>
-          <tr><td class="k">tag</td><td>ALL</td><td>CRUD</td><td>R</td><td>R</td></tr>
-          <tr><td class="k">document</td><td>ALL</td><td>CRU</td><td>R</td><td>R</td></tr>
-          <tr><td class="k">documents_source</td><td>ALL</td><td>R</td><td>R</td><td>—</td></tr>
-          <tr><td class="k">resource</td><td>ALL</td><td>CRUD</td><td>R</td><td>—</td></tr>
-          <tr><td class="k">table</td><td>ALL</td><td>CRUD</td><td>R</td><td>R</td></tr>
-          <tr><td class="k">tables_database</td><td>ALL</td><td>CRUD</td><td>R</td><td>R</td></tr>
-          <tr><td class="k">kpi</td><td>ALL</td><td>R</td><td>R</td><td>—</td></tr>
-          <tr><td class="k">opensearch</td><td>ALL</td><td>R</td><td>R</td><td>R</td></tr>
-          <tr><td class="k">neo4j</td><td>ALL</td><td>—</td><td>R</td><td>—</td></tr>
-          <tr><td class="k">logs</td><td>ALL</td><td>—</td><td>R</td><td>—</td></tr>
-          <tr><td class="k">files</td><td>ALL</td><td>CRUD</td><td>CRUD</td><td>—</td></tr>
-          <tr><td class="k">feedback</td><td>ALL</td><td>C</td><td>C</td><td>—</td></tr>
-          <tr><td class="k">prompt_completions</td><td>ALL</td><td>C</td><td>C</td><td>—</td></tr>
-          <tr><td class="k">metrics</td><td>ALL</td><td>R</td><td>R</td><td>R</td></tr>
-          <tr><td class="k">agents</td><td>ALL</td><td>R</td><td>R</td><td>—</td></tr>
-          <tr><td class="k">agent</td><td>ALL</td><td>—</td><td>R</td><td>—</td></tr>
-          <tr><td class="k">sessions</td><td>ALL</td><td>CRUD</td><td>CRUD</td><td>—</td></tr>
-          <tr><td class="k">message_attachments</td><td>ALL</td><td>C,R</td><td>CRUD</td><td>—</td></tr>
-          <tr><td class="k">mcp_servers</td><td>ALL</td><td>CRU</td><td>R</td><td>—</td></tr>
-          <tr><td class="k">user</td><td>ALL</td><td>R</td><td>R</td><td>—</td></tr>
-          <tr><td class="k">team</td><td>ALL</td><td>—</td><td>R</td><td>—</td></tr>
-          <tr><td class="k">organization</td><td>ALL</td><td>—</td><td>R</td><td>—</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="legend">ALL = all six actions · CRUD = create/read/update/delete · CRU = create/read/update · C = create · R = read · — = none.</div>
-    <p class="src">Source: fred-core <code>security/models.py</code> (Action, Resource) · <code>security/permission_catalog.py</code> (ROLE_CAPABILITIES)</p>
+    <p>
+      The only role-string check left anywhere in this path is <code>service_agent</code> — an
+      identity marker on the JWT (<code>KeycloakUser.roles</code>), not a ReBAC relation, that lets
+      the evaluation worker act within a scoped <code>team_id</code>.
+    </p>
+    <p class="src">Source: fred-core <code>security/structure.py</code> (<code>SERVICE_AGENT_ROLE</code>) ·
+    control-plane <code>teams/service.py</code>, <code>product/schemas.py</code> · frontend
+    <code>rework/core/hooks/useUserCapabilities.ts</code>, <code>useTeamCapabilities.ts</code></p>
   </section>
 
   <!-- ── Enforcement ────────────────────────────────────── -->
@@ -268,12 +292,13 @@
         <tbody>
           <tr><td class="k">control-plane · teams</td><td>Team permissions — <code>can_read</code>, <code>can_update_info</code>, <code>can_read_members</code>, <code>can_administer_*</code></td></tr>
           <tr><td class="k">control-plane · platform, import/export, agent class path</td><td>Organization <code>can_manage_platform</code></td></tr>
-          <tr><td class="k">control-plane · global KPIs</td><td>Organization <code>can_read_kpi_global</code></td></tr>
+          <tr><td class="k">control-plane · global KPIs</td><td>Organization <code>can_observe_platform</code></td></tr>
           <tr><td class="k">control-plane · sessions &amp; history</td><td>Team + <strong>owner</strong> scoping — <code>session.user_id == uid</code> and matching <code>team_id</code></td></tr>
           <tr><td class="k">control-plane · evaluations</td><td>Team <code>can_update_agents</code> / <code>can_read</code></td></tr>
           <tr><td class="k">fred-agents · execute / stream</td><td>Pod-side team <code>can_read</code> on a mandatory <code>team_id</code>, per request</td></tr>
           <tr><td class="k">knowledge-flow · tags, documents, resources</td><td>Object-level tag / document / resource permissions</td></tr>
-          <tr><td class="k">knowledge-flow · content, logs, statistics</td><td>Organization <code>can_read_content</code> / <code>can_process_content</code> / <code>can_read_logs</code></td></tr>
+          <tr><td class="k">knowledge-flow · KPIs, opensearch statistics</td><td>Organization <code>can_observe_platform</code></td></tr>
+          <tr><td class="k">knowledge-flow · logs, task status</td><td>Authentication only — no ReBAC check (AUTHZ-05 removed the "any connected user" organization tier)</td></tr>
           <tr><td class="k">health / readiness</td><td>Public — no auth</td></tr>
         </tbody>
       </table>
@@ -324,6 +349,10 @@
       <a class="ref-card" href="erasure-you-can-prove.html">
         <div class="ref-topic">Erasure you can prove →</div>
         <div class="ref-path">team-scoped, authorized erasure</div>
+      </a>
+      <a class="ref-card" href="nothing-enabled-by-default.html">
+        <div class="ref-topic">Bootstrap, capabilities &amp; teams →</div>
+        <div class="ref-path">how these relations get granted in the first place</div>
       </a>
     </div>
   </section>

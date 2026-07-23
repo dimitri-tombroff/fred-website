@@ -1,4 +1,15 @@
 <!DOCTYPE html>
+<!-- Verified against fred monorepo branch consolidation-22-07, corrected 2026-07-23:
+     removed the ExecutionGrant/trust-envelope model (design-rule section and
+     mental model #2) — RFC RUNTIME-07 rev. 2 (2026-06-28) confirms there is no
+     control-plane-issued grant; identity flows as the caller's Keycloak JWT and
+     managed execution is authorized by the pod itself via a per-request OpenFGA
+     check on runtime_context.team_id (docs/swift/design/RUNTIME-EXECUTION-CONTRACT.md,
+     docs/swift/design/CONTROL-PLANE-PRODUCT-CONTRACT.md). Replaced docs/PMO.md §7
+     references (frozen 2026-07-16, superseded) with CLAUDE.md's Task lifecycle
+     section and GitHub Issues/Milestones as the live source of truth. Corrected
+     role names in mental model #4 and the reading path from "owner"/"manager" to
+     the real REBAC.md relations platform_admin/team_admin/team_member. -->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -498,17 +509,17 @@
       <div class="layer ctl">
         <div class="l-name">control-plane-backend</div>
         <div class="l-tags">teams · agents · sessions · auth · enrollment</div>
-        <div class="l-rule">issues ExecutionGrant to runtime — never touches execution internals</div>
+        <div class="l-rule">issues no execution token — passes the caller's Keycloak JWT through, never touches execution internals</div>
       </div>
 
       <div class="connector">
-        <div class="cn-label">ExecutionGrant (trust envelope)</div>
+        <div class="cn-label">caller's Keycloak JWT</div>
         <div class="cn-arrow">↓</div>
       </div>
 
       <div class="layer rnt">
         <div class="l-name">fred-runtime</div>
-        <div class="l-tags">SSE streaming · HITL pause/resume · checkpoints · grant validation</div>
+        <div class="l-tags">SSE streaming · HITL pause/resume · checkpoints · per-request OpenFGA check</div>
         <div class="l-rule">knows nothing about teams or product APIs</div>
       </div>
 
@@ -533,9 +544,11 @@
     <p>
       This separation means the execution engine can evolve without touching product
       APIs, and the product surface can evolve without touching how agents run. It also
-      keeps the authorization model clean: the ExecutionGrant carries
-      <code>user_id</code>, <code>team_id</code>, <code>agent_instance_id</code>, and
-      policy constraints — the runtime validates it but never issues it.
+      keeps the authorization model clean: there is no control-plane-issued grant.
+      The caller's Keycloak JWT carries identity end to end, and the agent pod itself
+      authorizes each request with a per-request OpenFGA check on
+      <code>runtime_context.team_id</code> — the pod is the execution authority, not
+      a token the control-plane hands it.
     </p>
   </section>
 
@@ -563,7 +576,7 @@
         <tr>
           <td><code>apps/control-plane-backend</code></td>
           <td><span class="badge bc">Control plane</span></td>
-          <td>Product/session/admin APIs and ExecutionGrant issuance</td>
+          <td>Product/session/admin APIs — issues no execution token; execution auth is JWT + pod-side OpenFGA</td>
         </tr>
         <tr>
           <td><code>apps/knowledge-flow-backend</code></td>
@@ -648,15 +661,17 @@
         <summary>
           <span class="chevron">›</span>
           <span class="model-n">2</span>
-          The ExecutionGrant — the trust envelope
+          JWT + per-request OpenFGA — no execution grant
         </summary>
         <div class="d-body"><p>
-          When the frontend calls execute, control-plane issues an
-          <code>ExecutionGrant</code> that encodes <code>user_id</code>,
-          <code>team_id</code>, <code>agent_instance_id</code>,
-          <code>session_id</code>, and policy constraints. The runtime validates
-          this grant on every request. Neither the frontend nor the user can forge
-          or escalate it. This is the primary security boundary between product
+          There is no control-plane-issued grant or token for execution. Identity
+          flows as the caller's Keycloak JWT, forwarded unchanged all the way to
+          the agent pod. The pod is its own execution authority: on every request
+          it validates the JWT (issuer, audience, per-agent <code>aud</code>) and
+          runs a live OpenFGA check that the caller holds <code>CAN_READ</code> on
+          <code>runtime_context.team_id</code>. Neither the frontend nor the user
+          can forge or escalate that check — a missing or unauthorized team fails
+          closed (403). This is the primary security boundary between product
           and execution.
         </p></div>
       </details>
@@ -684,14 +699,14 @@
           Platform admin vs team admin — orthogonal, not hierarchical
         </summary>
         <div class="d-body"><p>
-          A platform admin (<code>owner</code>) sets immutable guardrails: quotas,
-          allowed model profiles, allowed MCP servers. A team admin
-          (<code>manager</code>) configures everything within those guardrails:
+          A platform admin (<code>platform_admin</code>) sets immutable guardrails:
+          quotas, allowed model profiles, allowed MCP servers. A team admin
+          (<code>team_admin</code>) configures everything within those guardrails:
           agents, routing policy, shared prompts.
           <strong>Neither role can write to the other's surfaces.</strong>
-          Owner cannot manage agents or prompts. Manager cannot touch platform
-          policy. This is enforced at the API layer, not only in the UI.
-          See <code>docs/swift/platform/REBAC.md</code> for the full model.
+          A platform admin cannot manage agents or prompts. A team admin cannot
+          touch platform policy. This is enforced at the API layer, not only in
+          the UI. See <code>docs/swift/platform/REBAC.md</code> for the full model.
         </p></div>
       </details>
 
@@ -725,7 +740,7 @@
       <div class="path-item">
         <div class="path-n">1</div>
         <div>
-          <div class="path-why">Before touching any API boundary — understand who is allowed to do what and how the owner / manager / member split is enforced at the engine level.</div>
+          <div class="path-why">Before touching any API boundary — understand who is allowed to do what and how the platform_admin / team_admin / team_member split is enforced at the engine level.</div>
           <div class="path-doc">
             <strong>REBAC.md</strong>
             <span class="tbadge">5 min</span>
@@ -737,7 +752,7 @@
       <div class="path-item">
         <div class="path-n">2</div>
         <div>
-          <div class="path-why">Before touching the execution path — the SSE contract, ExecutionGrant lifecycle, and event types are frozen and cannot be improvised.</div>
+          <div class="path-why">Before touching the execution path — the SSE contract, the JWT + per-request OpenFGA authorization model, and event types are frozen and cannot be improvised.</div>
           <div class="path-doc">
             <strong>RUNTIME-EXECUTION-CONTRACT.md</strong>
             <span class="tbadge">5 min</span>
@@ -772,12 +787,12 @@
       <div class="path-item">
         <div class="path-n">5</div>
         <div>
-          <div class="path-why">Before starting any task — understand the RFC → backlog → sprint → GitHub issue → implement workflow. Every task in this repo follows this sequence.</div>
+          <div class="path-why">Before starting any task — understand the RFC → developer confirmation → GitHub issue → implement → close-out workflow. Every task in this repo follows this sequence, and GitHub Issues/Milestones are the single source of truth for status.</div>
           <div class="path-doc">
-            <strong>PMO.md</strong>
+            <strong>CLAUDE.md</strong>
             <span class="tbadge">2 min</span>
           </div>
-          <div class="path-section">Read §7 "How work gets done"</div>
+          <div class="path-section">Read the "Task lifecycle" section; check status with <code>gh issue list --milestone "swift-golive"</code></div>
         </div>
       </div>
 
@@ -794,11 +809,13 @@
   <!-- ── How work gets done ─────────────────────────────── -->
   <section id="workflow">
     <h2>How work gets done</h2>
-    <p>Every task follows a fixed sequence: RFC → backlog entry → developer confirmation → GitHub issue → implementation → close-out. Steps cannot be skipped or reordered.</p>
+    <p>Every task follows a fixed sequence: RFC → developer confirmation → GitHub issue → implementation → close-out. Steps cannot be skipped or reordered.</p>
     <div class="callout">
       <strong>Full process documentation</strong> lives in the Fred repository:
       <strong>CLAUDE.md §Task lifecycle</strong> for mandatory rules ·
-      <strong>docs/PMO.md §7</strong> for coordination and handoff
+      GitHub Issues/Milestones (<code>swift-golive</code>, <code>swift ga</code>) are the
+      single source of truth for sprints, issues, and status —
+      <code>gh issue list --milestone "swift-golive"</code>
     </div>
   </section>
 

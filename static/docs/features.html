@@ -301,6 +301,16 @@
 </head>
 <body>
 
+<!-- Verified against fred monorepo branch consolidation-22-07, corrected 2026-07-23.
+     Key files checked: libs/fred-runtime/fred_runtime/app/agent_app.py (execute_stream
+     docstring, "no ExecutionGrant"); libs/fred-sdk/fred_sdk/contracts/runtime.py
+     (RuntimeEvent* classes); apps/control-plane-backend/control_plane_backend/product/schemas.py
+     (ExecutionPreparation); apps/knowledge-flow-backend/config/configuration.yaml
+     (processing.profiles.fast.input_processors); apps/fred-agents/fred_agents/general_assistant.py,
+     deep_assistant.py, react_rag_mcp.py (agent_id); apps/frontend/src/rework/components/pages/
+     ManagedChatPage/useChatAttachments.ts; docs/swift/design/RUNTIME-EXECUTION-CONTRACT.md
+     (RFC RUNTIME-07 rev. 2, §2.2, §8.11). -->
+
 <!-- ─── Sidebar navigation ─────────────────────────────────── -->
 <nav>
   <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
@@ -319,7 +329,7 @@
     <li class="nav-section">Execution</li>
     <li><a href="#sse">SSE event stream</a></li>
     <li><a href="#hitl">HITL &amp; checkpoints</a></li>
-    <li><a href="#grant">ExecutionGrant</a></li>
+    <li><a href="#grant">Execution authorization</a></li>
     <li><a href="#cli">Developer CLI</a></li>
 
     <li class="nav-section">Agents</li>
@@ -381,7 +391,7 @@
     <div class="overview-grid">
       <div class="overview-card">
         <div class="ov-title">Knowledge ingestion</div>
-        <div class="ov-body">31 file formats — documents, spreadsheets, images, audio, video — converted to
+        <div class="ov-body">32 file formats — documents, spreadsheets, images, audio, video — converted to
         searchable, citation-rich Markdown via configurable processing profiles.</div>
       </div>
       <div class="overview-card">
@@ -425,7 +435,7 @@
         <tr>
           <td><code>apps/control-plane-backend</code></td>
           <td><span class="badge bc">Control plane</span></td>
-          <td>Teams, sessions, agent enrollment, ExecutionGrant issuance, prompt library, admin APIs</td>
+          <td>Teams, sessions, agent enrollment, execution authorization (JWT + per-request OpenFGA check), prompt library, admin APIs</td>
         </tr>
         <tr>
           <td><code>apps/knowledge-flow-backend</code></td>
@@ -502,6 +512,30 @@
           <td><span class="tag tag-doc">.pptx</span></td>
           <td><code>PptxMarkdownProcessor</code></td>
           <td>Slide content and speaker notes</td>
+        </tr>
+        <tr>
+          <td>Legacy Word</td>
+          <td><span class="tag tag-doc">.doc</span></td>
+          <td><code>DocMarkdownProcessor</code></td>
+          <td>Upgraded to <code>.docx</code> via headless LibreOffice, then reuses <code>DocxMarkdownProcessor</code></td>
+        </tr>
+        <tr>
+          <td>OpenDocument text</td>
+          <td><span class="tag tag-doc">.odt</span></td>
+          <td><code>OdtMarkdownProcessor</code></td>
+          <td>Upgraded to <code>.docx</code> via headless LibreOffice, then reuses <code>DocxMarkdownProcessor</code></td>
+        </tr>
+        <tr>
+          <td>Legacy PowerPoint</td>
+          <td><span class="tag tag-doc">.ppt</span></td>
+          <td><code>PptMarkdownProcessor</code></td>
+          <td>Upgraded to <code>.pptx</code> via headless LibreOffice, then reuses <code>PptxMarkdownProcessor</code></td>
+        </tr>
+        <tr>
+          <td>Excel workbook</td>
+          <td><span class="tag tag-doc">.xlsx</span> <span class="tag tag-doc">.xls</span> <span class="tag tag-doc">.xlsm</span></td>
+          <td><code>ExcelProcessor</code> — openpyxl</td>
+          <td>Per-table tabular extraction (optional headless-LibreOffice recalculation) plus a Markdown summary</td>
         </tr>
         <tr>
           <td>CSV / spreadsheet</td>
@@ -650,42 +684,57 @@
         <tr>
           <td><code>assistant_delta</code></td>
           <td>Each streaming text chunk</td>
-          <td><code>content: str</code>, <code>exchange_id</code></td>
+          <td><code>delta: str</code></td>
         </tr>
         <tr>
           <td><code>status</code></td>
-          <td>Intermediate agent step</td>
-          <td><code>kind: ThoughtKind</code> (planning · tool_use · observation · reflection · synthesis), <code>content</code></td>
+          <td>Generic operational progress signal (no chain-of-thought semantics)</td>
+          <td><code>status: str</code>, <code>detail: str | None</code></td>
+        </tr>
+        <tr>
+          <td><code>thought_start</code></td>
+          <td>Opens a reasoning block</td>
+          <td><code>thought_id</code>, <code>phase: ThoughtKind</code> (planning · tool_use · observation · reflection · synthesis), <code>title</code>, <code>source</code> (authored | model_native)</td>
+        </tr>
+        <tr>
+          <td><code>thought_delta</code></td>
+          <td>Incremental text fragment into an open reasoning block</td>
+          <td><code>thought_id</code>, <code>delta: str</code></td>
+        </tr>
+        <tr>
+          <td><code>thought_end</code></td>
+          <td>Closes a reasoning block</td>
+          <td><code>thought_id</code>, <code>conclusion</code>, <code>duration_ms</code></td>
         </tr>
         <tr>
           <td><code>tool_call</code></td>
           <td>Agent invokes an MCP tool</td>
-          <td><code>tool_name</code>, <code>tool_call_id</code>, <code>arguments</code></td>
+          <td><code>tool_name</code>, <code>call_id</code>, <code>arguments</code></td>
         </tr>
         <tr>
           <td><code>tool_result</code></td>
           <td>Tool returns result</td>
-          <td><code>tool_call_id</code>, <code>content</code>, <code>sources[]</code>, <code>latency_ms</code>, <code>metadata</code></td>
+          <td><code>call_id</code>, <code>content</code>, <code>tool_name</code>, <code>is_error</code>, <code>sources[]</code>, <code>ui_parts[]</code>, <code>latency_ms</code></td>
         </tr>
         <tr>
           <td><code>final</code></td>
           <td>Turn complete</td>
-          <td><code>content</code> (full), <code>sources: VectorSearchHit[]</code>, <code>token_usage</code>, <code>ui_parts[]</code></td>
+          <td><code>content</code> (full), <code>sources: VectorSearchHit[]</code>, <code>ui_parts[]</code>, <code>token_usage</code>, <code>finish_reason</code></td>
         </tr>
         <tr>
           <td><code>awaiting_human</code></td>
           <td>HITL pause requested</td>
-          <td><code>checkpoint_id</code>, <code>HumanInputRequest</code> (prompt, options, kind)</td>
+          <td><code>request: HumanInputRequest</code> — <code>stage</code>, <code>title</code>, <code>question</code>, <code>choices[]</code>, <code>free_text</code>, <code>metadata</code>, <code>checkpoint_id</code></td>
         </tr>
         <tr>
           <td><code>node_error</code></td>
-          <td>Graph node failure with routing</td>
-          <td><code>node</code>, <code>error</code>, <code>recoverable: bool</code></td>
+          <td>Graph node raised and declared <code>on_error</code> routing</td>
+          <td><code>node_id</code>, <code>error_message</code>, <code>routed_to</code></td>
         </tr>
         <tr>
           <td><code>execution_error</code></td>
           <td>Unhandled pipeline exception (terminal)</td>
-          <td><code>error</code>, <code>request_id</code></td>
+          <td><code>message: str</code></td>
         </tr>
       </tbody>
     </table>
@@ -739,11 +788,11 @@
       <tbody>
         <tr>
           <td>Pause trigger</td>
-          <td>Agent emits <code>awaiting_human</code> event with <code>checkpoint_id</code> and a <code>HumanInputRequest</code> (prompt, options list, kind)</td>
+          <td>Agent emits <code>awaiting_human</code> event with a <code>HumanInputRequest</code> (<code>stage</code>, <code>title</code>, <code>question</code>, <code>choices[]</code>, <code>free_text</code>, <code>checkpoint_id</code>)</td>
         </tr>
         <tr>
           <td>Resume</td>
-          <td><code>POST /agents/execute/stream</code> with <code>action: "resume"</code> + <code>checkpoint_id</code> + human response payload in <code>ExecutionGrant</code></td>
+          <td><code>POST /agents/execute/stream</code> with <code>execution_action: "resume"</code> + <code>checkpoint_id</code> + human response carried in <code>ExecutionConfig.resume_payload</code></td>
         </tr>
         <tr>
           <td>Persistence</td>
@@ -762,35 +811,37 @@
   </section>
 
 
-  <!-- ── ExecutionGrant ─────────────────────────────────────── -->
+  <!-- ── Execution authorization ────────────────────────────── -->
   <section id="grant">
-    <h2>ExecutionGrant</h2>
+    <h2>Execution authorization</h2>
     <p>
-      The ExecutionGrant is the trust envelope issued by the control plane and validated
-      by the runtime on every request. It is the primary security boundary between product
-      and execution — the runtime never issues one, and the frontend cannot forge or
-      escalate it.
+      There is no <code>ExecutionGrant</code> and no control-plane-issued signed or
+      unsigned token (RFC RUNTIME-07 rev. 2 — the earlier signed-grant / valet-key
+      design was reversed by RFC decision D5). Identity is the caller's own Keycloak
+      JWT, forwarded on every request; each agent pod is its own execution authority
+      and authorizes the request itself. The frontend cannot forge or escalate access
+      because there is no capability token to forge — access is derived fresh from
+      the JWT and a live OpenFGA check on every call.
     </p>
     <table>
       <thead>
-        <tr><th>Field</th><th>Purpose</th></tr>
+        <tr><th>Step</th><th>Detail</th></tr>
       </thead>
       <tbody>
-        <tr><td><code>user_id</code></td><td>Keycloak UUID of the requesting user</td></tr>
-        <tr><td><code>team_id</code></td><td>Team scope for the execution</td></tr>
-        <tr><td><code>agent_instance_id</code></td><td>Enrolled agent instance being run</td></tr>
-        <tr><td><code>session_id</code></td><td>Stable multi-turn conversation key</td></tr>
-        <tr><td><code>action</code></td><td><code>execute</code> or <code>resume</code> (HITL)</td></tr>
-        <tr><td><code>expires_at</code></td><td>Short-lived (5 minutes); cannot be cached or replayed</td></tr>
-        <tr><td><code>scopes</code></td><td>Optional fine-grained capability constraints</td></tr>
-        <tr><td><code>storage_scope</code></td><td>Allowed object storage paths for this execution</td></tr>
+        <tr><td>Authentication</td><td>Caller's Keycloak JWT in the <code>Authorization: Bearer</code> header; the pod is an OAuth2 resource server and validates issuer/audience under the <code>c3</code> security profile</td></tr>
+        <tr><td>Audience binding</td><td>Each pod validates <code>aud == its own client_id</code> — per-agent audience, anti-confused-deputy (decision D5c)</td></tr>
+        <tr><td>Authorization</td><td>Per-request pod-side OpenFGA <code>CAN_READ</code> check on <code>runtime_context.team_id</code>; a missing or unauthorized team fails closed (403)</td></tr>
+        <tr><td>Identity integrity</td><td><code>user_id</code> is taken from the validated token only — any body-supplied user id is neutralized</td></tr>
+        <tr><td>Execution action</td><td><code>execution_action</code>: <code>execute</code> or <code>resume</code> (HITL) — the one field that survives from the retired <code>ExecutionGrant</code> envelope</td></tr>
       </tbody>
     </table>
     <div class="callout info">
       <strong>Prepare-execution flow:</strong> <code>POST /teams/{team_id}/agent-instances/{id}/prepare-execution</code>
-      returns <code>ExecutionPreparation</code> — grant + runtime URLs + effective chat options + capability flags
-      (<code>supports_streaming</code>, <code>supports_hitl</code>, <code>supports_ui_parts</code>).
-      The grant expires after 5 minutes regardless of whether execution has started.
+      returns <code>ExecutionPreparation</code> — <code>execute_url</code>, <code>execute_stream_url</code>,
+      <code>messages_url_template</code>, and capability flags (<code>supports_streaming</code>,
+      <code>supports_hitl</code>, <code>supports_ui_parts</code>) plus computed <code>chat_controls[]</code>.
+      No grant object, no expiry — every subsequent call is authorized independently
+      by the runtime pod using the caller's own JWT.
     </div>
   </section>
 
@@ -839,16 +890,28 @@
       </thead>
       <tbody>
         <tr>
-          <td><code>fred.github.general_assistant</code></td>
+          <td><code>fred.github.assistant</code></td>
           <td>General assistant</td>
           <td>Optional</td>
-          <td>General-purpose ReAct agent; configurable system prompt, no retrieval by default</td>
+          <td>Blank-slate ReAct agent with access to all pod MCP tools; operator selects tools and writes the prompt at enrollment</td>
         </tr>
         <tr>
           <td><code>fred.github.rag_expert</code></td>
           <td>RAG expert</td>
           <td>Yes</td>
           <td>ReAct with Knowledge Flow vector search; formats cited sources with <code>[N]</code> anchors</td>
+        </tr>
+        <tr>
+          <td><code>fred.github.deep_assistant</code></td>
+          <td>Deep assistant</td>
+          <td>Optional</td>
+          <td>Blank-slate planning assistant on the LangGraph deep-agent runtime; plans multi-step tasks before executing; no filesystem tools by default</td>
+        </tr>
+        <tr>
+          <td><code>fred.github.react_rag_mcp</code></td>
+          <td>ReAct RAG (MCP)</td>
+          <td>Yes</td>
+          <td>Document-grounded ReAct agent backed by Knowledge Flow MCP search (vs. <code>rag_expert</code>'s built-in tool ref); Tools-tab configurable library, search policy, and RAG scope</td>
         </tr>
         <tr>
           <td><code>fred.github.sql_expert</code></td>
@@ -979,19 +1042,20 @@
   <section id="attachments">
     <h2>Chat attachments</h2>
     <p>
-      Files attached in the chat composer are uploaded to Knowledge Flow and their path
-      or content is injected into the agent's execution context.
+      Files attached in the chat composer are fast-ingested into Knowledge Flow for
+      session-scoped retrieval, then persisted as session attachment records via the
+      control plane so they survive across turns and reloads.
     </p>
     <table>
       <thead>
         <tr><th>Feature</th><th>Detail</th></tr>
       </thead>
       <tbody>
-        <tr><td>Upload endpoint</td><td><code>POST /knowledge-flow/v1/storage/user/upload</code></td></tr>
-        <tr><td>Path injection</td><td>File path <code>/workspace/uploads/{filename}</code> passed to agent as execution context</td></tr>
-        <tr><td>Multimodal</td><td>Images base64-encoded for vision-capable models</td></tr>
-        <tr><td>Drag-and-drop</td><td>Initiates Knowledge Flow ingestion task with live progress via SSE task stream</td></tr>
-        <tr><td>Progress UI</td><td>Reuses <code>TaskStateBadge</code>, <code>TaskProgressBar</code>, and <code>useTaskSseManager</code> from the scheduler primitives</td></tr>
+        <tr><td>Fast ingest</td><td><code>POST /knowledge-flow/v1/fast/ingest</code> — multipart <code>file</code> + <code>session_id</code> + <code>scope: "session"</code> + <code>options_json</code>; returns <code>document_uid</code> and a preview <code>summary_md</code></td></tr>
+        <tr><td>Persistence</td><td><code>POST /teams/{team_id}/sessions/{session_id}/attachments</code> records the attachment (name, mime, size, summary, <code>document_uid</code>) against the session; listed via the matching <code>GET</code>, removed via <code>DELETE .../attachments/{attachment_id}</code></td></tr>
+        <tr><td>Context injection</td><td>Persisted attachments are listed by name (and internal <code>document_uid</code>) in a Markdown block prepended to the agent's system context, so document search tools can find them — no raw file path is passed</td></tr>
+        <tr><td>Multimodal</td><td>Images ≤ 4 MB of type png/jpeg/webp/gif are additionally read client-side and carried inline (data URL) as vision context for capable models</td></tr>
+        <tr><td>Progress UI</td><td>Local Redux task events (<code>taskRegistered</code> / <code>taskEventReceived</code>) drive per-attachment ingesting/ready/error state — no task SSE stream or polling involved for attachments</td></tr>
       </tbody>
     </table>
   </section>
@@ -1164,7 +1228,7 @@
       </thead>
       <tbody>
         <tr><td><code>GET /control-plane/v1/frontend/bootstrap</code></td><td>Single-call SPA init — user, team, permissions, flags</td></tr>
-        <tr><td><code>POST /teams/{team_id}/agent-instances/{id}/prepare-execution</code></td><td>Issue ExecutionGrant + runtime URLs + effective chat options</td></tr>
+        <tr><td><code>POST /teams/{team_id}/agent-instances/{id}/prepare-execution</code></td><td>Issue runtime execute/stream URLs + effective chat options — no signed grant, the pod authorizes each request itself</td></tr>
         <tr><td><code>GET/POST/PATCH/DELETE /teams/{team_id}/agent-instances</code></td><td>Enroll, list, update, remove agent instances</td></tr>
         <tr><td><code>GET/POST/PATCH/DELETE /teams/{team_id}/sessions</code></td><td>Session metadata CRUD</td></tr>
         <tr><td><code>GET /teams/{team_id}/agent-templates</code></td><td>Proxied catalog from all registered runtime pods</td></tr>
@@ -1212,7 +1276,7 @@
         <tr><th>Module</th><th>Provides</th></tr>
       </thead>
       <tbody>
-        <tr><td>Execution types</td><td><code>ExecutionGrant</code>, <code>ChatMessage</code>, <code>VectorSearchHit</code>, <code>HumanInputRequest</code>, all SSE event types</td></tr>
+        <tr><td>Execution types</td><td><code>ExecutionTarget</code>, <code>RuntimeExecuteRequest</code>, <code>ChatMessage</code>, <code>VectorSearchHit</code>, <code>HumanInputRequest</code>, all SSE event types</td></tr>
         <tr><td>UiPart primitives</td><td><code>LinkPart</code>, <code>GeoPart</code> and the <code>UiPart</code> discriminated union</td></tr>
         <tr><td>ThoughtKind enum</td><td><code>planning · tool_use · observation · reflection · synthesis</code></td></tr>
         <tr><td>Prompt utilities</td><td>System prompt assembly, tuning field resolution, context injection helpers</td></tr>
@@ -1274,7 +1338,7 @@
       <tbody>
         <tr><td>Identity provider</td><td>Keycloak — OpenID Connect, configurable realm</td></tr>
         <tr><td>Auth flows</td><td>PKCE browser flow (primary), resource-owner password flow (CLI/dev), no-security mode (local/airgapped)</td></tr>
-        <tr><td>Token validation</td><td>Bearer token required on all protected endpoints; short-lived ExecutionGrant additionally required for execution</td></tr>
+        <tr><td>Token validation</td><td>Bearer token (Keycloak JWT) required on all protected endpoints, including execution — authorized per-request via OpenFGA, no separate grant token</td></tr>
         <tr><td>MFA</td><td>TOTP secrets migrate with Keycloak realm export; WebAuthn/passkey supported (hardware-bound, re-enrolment required on migration)</td></tr>
         <tr><td>No-security mode</td><td>Auth bypass for local development and air-gapped deployments; <code>team_id</code> defaults to <code>"personal"</code></td></tr>
       </tbody>
@@ -1300,8 +1364,8 @@
       </thead>
       <tbody>
         <tr><td>Team namespace isolation</td><td>All data (agents, prompts, sessions, documents) is team-scoped at the storage and authorization layer</td></tr>
-        <tr><td>Storage scope in grant</td><td><code>ExecutionGrant.storage_scope</code> restricts which object storage paths a runtime execution may access</td></tr>
-        <tr><td>Session content isolation</td><td>Runtime returns session messages only to requests carrying a valid grant for that session's team</td></tr>
+        <tr><td>Storage scope</td><td>Object storage paths are scoped by <code>team_id</code> at request time — an OpenFGA check by the pod handling the request, not a field in a signed grant</td></tr>
+        <tr><td>Session content isolation</td><td>Runtime returns session messages only to requests whose Keycloak JWT passes the per-request OpenFGA check for that session's team</td></tr>
         <tr><td>Personal team isolation</td><td>Personal team data is accessible only to the owning user; the personal team ID is not guessable (UUID-derived)</td></tr>
         <tr><td>Document download TTL</td><td>Presigned URLs for document images expire after 1 minute</td></tr>
       </tbody>
@@ -1322,8 +1386,8 @@
       </thead>
       <tbody>
         <tr><td>Auditability</td><td>All execution attributed to <code>user_id</code> + <code>team_id</code>; Langfuse traces record full identity context per turn</td></tr>
-        <tr><td>Role separation</td><td>Owner / manager / member surfaces are orthogonal and API-enforced; no privilege escalation path</td></tr>
-        <tr><td>Least-privilege execution</td><td>ExecutionGrant is short-lived, scoped to one session and one agent instance; cannot be forged or escalated by the frontend</td></tr>
+        <tr><td>Role separation</td><td>Platform (<code>platform_admin</code>/<code>platform_observer</code>) and team (<code>team_admin</code>/<code>team_editor</code>/<code>team_analyst</code>/<code>team_member</code>) roles are orthogonal and API-enforced; no privilege escalation path</td></tr>
+        <tr><td>Least-privilege execution</td><td>Each execution request is authorized independently by the pod via a per-request OpenFGA check against the caller's Keycloak JWT — scoped to the caller's team, cannot be forged or escalated by the frontend, and there's no grant object to extend or replay</td></tr>
         <tr><td>No shared global state</td><td>Every resource is team-scoped; there is no unscoped global API for non-admin operations</td></tr>
         <tr><td>Air-gap capable</td><td>No-security mode + local object storage + local vector store; no mandatory external service dependencies in the execution path</td></tr>
       </tbody>

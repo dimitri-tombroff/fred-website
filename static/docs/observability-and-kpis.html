@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Verified against the `fred` monorepo, branch `consolidation`, by reading
+  libs/fred-core/fred_core/kpi/prometheus_kpi_store.py, kpi_writer.py,
+  kpi_process.py, http_middleware.py; libs/fred-runtime .../middleware/
+  tool_observability.py, tracing_kpi.py; libs/fred-runtime/.../agent_app.py;
+  docs/swift/platform/OBSERVABILITY-AND-AUDIT.md. Every metric name, type,
+  and surviving-label claim below traces to a specific recording call site.
+  No Fred backend process was reachable locally at write time (nothing was
+  running), so exact live wire-format output (e.g. the exact
+  prometheus_client default-collector metric set) was NOT observed —
+  everything here is a code-level guarantee, not a captured scrape. If you
+  find a live mismatch, the code is still the source of truth; file it.
+
+  Correction pass: branch `consolidation-22-07`, 2026-07-23. Re-checked
+  fred-core common/structures.py (KpiPrometheusSinkConfig.enabled defaults to
+  true — the exporter is opt-out, not opt-in), control-plane-backend
+  agent_instances/suspension.py + scheduler/main_worker.py (agent.suspended_total
+  / agent.suspension_cleared_total are emitted from the API process, via
+  capabilities/enablement.py and product/service.py — not the Temporal worker,
+  which currently emits no KPI events at all), and knowledge-flow-backend
+  features/scheduler/kpi_utils.py (temporal.system.activity_duration_ms and
+  temporal.ingestion.documents_total also carry status/error_code/file_type
+  after the label allow-list, not "none" / "status only").
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Observability &amp; KPIs</title>
+  <meta name="description" content="What Fred exports to Prometheus, where, with which labels — and where it deliberately doesn't export to Prometheus at all. A reference for wiring up Grafana.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    212px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    main { width: 100%; max-width: 900px; margin: 0 auto; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
+
+    .hd { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 580px; }
+
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+    h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    p { font-size: 0.9rem; margin-bottom: 0.7rem; max-width: 680px; }
+    p strong { color: var(--text); font-weight: 650; }
+    ol, ul { font-size: 0.9rem; margin: 0.4rem 0 0.7rem 1.2rem; max-width: 680px; }
+    ol li, ul li { margin-bottom: 0.4rem; }
+    .src { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.6rem; }
+
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 700px; }
+    .callout strong { color: var(--text); }
+    .callout.warn  { border-left-color: var(--s); }
+    .callout.info  { border-left-color: var(--c); }
+    .callout.ok    { border-left-color: var(--r); }
+
+    .tablewrap { overflow-x: auto; margin: 0.85rem 0; max-width: 100%; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.82rem; min-width: 460px; }
+    th, td { text-align: left; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; background: var(--bg2); }
+    td.k, th.k { font-family: var(--mono); font-size: 0.76rem; white-space: nowrap; }
+    tbody tr:hover { background: var(--bg2); }
+    .legend { font-size: 0.74rem; color: var(--muted); margin-top: 0.4rem; }
+
+    code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
+    pre { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rad); padding: 0.9rem 1rem; margin: 0.85rem 0; overflow-x: auto; max-width: 700px; }
+    pre code { background: none; border: none; padding: 0; font-size: 0.78rem; line-height: 1.6; }
+
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-path { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+    a.inline { color: var(--c); text-decoration: none; font-weight: 600; }
+    a.inline:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Observability &amp; KPIs</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#streams">Grafana sees one stream of three</a></li>
+    <li><a href="#endpoints">Where metrics are exposed</a></li>
+    <li><a href="#labels">The label allow-list</a></li>
+    <li><a href="#metrics">Metric reference</a></li>
+    <li><a href="#gaps">Defined, but not on /metrics</a></li>
+    <li><a href="#scrape">Scrape config &amp; PromQL</a></li>
+    <li><a href="#related">Related documents</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">docs / observability</div>
+    <h1>Observability &amp; KPIs</h1>
+    <p class="hd-lead">
+      Every metric Fred exports to Prometheus, the port it's on, and exactly which labels
+      survive — plus the handful of near-misses (audit events, dead metric names, generic
+      process stats) that look like Prometheus data but aren't.
+    </p>
+  </div>
+
+  <!-- ── Streams ────────────────────────────────────────── -->
+  <section id="streams">
+    <h2>Grafana sees one stream of three</h2>
+    <p>
+      Fred separates three kinds of signal that used to be conflated under one "KPI" umbrella.
+      Prometheus/Grafana is <strong>only ever Stream 1</strong> — operational health. If you're
+      here looking for per-user, per-team, or per-agent-instance breakdowns, they live elsewhere
+      by design, not by omission.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Stream</th><th>Answers</th><th>Destination</th><th>Contains identity?</th></tr></thead>
+        <tbody>
+          <tr><td class="k">1 — Operational metrics</td><td>Is the platform healthy?</td><td><strong>Prometheus → Grafana</strong></td><td>No — structurally excluded, see below</td></tr>
+          <tr><td class="k">2 — Product analytics</td><td>How is the platform used, by whom?</td><td>OpenSearch, via Fred's own authorization-scoped API</td><td>Yes, access-scoped per viewer</td></tr>
+          <tr><td class="k">3 — Security &amp; audit trail</td><td>Who did what, when, with what outcome?</td><td>Structured log line → the platform's log pipeline</td><td>Yes — that's its entire purpose</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout info">
+      A tool call's start/completion is logged twice, for two different audiences: a Stream-3
+      audit-log line (<code>agent.tool.invocation.started</code> / <code>.completed</code>, with
+      outcome and identity) and, separately, a Stream-1 metric
+      (<code>agent.tool_latency_ms</code>, no identity). They share a name prefix but are not the
+      same data — see the callout in <a class="inline" href="#gaps">Defined, but not on /metrics</a>.
+    </div>
+    <p>
+      For per-user/per-team dashboards or an audit trail, see
+      <a class="inline" href="access-model.html">Access model</a> for how that data is scoped and reached.
+    </p>
+    <p class="src">Source: fred docs <code>docs/swift/platform/OBSERVABILITY-AND-AUDIT.md</code> §2–§3</p>
+  </section>
+
+  <!-- ── Endpoints ──────────────────────────────────────── -->
+  <section id="endpoints">
+    <h2>Where metrics are exposed</h2>
+    <p>
+      <strong>Metrics are not served on the API port.</strong> Each backend that emits Prometheus
+      metrics runs a second, dedicated HTTP server just for scraping
+      (<code>prometheus_client.start_http_server</code>), entirely separate from the service's own
+      request routing.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Service</th><th>Exposes metrics</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td class="k">control-plane-backend</td><td>Yes</td><td>dedicated exporter, on by default (config-controlled)</td></tr>
+          <tr><td class="k">knowledge-flow-backend</td><td>Yes</td><td>dedicated exporter, on by default (config-controlled)</td></tr>
+          <tr><td class="k">fred-agents</td><td>Yes</td><td>dedicated exporter, on by default (config-controlled)</td></tr>
+          <tr><td class="k">knowledge-flow Temporal worker</td><td>Yes</td><td>no HTTP API of its own — the exporter is all it serves</td></tr>
+          <tr><td class="k">control-plane Temporal worker</td><td><strong>No</strong></td><td>no exporter of its own — and unlike the knowledge-flow worker, it currently emits no KPI events at all. <code>agent.suspended_total</code> / <code>agent.suspension_cleared_total</code> are emitted from the control-plane-backend API process instead (see row above), not the worker</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout warn">
+      <strong>The exporter is opt-out, on by default</strong> —
+      <code>KpiPrometheusSinkConfig.enabled</code> defaults to <code>true</code> in fred-core, so a
+      deployment exports to Prometheus unless <code>observability.kpi.prometheus.enabled: false</code>
+      is set explicitly. The checked-in dev <code>configuration.yaml</code> for control-plane-backend,
+      knowledge-flow-backend, and fred-agents all set it to <code>false</code> — confirm what your own
+      deployment's config does before assuming metrics are (or aren't) being exported.
+    </div>
+    <div class="callout">
+      Exact host and port are deployment-specific and intentionally not hardcoded here: a local
+      dev stack (docker-compose) exposes them as plain container ports, while a real cluster
+      deployment reaches them however its manifests wire scraping (a Kubernetes
+      <code>Service</code>, a GMP <code>PodMonitoring</code>, etc.) — check your own deployment's
+      service manifests for the actual values. The GCP/GKE reference deployment lives in the
+      <code>fred-deployment-factory</code> repository if you need a concrete example to start from.
+    </div>
+    <p class="src">Source: fred-core <code>kpi/kpi_factory.py</code>, <code>common/structures.py</code> (<code>KpiPrometheusSinkConfig</code>) · per-service <code>main.py</code>/<code>context.py</code> exporter startup</p>
+  </section>
+
+  <!-- ── Labels ─────────────────────────────────────────── -->
+  <section id="labels">
+    <h2>The label allow-list</h2>
+    <p>
+      One flat allow-list, shared by every metric. Any dimension not on this list is silently
+      dropped before the metric ever touches the Prometheus client — this is an explicit,
+      structural guarantee, not operator discipline: a new dimension needs a deliberate code
+      change to ever appear as a label.
+    </p>
+    <pre><code>tool_name, status, error_code, exception_type, http_status,
+template_agent_id, model, model_name, finish_reason,
+runtime_id, source_runtime_id, service, env, cluster,
+route, method, actor_type, file_type, agent_step</code></pre>
+    <p>
+      Deliberately excluded: <code>user_id</code>, <code>session_id</code>, <code>exchange_id</code>
+      (identity); <code>team_id</code>, <code>agent_instance_id</code>, <code>agent_instance_name</code>,
+      <code>agent_id</code> — "usage by team/agent instance" is a Stream-2 product-analytics
+      question with its own access-scoped answer, so it's deliberately not duplicated here as an
+      unscoped, platform-wide-visible label; and <code>trace_id</code>, <code>correlation_id</code>,
+      <code>checkpoint_id</code>, <code>doc_uid</code>, <code>scope_id</code> — unique per call, no
+      aggregate value as a label, and a pivot vector back into raw logs from a wide-audience dashboard.
+    </p>
+    <div class="callout ok">
+      This means several metrics are emitted with far more dims than actually reach
+      <code>/metrics</code> — the reference below lists only what <strong>survives</strong>, not
+      what the call site passes in.
+    </div>
+    <p class="src">Source: fred-core <code>kpi/prometheus_kpi_store.py</code> (<code>PROMETHEUS_ALLOWED_LABELS</code>, <code>_prometheus_label_dims</code>)</p>
+  </section>
+
+  <!-- ── Metrics ────────────────────────────────────────── -->
+  <section id="metrics">
+    <h2>Metric reference</h2>
+    <p>
+      Metric names use dots in code; Prometheus wire names sanitize every non-alphanumeric
+      character to <code>_</code> (so <code>agent.tool_latency_ms</code> →
+      <code>agent_tool_latency_ms</code> on the wire, and a histogram adds the usual
+      <code>_bucket</code>/<code>_sum</code>/<code>_count</code> suffixes). Table below uses the
+      code-form name; apply the substitution when writing PromQL.
+    </p>
+
+    <h3>Agent &amp; tool execution</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Metric</th><th class="k">Type</th><th>Surviving labels</th></tr></thead>
+        <tbody>
+          <tr><td class="k">agent.tool_latency_ms</td><td class="k">histogram</td><td><code>tool_name</code>, <code>template_agent_id</code>; on failure also <code>status</code>, <code>error_code</code>, <code>exception_type</code></td></tr>
+          <tr><td class="k">agent.tool_failed_total</td><td class="k">counter</td><td><code>tool_name</code>, <code>template_agent_id</code>, <code>status</code>, <code>error_code</code>, <code>exception_type</code></td></tr>
+          <tr><td class="k">agent.turn_completed</td><td class="k">histogram</td><td><code>template_agent_id</code>, <code>runtime_id</code>, <code>model_name</code>, <code>finish_reason</code> (<code>team_id</code>, <code>agent_instance_id</code>/<code>_name</code> are sent but dropped)</td></tr>
+          <tr><td class="k">agent.turn_error_total</td><td class="k">counter</td><td>same as above; only emitted when the turn errors</td></tr>
+          <tr><td class="k">agent.turn_completed_quantity_input_tokens_total<br>agent.turn_completed_quantity_output_tokens_total<br>agent.turn_completed_quantity_tool_count_total</td><td class="k">counter</td><td>same labels as <code>agent.turn_completed</code> — auto-derived per-call from its <code>quantities</code>; this is where token counts actually live today, not any <code>cost.*</code> series</td></tr>
+          <tr><td class="k">agent.suspended_total<br>agent.suspension_cleared_total</td><td class="k">counter</td><td>none informative — <code>team_id</code>, <code>agent_instance_id</code>, <code>reason</code> are all sent but all dropped</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>API &amp; LLM calls</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Metric</th><th class="k">Type</th><th>Surviving labels</th></tr></thead>
+        <tbody>
+          <tr><td class="k">api.request_latency_ms</td><td class="k">histogram</td><td><code>route</code>, <code>method</code>, <code>status</code>, <code>http_status</code>, <code>error_code</code>, <code>exception_type</code> — emitted for every HTTP request to control-plane, knowledge-flow, and fred-agents alike</td></tr>
+          <tr><td class="k">api.error_total</td><td class="k">counter</td><td>same as above; only on non-2xx/3xx</td></tr>
+          <tr><td class="k">error.total</td><td class="k">counter</td><td>generic error counter emitted alongside <code>api.error_total</code>, same labels</td></tr>
+          <tr><td class="k">llm.call_latency_ms</td><td class="k">histogram</td><td><code>model_name</code> only — <code>agent_id</code> and <code>operation</code> are sent but dropped</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Retrieval &amp; ingestion</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Metric</th><th class="k">Type</th><th>Surviving labels</th></tr></thead>
+        <tbody>
+          <tr><td class="k">rag.search_latency_ms</td><td class="k">histogram</td><td>none by default — <code>backend</code>, <code>index</code> are sent but dropped; <code>status</code>/<code>error_code</code> survive when set</td></tr>
+          <tr><td class="k">rag.search_total<br>rag.search_error_total<br>rag.search_hits_total<br>rag.search_top_k_total<br>rag.search_empty_total</td><td class="k">counter</td><td><code>status</code></td></tr>
+          <tr><td class="k">rag.search_hit_ratio</td><td class="k">gauge</td><td><code>status</code></td></tr>
+          <tr><td class="k">rag.rerank_latency_ms<br>rag.rerank_total<br>rag.rerank_docs_total<br>rag.rerank_top_r_total</td><td class="k">timer/counter</td><td><code>status</code>, <code>model</code></td></tr>
+          <tr><td class="k">document.created_total<br>document.deleted_total</td><td class="k">counter</td><td><code>file_type</code> only — <code>source_type</code>, <code>team_id</code> are sent but dropped</td></tr>
+          <tr><td class="k">ingestion.document_duration_ms</td><td class="k">histogram</td><td><code>file_type</code>, <code>status</code> — <code>source</code> is sent but dropped</td></tr>
+          <tr><td class="k">app.phase_latency_ms</td><td class="k">histogram</td><td><code>agent_step</code> only, and only from the ReAct/Graph runtime call sites that set it — <code>phase</code> is sent everywhere but always dropped; the knowledge-flow and vector-store call sites don't set <code>agent_step</code> at all, so those observations are effectively unlabeled</td></tr>
+          <tr><td class="k">temporal.system.activity_queue_wait_ms</td><td class="k">histogram</td><td>none — <code>phase</code>, <code>activity_type</code>, <code>task_queue</code>, <code>workflow_type</code>, <code>attempt</code> are all sent but all dropped</td></tr>
+          <tr><td class="k">temporal.system.activity_duration_ms</td><td class="k">histogram</td><td><code>status</code>, <code>error_code</code>, <code>file_type</code> — <code>phase</code>, <code>activity_type</code>, <code>task_queue</code>, <code>workflow_type</code>, <code>attempt</code>, <code>source_type</code>, <code>source_tag</code> are sent but dropped</td></tr>
+          <tr><td class="k">temporal.ingestion.documents_total</td><td class="k">counter</td><td><code>status</code>, <code>error_code</code>, <code>file_type</code> — same dims as <code>temporal.system.activity_duration_ms</code> above; the rest dropped</td></tr>
+          <tr><td class="k">temporal.ingestion.workflows_total</td><td class="k">counter</td><td><code>status</code> only — <code>task_queue</code>, <code>workflow_type</code>, <code>has_error</code>, <code>has_document_uid</code>, <code>has_filename</code>, <code>workflow_id_prefix</code> are sent but dropped</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="src">Source: fred-runtime <code>react/middleware/tool_observability.py</code>, <code>tracing_kpi.py</code>, <code>app/agent_app.py</code> · fred-core <code>kpi/http_middleware.py</code>, <code>kpi/kpi_writer.py</code>, <code>kpi/kpi_phase_metric.py</code> · knowledge-flow-backend <code>features/metadata/service.py</code>, <code>features/ingestion/ingestion_controller.py</code>, <code>features/scheduler/kpi_utils.py</code> · <code>vector_search_service.py</code> · control-plane-backend <code>agent_instances/suspension.py</code></p>
+  </section>
+
+  <!-- ── Gaps ───────────────────────────────────────────── -->
+  <section id="gaps">
+    <h2>Defined, but not on /metrics</h2>
+    <p>These look like Prometheus metrics — same naming convention, same codebase — and aren't. Don't build a panel against them:</p>
+    <div class="callout warn">
+      <strong><code>agent.tool.invocation.started</code> / <code>.completed</code></strong> are
+      <strong>Stream-3 audit-log events</strong>, not metrics. They're written to the audit logger
+      and never call into the KPI/Prometheus pipeline at all.
+    </div>
+    <div class="callout warn">
+      <strong><code>process.memory.*</code> / <code>process.db_pool.*</code></strong> KPI gauges
+      are explicitly excluded from Prometheus by name-prefix check (they stay in the log/OpenSearch
+      pipeline). What you'll find under a similar-looking <code>process_*</code> name on
+      <code>/metrics</code> instead — <code>process_resident_memory_bytes</code>,
+      <code>process_cpu_seconds_total</code>, <code>process_open_fds</code>, etc. — comes from
+      <code>prometheus_client</code>'s own generic process collector, and carries no DB-pool or
+      Fred-specific data at all.
+    </div>
+    <div class="callout">
+      <strong><code>agent.step_total</code>, <code>llm.rate_limit_events_total</code>,
+      <code>llm.request_latency_ms</code>, and every <code>cost.*</code> field</strong>
+      (<code>cost.tokens_prompt</code>, <code>cost.tokens_completion</code>,
+      <code>cost.tokens_total</code>, <code>cost.usd</code>) are declared in code but have zero
+      call sites today — nothing emits them. Token counts are live today, just under a different
+      name: see <code>agent.turn_completed_quantity_input_tokens_total</code> /
+      <code>_output_tokens_total</code> above.
+    </div>
+  </section>
+
+  <!-- ── Scrape ─────────────────────────────────────────── -->
+  <section id="scrape">
+    <h2>Scrape config &amp; PromQL</h2>
+    <p>
+      Minimal <code>prometheus.yml</code> shape — swap in your deployment's actual metrics host
+      and port for each service (see the callout above; it's not the same value as the API port):
+    </p>
+    <pre><code>scrape_configs:
+  - job_name: fred-control-plane
+    static_configs:
+      - targets: ["&lt;control-plane-metrics-host:port&gt;"]
+  - job_name: fred-knowledge-flow
+    static_configs:
+      - targets: ["&lt;knowledge-flow-metrics-host:port&gt;"]
+  - job_name: fred-agents
+    static_configs:
+      - targets: ["&lt;fred-agents-metrics-host:port&gt;"]
+  - job_name: fred-knowledge-flow-worker
+    static_configs:
+      - targets: ["&lt;knowledge-flow-worker-metrics-host:port&gt;"]</code></pre>
+    <p>Example queries, matched to the verified type/label pairs above:</p>
+    <pre><code># p95 tool latency by tool
+histogram_quantile(0.95,
+  sum(rate(agent_tool_latency_ms_bucket[5m])) by (le, tool_name))
+
+# tool failure rate by tool
+sum(rate(agent_tool_failed_total[5m])) by (tool_name)
+  / sum(rate(agent_tool_latency_ms_count[5m])) by (tool_name)
+
+# API error rate by route
+sum(rate(api_error_total[5m])) by (route)
+  / sum(rate(api_request_latency_ms_count[5m])) by (route)
+
+# API p95 latency by route
+histogram_quantile(0.95,
+  sum(rate(api_request_latency_ms_bucket[5m])) by (le, route))
+
+# LLM call latency p95 by model
+histogram_quantile(0.95,
+  sum(rate(llm_call_latency_ms_bucket[5m])) by (le, model_name))
+
+# turn error rate by agent template
+sum(rate(agent_turn_error_total[5m])) by (template_agent_id)
+  / sum(rate(agent_turn_completed_count[5m])) by (template_agent_id)</code></pre>
+    <p class="src">Types confirmed from recording calls in <code>prometheus_kpi_store.py</code>: <code>"timer"</code>/<code>"distribution"</code> → Histogram (use <code>histogram_quantile</code> on <code>_bucket</code>), <code>"counter"</code> → Counter (use <code>rate()</code>), <code>"gauge"</code> → Gauge (query directly).</p>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Related documents</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="access-model.html">
+        <div class="ref-topic">Access model →</div>
+        <div class="ref-path">per-user/team data lives here, not in Grafana</div>
+      </a>
+      <a class="ref-card" href="architecture.html">
+        <div class="ref-topic">Platform Architecture →</div>
+        <div class="ref-path">where each backend and worker runs</div>
+      </a>
+      <a class="ref-card" href="nothing-enabled-by-default.html">
+        <div class="ref-topic">Bootstrap, capabilities &amp; teams →</div>
+        <div class="ref-path">the platform-admin operations these metrics observe</div>
+      </a>
+      <a class="ref-card" href="deploy-gke.html">
+        <div class="ref-topic">Deploying on GCP / GKE →</div>
+        <div class="ref-path">run the platform this scrapes</div>
+      </a>
+      <a class="ref-card" href="docling-ingestion-sizing.html">
+        <div class="ref-topic">Sizing the PDF Ingestion Worker →</div>
+        <div class="ref-path">what temporal.ingestion.* and ingestion.document_duration_ms look like when the worker is thrashing</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
