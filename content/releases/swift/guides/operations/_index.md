@@ -23,6 +23,17 @@ For the end-user perspective, see the [User Guide]({{< ref "/releases/swift/guid
 
 A curated overview of a complete Fred deployment on Google Kubernetes Engine — the components, the stores, and the executable completeness checklist that tells you it is correct, not just running — is in the [Deploying Fred on GKE](/docs/deploy-gke.html) page. The environment-specific runbook (ordered commands, secrets, the completeness checker) ships with the Helm chart in the deployment repository.
 
+## Sizing the PDF ingestion worker (Docling)
+
+The `medium`/`rich` ingestion profiles run PDFs through Docling (OCR + layout) on the
+knowledge-flow Temporal worker. Getting `docling_num_threads` wrong relative to
+`ingestion_max_concurrent_activities` and the worker's actual CPU (the pod's
+`resources.limits.cpu` in Kubernetes, never the node's core count) causes silent CPU
+thrashing that looks like a hung pipeline rather than a config error. The sizing
+formula, a threads × concurrency safe/caution/danger abacus with measured numbers,
+and a diagnostic checklist ("check `top`/`mpstat` per core before concluding it's a
+deadlock") are in [Sizing the PDF Ingestion Worker (Docling)](/docs/docling-ingestion-sizing.html).
+
 ## Key differences from Kea operations
 
 Swift 2.0 uses a simpler service topology than Kea. `fred-agents` is a standalone Python pod — there is no separate agentic backend. The same two-file model configuration pattern applies (`configuration.yaml` + `models_catalog.yaml`), but there is no Knowledge Flow dependency for agents that do not use RAG tools.

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+  Verified against the `fred` monorepo, branch `consolidation-22-07`, by reading
+  apps/knowledge-flow-backend/knowledge_flow_backend/common/structures.py
+  (DoclingPdfProcessingConfig.docling_num_threads), core/processors/input/
+  pdf_markdown_processor/{docling_processor,pdf_markdown_processor}.py, and
+  config/{configuration,configuration_prod,configuration_worker}.yaml. Measured
+  values (CPU%, thread counts, per-document timings) come from a live local
+  debug session on an Intel Core Ultra 7 258V (8 logical cores, 4 P-cores
+  @4.7-4.8GHz + 4 E-cores @3.7GHz, no hyperthreading) — treat them as one
+  concrete data point illustrating the failure mode, not a universal
+  benchmark; the sizing formula is what generalizes, not the raw numbers.
+-->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Sizing the PDF Ingestion Worker (Docling)</title>
+  <meta name="description" content="Why a Docling PDF ingestion worker can look hung when it's actually CPU-thrashing, the docling_num_threads sizing formula, and a diagnostic checklist for native and Kubernetes deployments.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --d:      #dc2626;  --d-bg: #fef2f2;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    212px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --d:      #f87171;  --d-bg: #7f1d1d30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    main { width: 100%; max-width: 900px; margin: 0 auto; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
+
+    .hd { margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 620px; }
+
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+    h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    p { font-size: 0.9rem; margin-bottom: 0.7rem; max-width: 680px; }
+    p strong { color: var(--text); font-weight: 650; }
+    ol, ul { font-size: 0.9rem; margin: 0.4rem 0 0.7rem 1.2rem; max-width: 680px; }
+    ol li, ul li { margin-bottom: 0.4rem; }
+    .src { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-top: 0.6rem; }
+
+    .callout { background: var(--bg2); border-left: 3px solid var(--border); padding: 0.7rem 1rem; border-radius: 0 var(--rad) var(--rad) 0; font-size: 0.84rem; color: var(--muted); margin: 0.85rem 0; max-width: 700px; }
+    .callout strong { color: var(--text); }
+    .callout.warn  { border-left-color: var(--s); }
+    .callout.info  { border-left-color: var(--c); }
+    .callout.ok    { border-left-color: var(--r); }
+    .callout.danger { border-left-color: var(--d); }
+
+    .tablewrap { overflow-x: auto; margin: 0.85rem 0; max-width: 100%; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.82rem; min-width: 460px; }
+    th, td { text-align: left; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 700; background: var(--bg2); }
+    td.k, th.k { font-family: var(--mono); font-size: 0.76rem; white-space: nowrap; }
+    tbody tr:hover { background: var(--bg2); }
+    .legend { font-size: 0.74rem; color: var(--muted); margin-top: 0.4rem; }
+
+    .zone { display: inline-block; padding: 0.1em 0.55em; border-radius: 999px; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+    .zone-safe   { background: var(--r-bg); color: var(--r); }
+    .zone-caution { background: var(--s-bg); color: var(--s); }
+    .zone-danger { background: var(--d-bg); color: var(--d); }
+
+    code { font-family: var(--mono); font-size: 0.83em; background: var(--bg2); padding: 0.1em 0.35em; border-radius: 3px; border: 1px solid var(--border); }
+    pre { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--rad); padding: 0.9rem 1rem; margin: 0.85rem 0; overflow-x: auto; max-width: 700px; }
+    pre code { background: none; border: none; padding: 0; font-size: 0.78rem; line-height: 1.6; }
+
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-path { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+    a.inline { color: var(--c); text-decoration: none; font-weight: 600; }
+    a.inline:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Docling Ingestion Sizing</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#formula">Sizing principle &amp; formula</a></li>
+    <li><a href="#abacus">Threads × concurrency abacus</a></li>
+    <li><a href="#checklist">Diagnostic checklist</a></li>
+    <li><a href="#bugs">What we actually hit</a></li>
+    <li><a href="#related">Related documents</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">docs / operations / knowledge-flow-backend</div>
+    <h1>Sizing the PDF Ingestion Worker (Docling)</h1>
+    <p class="hd-lead">
+      The <code>medium</code> and <code>rich</code> ingestion profiles run every PDF through
+      Docling (OCR + layout) on a Temporal worker. Get the thread count wrong relative to
+      worker concurrency and CPU cores, and ingestion doesn't error — it just goes silent for
+      minutes at a time. This page is the operational reference for avoiding and diagnosing that.
+    </p>
+  </div>
+
+  <!-- ── Formula ────────────────────────────────────────── -->
+  <section id="formula">
+    <h2>Sizing principle &amp; formula</h2>
+    <p>
+      A Temporal worker runs up to <code>scheduler.temporal.ingestion_max_concurrent_activities</code>
+      PDF extractions <strong>at the same time</strong>, each in its own activity thread. Each of
+      those extractions independently spins up its own Docling accelerator pool, sized by
+      <code>processing.profiles.&lt;profile&gt;.pdf.docling_num_threads</code> (OMP/accelerator
+      threads — Pydantic field, default <code>4</code>, only meaningful for the <code>medium</code>
+      and <code>rich</code> profiles, since those are the only ones with <code>extractor: docling</code>).
+    </p>
+    <p>
+      Nothing ties these two numbers together automatically. Total OMP threads in flight at any
+      moment is their product, and that product has to fit inside the CPU you actually have —
+      not the CPU you think you have.
+    </p>
+    <div class="callout info">
+      <strong>The formula:</strong>
+      <pre><code>docling_num_threads ≈ available_cores ÷ ingestion_max_concurrent_activities</code></pre>
+      <ul style="margin-top:0.4rem;">
+        <li><strong>Native (<code>make run-worker</code>):</strong> <code>available_cores</code> = <code>nproc</code> — the host's logical core count.</li>
+        <li><strong>Kubernetes:</strong> <code>available_cores</code> = the worker pod's <code>resources.limits.cpu</code> — <strong>never</strong> the host node's core count. A pod capped at 2 vCPU on a 64-core node still only gets 2 vCPU worth of scheduler time; sizing off the node's <code>nproc</code> reproduces the exact same thrash inside the cgroup.</li>
+      </ul>
+    </div>
+    <p>
+      A pod limited to 2 vCPU with <code>ingestion_max_concurrent_activities: 3</code> must not
+      exceed <code>docling_num_threads: 1</code> — going higher hits the same symptom as the
+      native case: the pod pins at 100% of its cgroup CPU limit and extractions appear to stall,
+      even though nothing has actually deadlocked.
+    </p>
+    <p class="src">Source: <code>knowledge_flow_backend/common/structures.py</code> (<code>docling_num_threads</code> field, <code>DoclingPdfExtractor.__init__</code> wiring) · <code>config/configuration.yaml</code>, <code>config/configuration_prod.yaml</code> (inline sizing comment on both <code>medium</code> and <code>rich</code> profiles) · <code>deploy/charts/fred/values.yaml</code> (sizing comment next to <code>ingestion_max_concurrent_activities</code> — no value is imposed there, since it depends on the pod's real CPU limit)</p>
+  </section>
+
+  <!-- ── Abacus ─────────────────────────────────────────── -->
+  <section id="abacus">
+    <h2>Threads × concurrency abacus</h2>
+    <p>
+      Zones below are relative to <code>available_cores</code> (host <code>nproc</code> natively,
+      pod CPU limit in Kubernetes) — read <strong>ratio</strong>, not the absolute thread count,
+      when translating to your own hardware or pod sizing.
+    </p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Total OMP threads (num_threads × concurrent activities)</th><th>Ratio vs. available cores</th><th>Zone</th></tr></thead>
+        <tbody>
+          <tr><td>≤ available cores</td><td>≤ 1.0×</td><td><span class="zone zone-safe">safe</span></td></tr>
+          <tr><td>up to ~1.5× available cores</td><td>1.0×–1.5×</td><td><span class="zone zone-caution">caution</span> — some scheduler contention, still makes forward progress</td></tr>
+          <tr><td>&gt; 1.5× available cores</td><td>&gt;1.5×</td><td><span class="zone zone-danger">danger</span> — severe OMP thread thrashing, looks like a hang</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Two measured points on an 8-logical-core dev machine (Intel Core Ultra 7 258V, 4 P-cores @4.7-4.8GHz + 4 E-cores @3.7GHz, no hyperthreading), <code>ingestion_max_concurrent_activities: 3</code> in both cases:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="k">Config</th><th class="k">Total OMP threads</th><th class="k">Ratio vs. 8 cores</th><th>Zone</th><th>Observed behavior</th></tr></thead>
+        <tbody>
+          <tr><td class="k">docling_num_threads=8 × 3 concurrent</td><td class="k">24</td><td class="k">3.0×</td><td><span class="zone zone-danger">danger</span></td><td>CPU 253%, 131 system threads, logs silent &gt;2 min, one document took 67s</td></tr>
+          <tr><td class="k">docling_num_threads=2 × 3 concurrent</td><td class="k">6</td><td class="k">0.75×</td><td><span class="zone zone-safe">safe</span></td><td>CPU ~400%, continuous cadence, 15–45s/doc, no stalls</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout warn">
+      These two numbers are one concrete data point, not a universal benchmark — Docling's
+      per-document time depends on page count, image density, and table complexity. What
+      transfers to other hardware is the <strong>ratio</strong> (safe at ≤1.0×, danger above
+      1.5×), not the raw seconds-per-document figures.
+    </div>
+  </section>
+
+  <!-- ── Checklist ──────────────────────────────────────── -->
+  <section id="checklist">
+    <h2>Diagnostic checklist</h2>
+    <p>
+      <strong>If ingestion looks stuck, check per-core CPU before concluding it's a deadlock.</strong>
+      A thrashing worker and a genuinely hung one look identical from the ingestion UI — both show
+      "Processing" with no progress — but they need opposite fixes.
+    </p>
+    <ol>
+      <li>
+        <strong>Check per-core CPU, not just aggregate load.</strong> Run <code>top</code> (process-level %CPU)
+        and <code>mpstat -P ALL 1</code> (per-core breakdown) on the worker host/pod. Aggregate CPU
+        pinned near <code>ingestion_max_concurrent_activities × 100%</code> with every core individually
+        saturated is oversubscription, not a hang — proceed to step 2, not to restarting the worker.
+      </li>
+      <li>
+        <strong>Count OS threads on the worker process.</strong> <code>ps -o nlwp &lt;pid&gt;</code>
+        or <code>cat /proc/&lt;pid&gt;/status | grep Threads</code>. A count far above
+        <code>ingestion_max_concurrent_activities</code> (dozens to 100+) points at OMP
+        over-threading, not stuck activities.
+      </li>
+      <li>
+        <strong>Confirm the ratio.</strong> Multiply the configured
+        <code>docling_num_threads</code> by <code>ingestion_max_concurrent_activities</code> and
+        compare against <code>available_cores</code> (see <a class="inline" href="#formula">the formula above</a>) —
+        in Kubernetes, read the pod's actual <code>resources.limits.cpu</code>, don't assume the node's.
+        Above the 1.5× danger threshold, resize <code>docling_num_threads</code> down before
+        investigating anything else.
+      </li>
+      <li>
+        <strong>Rule out the extractor silently falling back.</strong> Docling initialization
+        failures (missing model artifacts, bad <code>path_base_model</code>) fail fast — in
+        under a millisecond — and fall back to <code>markitdown</code> silently: no OCR, no
+        layout, but no visible error either, and no CPU thrash symptom. If ingestion completes
+        <em>too</em> fast for a scanned/layout-heavy PDF and quality looks degraded, check the
+        worker's startup logs for a Docling init failure before assuming the CPU-sizing issue above.
+      </li>
+      <li>
+        <strong>Only after 1–4: consider a genuine stall</strong> (network-dependent model
+        download hanging, a Temporal activity stuck waiting on I/O). If per-core CPU is idle
+        while ingestion is silent, that's the real signal for an actual hang — worth checking
+        second, not first, since CPU thrash is the far more common cause in practice.
+      </li>
+    </ol>
+  </section>
+
+  <!-- ── What we hit ────────────────────────────────────── -->
+  <section id="bugs">
+    <h2>What we actually hit</h2>
+    <p>Three distinct issues surfaced in one live debug session on <code>medium</code>/<code>rich</code>-profile PDF ingestion — worth knowing about even if you never reproduce them verbatim, since two of the three don't fail loudly.</p>
+
+    <h3>1. Docker model path used in native execution</h3>
+    <p>
+      <code>config/configuration_worker.yaml</code> had <code>processing.path_base_model: "/app"</code>
+      (commented "Use for docker"), while <code>configuration.yaml</code> and
+      <code>configuration_prod.yaml</code> use <code>"."</code>. Running the worker natively
+      (<code>make run-worker</code>) resolved Docling's <code>artifacts_path</code> to
+      <code>/app/models</code> — a path that doesn't exist outside a container — so pipeline
+      initialization failed in ~1ms for every document, falling back to <code>markitdown</code>
+      silently (OCR and layout extraction lost, no visible error). Fixed by aligning
+      <code>path_base_model</code> to <code>"."</code> in <code>configuration_worker.yaml</code>.
+    </p>
+
+    <h3>2. Shared work directory across parallel extractions</h3>
+    <p>
+      <code>application_context.get_input_processor_instance()</code> caches one
+      <code>PdfMarkdownProcessor</code> singleton per class for the worker's whole lifetime. The
+      processor used to create a single <code>self.folder</code> temp directory in
+      <code>__init__</code>, shared by every document processed concurrently across Temporal
+      activity threads. A thread that finished ran <code>self._remove_all_files(self.folder)</code>
+      in its <code>finally</code> block and deleted images another thread was still reading —
+      <code>FileNotFoundError: img0.png</code>, silent fallback to <code>markitdown</code>. Fixed:
+      every call to <code>convert_file_to_markdown</code> now creates its own
+      <code>tempfile.mkdtemp()</code>, passed explicitly to the extractor and cleaned up only for
+      that call.
+    </p>
+
+    <h3>3. CPU oversubscription from a hardcoded OMP thread count</h3>
+    <p>
+      <code>DoclingPdfExtractor</code> hardcoded <code>AcceleratorOptions(num_threads=8)</code>,
+      independent of <code>ingestion_max_concurrent_activities</code> or the cores actually
+      available. See the <a class="inline" href="#abacus">measured numbers above</a> for what
+      that produced on an 8-core machine at concurrency 3. Fixed by adding
+      <code>processing.profiles.&lt;profile&gt;.pdf.docling_num_threads</code> (default 4),
+      threaded through <code>DoclingPdfExtractor.__init__(num_threads=...)</code>.
+    </p>
+
+    <div class="callout ok">
+      Bugs 1 and 2 are silent by design of the fallback path — <code>markitdown</code> succeeding
+      means no exception surfaces, so ingestion "works" with degraded output. If OCR/layout
+      quality looks wrong on <code>medium</code>/<code>rich</code>-profile PDFs, check worker
+      startup logs for a Docling init failure before assuming a model or content problem.
+    </div>
+    <p class="src">Files: <code>knowledge_flow_backend/common/structures.py</code> · <code>core/processors/input/pdf_markdown_processor/{docling_processor,pdf_markdown_processor}.py</code> · <code>config/configuration{,_prod,_worker}.yaml</code> · <code>deploy/charts/fred/values.yaml</code></p>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Related documents</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="deploy-gke.html">
+        <div class="ref-topic">Deploying on GCP / GKE →</div>
+        <div class="ref-path">set the worker pod's CPU limit this sizing depends on</div>
+      </a>
+      <a class="ref-card" href="observability-and-kpis.html">
+        <div class="ref-topic">Observability &amp; KPIs →</div>
+        <div class="ref-path">temporal.ingestion.* and ingestion.document_duration_ms metrics</div>
+      </a>
+      <a class="ref-card" href="/releases/swift/guides/operations/">
+        <div class="ref-topic">Operations Guide →</div>
+        <div class="ref-path">/releases/swift/guides/operations</div>
+      </a>
+      <a class="ref-card" href="https://github.com/ThalesGroup/fred">
+        <div class="ref-topic">Fred on GitHub →</div>
+        <div class="ref-path">source, Helm chart &amp; runbook</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
