@@ -1,20 +1,24 @@
 {{ define "main" }}
 <section class="section container-fluid mt-n3 pb-3">
   <div class="text-center">
-    <img src="/images/fred.svg" alt="Fred Logo" style="width: 100px; margin-bottom: 20px;" class="img-fluid">
+    <img src="/images/fred.svg" alt="Fred Logo" style="width: 80px; margin-bottom: 12px;" class="img-fluid">
   </div>
   <div class="row justify-content-center">
     <div class="col-lg-12 text-center">
-      <h1>{{ .Title }}</h1>
+      {{ with .Params.eyebrow }}<p class="hero-eyebrow">{{ . }}</p>{{ end }}
+      <h1>{{ .Params.headline | safeHTML }}</h1>
     </div>
     <div class="col-lg-9 col-xl-8 text-center">
       <p class="lead">{{ .Params.lead | safeHTML }}</p>
       <div class="my-3">
         <a class="btn btn-primary btn-cta rounded-pill btn-lg mx-1" href="/docs/getting-started.html" role="button">Get Started</a>
         <a class="btn btn-outline-secondary rounded-pill btn-lg mx-1" href="/docs/what-is-fred.html" role="button">What is Fred?</a>
+        <a class="btn btn-outline-secondary rounded-pill btn-lg mx-1" href="/blog/" role="button">Blog</a>
       </div>
-      {{ .Content }}
     </div>
+  </div>
+  <div class="container text-center">
+    {{ .Content }}
   </div>
 </section>
 {{ end }}
@@ -25,32 +29,6 @@
     <div class="bg-dots"></div>
   </div>
   {{ end -}}
-  {{ if eq $.Site.Language.LanguageName "English" }}
-  <section class="section section-md section-features">
-    <div class="container">
-      <div class="row justify-content-center text-center">
-        <div class="col-lg-6 mb-4">
-          <h2 class="h4">Built for Agent Engineers</h2>
-          <p class="mb-0">Fred offers a clean, composable Python SDK to define your own agents — from static document responders to stateful planners and tool users — with full support for async, streaming, and LangGraph workflows.</p>
-        </div>
-        <div class="col-lg-6 mb-4">
-          <h2 class="h4">Dynamic Agent Creation</h2>
-          <p class="mb-0">Fred supports creating agents at runtime — via code or API. Mix declarative YAML with programmatic flows. Your agents can load models, tools, or datasets on the fly, adapting to user or system needs.</p>
-        </div>
-      </div>
-      <div class="row justify-content-center text-center">
-        <div class="col-lg-6 mb-4">
-          <h2 class="h4">Fast to Prototype, Safe to Deploy</h2>
-          <p class="mb-0">Fred is both an innovation lab and a production-ready application. It gives developers a low-friction way to test new agentic ideas, while offering secure deployment (VM, Kubernetes, Helm) for enterprise scenarios.</p>
-        </div>
-        <div class="col-lg-6 mb-4">
-          <h2 class="h4">Designed for Complex Workflows</h2>
-          <p class="mb-0">Fred was built to handle real-world challenges where no single agent is enough. It lets you compose teams of experts — some retrieving documents, others invoking tools — to solve problems together.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-  {{ end }}
 {{ end }}
 
 {{ define "sidebar-footer" }}

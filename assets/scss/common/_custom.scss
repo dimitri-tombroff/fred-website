@@ -57,80 +57,138 @@
   }
 }
 
-// Homepage claim: "Governed · Powerful · Composable"
-.fred-claim {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  row-gap: 0.5rem;
-  margin: 2.75rem 0 1.75rem;
-}
-
-.fred-claim-word {
-  font-family: $headings-font-family;
-  font-weight: 700;
-  font-size: 2.6rem;
-  letter-spacing: -0.025em;
-  padding: 0 1.5rem;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-}
-
-.fred-claim-word.is-govern {
-  background-image: linear-gradient(95deg, #3d2159, #6b3f92);
-}
-
-.fred-claim-word.is-power {
-  background-image: linear-gradient(95deg, #7a2f6b, #b8548f);
-}
-
-.fred-claim-word.is-compose {
-  background-image: linear-gradient(95deg, #2f4a8f, #5a8fd6);
-}
-
-.fred-claim-rule {
-  width: 1px;
-  height: 2.25rem;
-  background-color: var(--bs-border-color);
-  flex: 0 0 auto;
-}
-
-.fred-claim-sub {
-  max-width: 34rem;
-  margin: 0 auto 1.5rem;
+// Homepage hero eyebrow (above the H1)
+.hero-eyebrow {
+  font-family: $font-family-monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--bs-secondary-color);
+  margin-bottom: 1rem;
 }
 
-[data-bs-theme="dark"] .fred-claim-word.is-govern,
-.dark .fred-claim-word.is-govern {
-  background-image: linear-gradient(95deg, #a980d6, #d6b6f0);
+// Homepage headline: shrink the theme's fluid `.home h1` (which scales with
+// viewport width, calc(1.875rem + 1.5vw)) and keep it to one horizontal line
+// instead of three stacked lines, so the hero fits closer to a single screen.
+.home h1 {
+  // Same calc() shape the theme itself uses for its fluid `.home h1` size
+  // (dart-sass evaluates clamp()/min()/max() arguments at compile time and
+  // rejects mixed rem/vw units there, but leaves calc() alone).
+  font-size: calc(1rem + 1.5vw);
+  margin-top: 0.5rem;
 }
 
-[data-bs-theme="dark"] .fred-claim-word.is-power,
-.dark .fred-claim-word.is-power {
-  background-image: linear-gradient(95deg, #e08fc0, #f5c8e0);
+// Homepage triptych: "Governed · Open · Composable"
+// Three verifiable properties, one column each, replaces the old stacked
+// "Governed · Powerful · Composable" claim.
+.fred-triptych {
+  max-width: 68.75rem;
+  margin: 2.5rem auto 0;
 }
 
-[data-bs-theme="dark"] .fred-claim-word.is-compose,
-.dark .fred-claim-word.is-compose {
-  background-image: linear-gradient(95deg, #8ab0ec, #c6dcfb);
+.fred-triptych-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
 }
 
-@media (max-width: 575.98px) {
-  .fred-claim {
-    flex-direction: column;
-    row-gap: 0.15rem;
+.fred-pillar {
+  padding: 0 1.75rem;
+  text-align: left;
+}
+
+.fred-pillar + .fred-pillar {
+  border-left: 1px solid var(--bs-border-color);
+}
+
+.fred-pillar-word {
+  font-family: $headings-font-family;
+  font-weight: $headings-font-weight;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.fred-pillar-desc {
+  font-size: 0.9rem;
+  color: var(--bs-body-color);
+  line-height: 1.55;
+  margin-bottom: 1rem;
+}
+
+.fred-pillar-proof {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: $font-family-monospace;
+  font-size: 0.78rem;
+  color: var(--bs-secondary-color);
+  margin-bottom: 0;
+}
+
+.fred-pillar--governed .fred-pillar-word,
+.fred-pillar--governed .fred-pillar-tick {
+  color: $fred-governed;
+}
+
+.fred-pillar--open .fred-pillar-word,
+.fred-pillar--open .fred-pillar-tick {
+  color: $primary;
+}
+
+.fred-pillar--composable .fred-pillar-word,
+.fred-pillar--composable .fred-pillar-tick {
+  color: $info;
+}
+
+[data-bs-theme="dark"] .fred-pillar--governed .fred-pillar-word,
+[data-bs-theme="dark"] .fred-pillar--governed .fred-pillar-tick,
+.dark .fred-pillar--governed .fred-pillar-word,
+.dark .fred-pillar--governed .fred-pillar-tick {
+  // $primary and $info already carry across dark mode elsewhere on the site;
+  // $fred-governed is new and needs a lighter tint to stay legible on a dark background.
+  color: lighten($fred-governed, 20%);
+}
+
+@include media-breakpoint-down(md) {
+  .fred-triptych-grid {
+    grid-template-columns: 1fr;
   }
 
-  .fred-claim-word {
-    font-size: 1.9rem;
-    padding: 0.15rem 0;
+  .fred-pillar {
+    padding: 1.5rem 0;
   }
 
-  .fred-claim-rule {
-    display: none;
+  .fred-pillar + .fred-pillar {
+    border-left: none;
+    border-top: 1px solid var(--bs-border-color);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fred-pillar {
+    animation: fred-pillar-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .fred-pillar:nth-child(1) {
+    animation-delay: 0.05s;
+  }
+
+  .fred-pillar:nth-child(2) {
+    animation-delay: 0.12s;
+  }
+
+  .fred-pillar:nth-child(3) {
+    animation-delay: 0.19s;
+  }
+
+  @keyframes fred-pillar-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 }

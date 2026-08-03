@@ -64,7 +64,7 @@ Fred is not a thin wrapper around an LLM, and it is also not yet the final form 
 
 In the current codebase, Fred already provides a unified runtime that can resolve both remote MCP tools and local in-process capabilities, shared helpers for governance (including tool-approval HITL and localized HITL payload generation), deterministic workflow agents built with explicit LangGraph state machines, interrupt/resume orchestration as a platform primitive, integration patterns for long-running execution, and a UI/API surface increasingly shaped by platform concerns rather than prompt-only concerns.
 
-There is also a second dimension that matters enormously in practice, especially in on-premise environments: the knowledge layer itself. In Fred, corpus management, document ingestion, and RAG preparation are treated as infrastructure concerns (with explicit trade-offs around latency, fidelity, delegation, and observability), not as incidental helpers attached to an agent prompt. This point matters because many agent platforms remain convincing at the reasoning layer while staying fragile at the document layer. Fred is unusual precisely because it addresses both. (I discuss this in more detail in [Document Ingestion Is Not a Side Effect](/blog/rags-02-26/).)
+There is also a second dimension that matters enormously in practice, especially in on-premise environments: the knowledge layer itself. In Fred, corpus management, document ingestion, and RAG preparation are treated as infrastructure concerns (with explicit trade-offs around latency, fidelity, delegation, and observability), not as incidental helpers attached to an agent prompt. This point matters because many agent platforms remain convincing at the reasoning layer while staying fragile at the document layer. Fred is unusual precisely because it addresses both. (I discuss this in more detail in [Document Ingestion Is Not a Side Effect](/blog/document-ingestion-is-not-a-side-effect/).)
 
 At the same time, Fred is still in a transitional phase in a few places, and that is an important part of the story. For example, the catalog UI is still conceptually framed as an “MCP” catalog, even though it can now expose both remote MCP connectors and local in-process providers. Similarly, the architectural decomposition Planner -> Policy -> Executor is already visible in the design and in some building blocks, but the full platform-wide composition is still being consolidated.
 
@@ -210,4 +210,4 @@ Fred is built by a small team, and we are still learning by building, operating,
 
 - [Agent Framework Container Wars](https://thenewstack.io/agent-framework-container-wars/)
 - [Martin Fowler on Preparing for AI's Nondeterministic Computing](https://thenewstack.io/martin-fowler-on-preparing-for-ais-nondeterministic-computing/)
-- [Document Ingestion Is Not a Side Effect](/blog/rags-02-26/)
+- [Document Ingestion Is Not a Side Effect](/blog/document-ingestion-is-not-a-side-effect/)

@@ -1,1 +1,6 @@
 // Put your custom SCSS variables here
+
+// Deep, sober green for the "Governed" hero pillar. No equivalent token exists
+// on the site: $green/--bs-success resolves to a bright lime (hsl(101 82% 63%)),
+// unsuitable for a calm, verifiable-properties accent.
+$fred-governed: #3f6f5c;
