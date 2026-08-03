@@ -21,7 +21,7 @@ homepage: false
 seo:
   title: "Fred Meets Kepler: Power-Aware Kubernetes with MCP and Prometheus"
   description: "Fred now integrates Kepler and a Kubernetes MCP server to analyze power usage metrics. See how it works and what insights you can unlock."
-  canonical: "https://fredk8.dev/blog/power-aware-kubernetes-with-kepler"
+  canonical: ""
   robots: "index, follow"
 ---
 
@@ -31,7 +31,7 @@ We’ve come a long way since our first [FrugalIT Inspector](https://paradox-inn
 Today, things are much simpler — and far more powerful — thanks to two major evolutions:
 
 1. The arrival of the first open-source **Prometheus MCP (Model Context Protocol)** server that standardizes metrics exposure.
-2. The rapid progress of the [**Fred** open-source project](https://fredk8.dev), which now offers agentic observability out of the box.
+2. The rapid progress of the [**Fred** open-source project](/), which now offers agentic observability out of the box.
 
 This post showcases how these two ingredients combine to make Kubernetes power analytics both accessible and intelligent. Our setup is quite simple:
 
@@ -169,5 +169,5 @@ We’re working on:
 
 Fred continues to evolve — and now, it’s energy-aware.
 
-Stay tuned — and as always, [check out the code](https://github.com/fred-agent) or [join the discussion](https://fredk8.dev)!
+Stay tuned — and as always, [check out the code](https://github.com/fred-agent) or [join the discussion](/)!
 

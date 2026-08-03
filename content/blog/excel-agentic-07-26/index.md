@@ -21,14 +21,14 @@ homepage: false
 seo:
   title: "Excel, but Agent-Ready: Deterministic Extraction and a Tabular MCP in Fred"
   description: "How Fred ingests Excel workbooks with a deterministic reconstruction pipeline instead of a vision model, exposes them through a document-centric tabular MCP, and locates values server-side to save round trips."
-  canonical: "https://fredk8.dev/blog/excel-but-agent-ready"
+  canonical: ""
   robots: "index, follow"
 ---
 
 *Why Fred doesn't hand your Excel files to a vision model, and how a deterministic extractor plus a document-centric tabular MCP let an agent understand a whole workbook — then query it precisely, in one shot.*
 
 {{< context >}}
-This article builds on [From CSV to Agent: Tabular Data Gets Smart in Fred](https://fredk8.dev/blog/smart-tabular-data-agent/), which introduced Fred's DuckDB-backed tabular store and the Tessa agent. That post handled clean CSV files. This one is about the harder, messier reality: real Excel workbooks — with merged headers, subtotals, hidden sheets, and three tables stacked on one sheet — and how we make them agent-ready.
+This article builds on [From CSV to Agent: Tabular Data Gets Smart in Fred](/blog/from-csv-to-agent-tabular-data-gets-smart-in-fred/), which introduced Fred's DuckDB-backed tabular store and the Tessa agent. That post handled clean CSV files. This one is about the harder, messier reality: real Excel workbooks — with merged headers, subtotals, hidden sheets, and three tables stacked on one sheet — and how we make them agent-ready.
 {{< /context >}}
 
 ---
@@ -305,4 +305,4 @@ The through-line of this work is a refusal to take the easy, expensive shortcut.
 
 The payoff is an agent that can read a whole workbook the way you'd skim it, then answer a pointed question with a real number — and tell you exactly which cell it came from.
 
-As always, Fred is open source: [explore the code](https://github.com/ThalesGroup/fred) or [join the community](https://fredk8.dev). Your spreadsheets are smarter than your RAG pipeline gave them credit for.
+As always, Fred is open source: [explore the code](https://github.com/ThalesGroup/fred) or [join the community](/). Your spreadsheets are smarter than your RAG pipeline gave them credit for.

@@ -196,7 +196,7 @@ style: |
 
 <small>Dimitri Tombroff &nbsp;·&nbsp; April 2025</small>
 <small>Technical Direction &nbsp;·&nbsp; Thales Service Numériques</small>
-<small>[Fred](https://fredk8.dev) Lead Architect</small>
+<small>[Fred](https://site.fredlab.dev) Lead Architect</small>
 
 
 ---

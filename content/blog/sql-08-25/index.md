@@ -19,7 +19,7 @@ homepage: false
 seo:
   title: "From SQL to Agent: Smart Database Access in Fred"
   description: "Discover how Fred integrates with SQL databases via SQLAlchemy, enabling agents like Tessa to query, update, and enrich data through natural language."
-  canonical: "https://fredk8.dev/blog/sql-agent-integration"
+  canonical: ""
   robots: "index, follow"
 ---
 

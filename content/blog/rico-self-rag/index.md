@@ -22,7 +22,7 @@ homepage: false
 seo:
   title: "Rico Learns to Reflect: Smarter Document Q&A with Self-RAG Techniques"
   description: "Explore how we improved Rico, the document expert agent in Fred, with Self-RAG ideas like document grading and answer self-evaluation using LangGraph."
-  canonical: "https://fredk8.dev/blog/rico-selfrag-upgrade"
+  canonical: ""
   robots: "index, follow"
 ---
 
@@ -135,7 +135,7 @@ Coming soon:
 - Explainability metadata (why did Rico rephrase?)
 - Integration with structured datasets, not just documents
 
-Curious to build your own Self-RAG-inspired agent? Join us at [fredk8.dev](https://fredk8.dev).
+Curious to build your own Self-RAG-inspired agent? Join us at [Fred](/).
 
 ---
 

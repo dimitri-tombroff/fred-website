@@ -19,7 +19,7 @@ homepage: false
 seo:
   title: "Smart Tabular Data: Tessa Brings CSVs to Life in Fred"
   description: "Fred now includes a Tabular Expert agent that analyzes CSV and Excel files using DuckDB and SQL. Learn how this works and what use cases it enables."
-  canonical: "https://fredk8.dev/blog/smart-tabular-data-agent"
+  canonical: ""
   robots: "index, follow"
 ---
 
@@ -198,4 +198,4 @@ We’re exploring:
 
 Tabular data is everywhere. Now, thanks to Fred and DuckDB, it’s agent-aware.
 
-Check out the new **Tabular Expert** in your Fred deployment — and as always, [explore the source](https://github.com/frThalesGroup/fred) or [join the community](https://fredk8.dev)!
+Check out the new **Tabular Expert** in your Fred deployment — and as always, [explore the source](https://github.com/frThalesGroup/fred) or [join the community](/)!

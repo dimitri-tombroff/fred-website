@@ -19,11 +19,11 @@ homepage: false
 seo:
   title: "How Fred Uses GPT-4 to Enforce Python Code Quality"
   description: "Explore how the Fred project uses OpenAI internally to review backend Python code and enforce strict architectural standards using a custom CLI tool."
-  canonical: "https://fredk8.dev/blog/ai-review-enforcing-code-guidelines"
+  canonical: ""
   robots: "index, follow"
 ---
 
-As part of the [Fred](https://fredk8.dev) open source platform, we rely on GPT-4 not just to provide agentic services — but to **review our own Python code**.
+As part of the [Fred](/) open source platform, we rely on GPT-4 not just to provide agentic services — but to **review our own Python code**.
 
 Our backend follows strict architectural guidelines to ensure clean layering, robust error handling, and maintainability across controllers, services, and utilities. To reduce reviewer workload and onboard new contributors faster, we built a CLI tool that uses OpenAI's API to enforce our development guide automatically.
 

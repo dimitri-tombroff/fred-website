@@ -10,7 +10,7 @@ toc: true
 seo:
   title: "Why Fred – A Developer Manifesto"
   description: "Fred and knowledge-flow make agentic development clean, scalable, and fun again. Learn why developers choose Fred to build serious, production-grade agents."
-  canonical: "https://fredk8.dev/why/"
+  canonical: ""
   robots: "index, follow"
 ---
 

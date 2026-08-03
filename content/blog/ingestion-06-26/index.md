@@ -19,14 +19,14 @@ homepage: false
 seo:
   title: "Ingestion Shouldn't Be a Choice: Rebuilding Fred's PDF Pipeline"
   description: "Why we removed the ingestion-mode tradeoff from the user, how we rebuilt PDF extraction to be ten times faster with 90% fewer LLM calls, and the unified architecture pointing toward transparent ingestion."
-  canonical: "https://fredk8.dev/blog/ingestion-shouldnt-be-a-choice"
+  canonical: ""
   robots: "index, follow"
 ---
 
 *Why we want to take the ingestion-mode decision away from the user, how we rebuilt the PDF → Markdown pipeline to make it fast, faithful, and cheap, and the unified ingestion architecture this points toward.*
 
 {{< context >}}
-This article continues [Document Ingestion Is Not a Side Effect](https://fredk8.dev/blog/document-ingestion-is-not-a-side-effect/) and [Rich Mode: Extending RAG with Direct Visual Evidence](https://fredk8.dev/blog/rich-mode-extending-rag-with-direct-visual-evidence/). The first argued a point: ingestion is a first-class architectural concern. The second showed how Rich mode lets us treat an image as evidence in its own right. This post sets a direction for what comes next: in time, if ingestion is well designed, the user shouldn't have to choose how it happens.
+This article continues [Document Ingestion Is Not a Side Effect](/blog/document-ingestion-is-not-a-side-effect/) and [Rich Mode: Extending RAG with Direct Visual Evidence](/blog/rich-mode-extending-rag-with-direct-visual-evidence/). The first argued a point: ingestion is a first-class architectural concern. The second showed how Rich mode lets us treat an image as evidence in its own right. This post sets a direction for what comes next: in time, if ingestion is well designed, the user shouldn't have to choose how it happens.
 {{< /context >}}
 
 ---

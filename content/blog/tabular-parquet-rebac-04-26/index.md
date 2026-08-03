@@ -22,7 +22,7 @@ homepage: false
 seo:
   title: "Fred Tabular Runtime: S3, Parquet, DuckDB, and ReBAC by Design"
   description: "Discover how Fred now handles CSV and tabular data through document-scoped Parquet artifacts, object storage, DuckDB query sessions, and authorization-first dataset mounting."
-  canonical: "https://fredk8.dev/blog/tabular-parquet-rebac-duckdb"
+  canonical: ""
   robots: "index, follow"
 ---
 

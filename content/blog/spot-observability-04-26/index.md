@@ -23,7 +23,7 @@ homepage: false
 seo:
   title: "Observability by Design in Fred: Prometheus, OpenSearch, and Spot"
   description: "How Fred uses Spot plus MCP-backed Prometheus and OpenSearch tools from knowledge-flow to answer monitoring questions in natural language and persist audit reports."
-  canonical: "https://fredk8.dev/blog/spot-observability-prometheus-opensearch"
+  canonical: ""
   robots: "index, follow"
 ---
 

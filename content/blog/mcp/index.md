@@ -22,7 +22,7 @@ homepage: false
 seo:
   title: "Fred x MCP: The Open Playground for Agentic AI"
   description: "Fred and knowledge-flow now talk MCP — exposing and consuming modular agent components over the Model Context Protocol. See how we're exploring real-world agent orchestration at scale."
-  canonical: "https://fredk8.dev/blog/fred-mcp-architecture"
+  canonical: ""
   robots: "index, follow"
 ---
 

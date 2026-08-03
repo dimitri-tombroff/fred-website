@@ -19,7 +19,7 @@ homepage: false
 seo:
   title: "Integrating External A2A Agents into Fred’s Backend"
   description: "Fred now bridges A2A-standard agents into its agentic backend—enabling language-agnostic, secure, and scalable agent development beyond Python-only stacks."
-  canonical: "https://fredk8.dev/blog/fred-a2a-bridge"
+  canonical: ""
   robots: "index, follow"
 ---
 

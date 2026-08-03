@@ -19,7 +19,7 @@ homepage: true
 seo:
   title: "Durable AI Agents with Temporal and Fred"
   description: "Learn how Fred uses Temporal.io to manage long-running AI workflows and deep agents with zero state loss."
-  canonical: "https://fredk8.dev/blog/fred-temporal-durable-agents"
+  canonical: ""
   robots: "index, follow"
 ---
 

@@ -1,5 +1,5 @@
 title = "Fred"
-baseurl = "http://localhost/"
+baseurl = "https://site.fredlab.dev/"
 canonifyURLs = false
 disableAliases = true
 disableHugoGeneratorInject = true

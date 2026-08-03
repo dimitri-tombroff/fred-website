@@ -17,7 +17,7 @@ homepage: false
 seo:
   title: "RAG That Pulls Its Weight: How Fred’s Retrieval Stack Leveled Up"
   description: "See how Fred’s upgraded document backbone—OpenSearch 2.19+, semantic/hybrid/strict modes, scope controls, chunk visibility, and attachment summarization—delivers more trustworthy answers."
-  canonical: "https://fredk8.dev/blog/fred-rag-upgrade"
+  canonical: ""
   robots: "index, follow"
 ---
 

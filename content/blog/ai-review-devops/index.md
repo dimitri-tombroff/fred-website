@@ -19,7 +19,7 @@ homepage: false
 seo:
   title: "How Fred Uses GPT-4 to Bridge the Dev ↔️ DevOps Gap"
   description: "Learn how the Fred platform uses an AI reviewer to verify consistency between backend config models and deployment files, catching mismatches before they break production."
-  canonical: "https://fredk8.dev/blog/ai-review-deployment-check"
+  canonical: ""
   robots: "index, follow"
 ---
 

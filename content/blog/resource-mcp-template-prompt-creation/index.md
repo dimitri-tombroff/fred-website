@@ -18,7 +18,7 @@ homepage: false
 seo:
   title: "Brontë, the Content Generator Agent in Fred"
   description: "Discover how Brontë, a new Fred agent, makes template and prompt creation conversational, guiding users step by step and saving resources directly to the knowledge base with MCP."
-  canonical: "https://fredk8.dev/blog/bronte-content-generator"
+  canonical: ""
   robots: "index, follow"
 ---
 

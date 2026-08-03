@@ -18,13 +18,13 @@ homepage: false
 seo:
   title: "Beyond Text RAG: Introducing Rich Mode for Multimodal Grounding"
   description: "Understand the limits of text-based RAG and how Rich mode improves accuracy and grounding by integrating images directly into the retrieval and inference pipeline."
-  canonical: "https://fredk8.dev/blog/richard-vs-rico-agentic-duel"
+  canonical: ""
   robots: "index, follow"
 ---
 
 
 {{< context >}}
-In Fred, advanced users can choose between three ingestion modes (Fast, Medium and Rich). Refer to [Document ingestion is not a side effect](https://fredk8.dev/blog/document-ingestion-is-not-a-side-effect/). This post focuses on the Rich mode, and the architectural shift it represents.
+In Fred, advanced users can choose between three ingestion modes (Fast, Medium and Rich). Refer to [Document ingestion is not a side effect](/blog/document-ingestion-is-not-a-side-effect/). This post focuses on the Rich mode, and the architectural shift it represents.
 {{< /context >}}
 
 ## Extending Beyond Text: Why Rich Mode Was Needed

@@ -19,7 +19,7 @@ homepage: false
 seo:
   title: "Relationship-Based Access Control in Fred with OpenFGA"
   description: "How Fred’s OpenFGA-backed ReBAC model unlocks granular sharing and inheritance for tags, documents, and libraries—mirroring Google Drive."
-  canonical: "https://fredk8.dev/blog/fred-rebac-openfga"
+  canonical: ""
   robots: "index, follow"
 ---
 

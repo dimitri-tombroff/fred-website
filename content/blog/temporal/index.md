@@ -19,7 +19,7 @@ homepage: false
 seo:
   title: "How Fred Uses Temporal to Orchestrate Reliable Document Pipelines"
   description: "Fred now uses Temporal to run ingestion pipelines for push or pull files, with retries, visibility, and customization for developers and AI engineers."
-  canonical: "https://fredk8.dev/blog/temporal-ingestion-pipeline"
+  canonical: ""
   robots: "index, follow"
 ---
 

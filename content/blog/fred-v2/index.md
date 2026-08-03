@@ -22,7 +22,7 @@ homepage: false
 seo:
   title: "Fred Architecture 2.0 — Modular, Agentic, and Knowledge-Aware"
   description: "Explore the new architecture of the Fred project, featuring a modular agentic backend, a powerful knowledge-flow service, and a modern React UI. Designed for multi-agent orchestration and document-aware LLMs."
-  canonical: "https://fredk8.dev/blog/introducing-the-new-fred-architecture"
+  canonical: ""
   robots: "index, follow"
 ---
 
@@ -184,7 +184,7 @@ We’re actively building and welcoming contributors!
   - [fred-agent/fred](https://github.com/fred-agent/fred)
   - [fred-agent/knowledge-flow](https://github.com/fred-agent/knowledge-flow)
 
-- **Read the docs:** [https://fredk8.dev](https://fredk8.dev)
+- **Read the docs:** [site.fredlab.dev](/)
 
 - **Open issues, suggest ideas, or build your own expert agent!**
 

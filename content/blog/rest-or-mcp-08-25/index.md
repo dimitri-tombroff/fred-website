@@ -21,11 +21,11 @@ homepage: false
 seo:
   title: "MCP vs REST for RAG in Fred"
   description: "Fred compares tool-first MCP against graph-first REST for RAG agents, using a shared VectorSearchHit schema to evaluate trade-offs."
-  canonical: "https://fredk8.dev/blog/mcp-vs-rest-rag"
+  canonical: ""
   robots: "index, follow"
 ---
 
-As part of the [Fred](https://fredk8.dev) platform, we’re exploring **two integration styles** for Retrieval-Augmented Generation (RAG):
+As part of the [Fred](/) platform, we’re exploring **two integration styles** for Retrieval-Augmented Generation (RAG):
 
 - **REST-first** agents — **Rico** and **Rico Pro** orchestrate retrieval directly in their graphs using a tiny HTTP client.  
 - **Tool-first (MCP)** agent — **Dominic** binds the MCP tool and lets the model decide when to call it.

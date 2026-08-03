@@ -19,7 +19,7 @@ homepage: false
 seo:
   title: "Comparing Graph-Centric and Reflective RAG Agents in Fred"
   description: "Richard (GraphRAG) and Rico (reflective RAG) compared in Fred’s agentic backend, including faithfulness and relevancy results."
-  canonical: "https://fredk8.dev/blog/richard-vs-rico-agentic-duel"
+  canonical: ""
   robots: "index, follow"
 ---
 
