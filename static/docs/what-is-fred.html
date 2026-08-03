@@ -2,7 +2,7 @@
 <!-- Verified against the `fred` monorepo, branch consolidation-22-07, and this
      site's own roadmap.md / capability slide deck research (2026-07-23). This
      page is the non-technical companion to the homepage claim ("Governed.
-     Powerful. Composable.") — it exists to answer "what is this, really"
+     Open. Composable.") — it exists to answer "what is this, really"
      before a visitor commits to the developer-oriented Getting Started page.
      No install steps, no code — that's what Getting Started is for. -->
 <html lang="en">
@@ -10,7 +10,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fred — What is Fred?</title>
-  <meta name="description" content="A high-level answer to what Fred actually is: governed by a real role and audit model, powerful because of a Temporal-backed async engine, and composable down to individual tools and agents.">
+  <meta name="description" content="A high-level answer to what Fred actually is: governed by a real role and audit model, open source under Apache 2.0 end to end, and composable down to individual tools and agents.">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -27,7 +27,7 @@
       --rad:    8px;
       --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
-      --govern: #6b3f92;  --power: #b8548f;  --compose: #3f6ec9;
+      --govern: #6b3f92;  --open: #b8548f;  --compose: #3f6ec9;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -40,7 +40,7 @@
         --bg:     #111827;
         --bg2:    #1f2937;
         --border: #374151;
-        --govern: #c6a3ea;  --power: #f0a9cf;  --compose: #9ec0f5;
+        --govern: #c6a3ea;  --open: #f0a9cf;  --compose: #9ec0f5;
       }
     }
 
@@ -72,14 +72,14 @@
     .claim span { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.03em; }
     .claim .sep { color: var(--border); font-weight: 400; font-size: 1.6rem; }
     .c-govern { color: var(--govern); }
-    .c-power { color: var(--power); }
+    .c-open { color: var(--open); }
     .c-compose { color: var(--compose); }
 
     section { margin-bottom: 3rem; }
     h2 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.6rem; }
     h2 .dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; flex: 0 0 auto; }
     h2.govern .dot { background: var(--govern); }
-    h2.power .dot { background: var(--power); }
+    h2.open .dot { background: var(--open); }
     h2.compose .dot { background: var(--compose); }
     .pillar-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.1rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--border); max-width: 680px; }
     p { font-size: 0.92rem; margin-bottom: 0.8rem; max-width: 680px; }
@@ -122,7 +122,7 @@
   <ul>
     <li class="nav-section">In this document</li>
     <li><a href="#governed">Governed</a></li>
-    <li><a href="#powerful">Powerful</a></li>
+    <li><a href="#open">Open</a></li>
     <li><a href="#composable">Composable</a></li>
     <li><a href="#who">Who this is for</a></li>
     <li><a href="#related">Go further</a></li>
@@ -142,7 +142,7 @@
     </p>
     <div class="claim">
       <span class="c-govern">Governed</span><span class="sep">·</span>
-      <span class="c-power">Powerful</span><span class="sep">·</span>
+      <span class="c-open">Open</span><span class="sep">·</span>
       <span class="c-compose">Composable</span>
     </div>
     <p class="hd-lead">This page says what each of those actually means.</p>
@@ -180,34 +180,30 @@
     </div>
   </section>
 
-  <!-- ── Powerful ───────────────────────────────────────── -->
-  <section id="powerful">
-    <h2 class="power"><span class="dot"></span>Powerful</h2>
-    <p class="pillar-sub">Underneath the chat interface is a durable, fault-tolerant execution engine, not a script that happens to work in a demo.</p>
+  <!-- ── Open ───────────────────────────────────────────── -->
+  <section id="open">
+    <h2 class="open"><span class="dot"></span>Open</h2>
+    <p class="pillar-sub">Everything Fred does, you can read, fork, and run yourself — Apache 2.0, end to end.</p>
     <p>
-      Every Fred service — document ingestion, agent evaluation, agent execution
-      itself — pairs a fast, synchronous API with a <strong>Temporal-backed
-      worker</strong> for the heavy, long-running work behind it. Uploading a document
-      doesn't block on OCR, chunking, and embedding happening inline; a durable
-      workflow does that work in the background and survives a crash mid-way through.
+      Fred is <strong>Apache 2.0, end to end</strong> — the full platform is public on
+      <code>ThalesGroup/fred</code>, not an open core with proprietary modules hidden
+      behind it. What you can read is what actually runs.
     </p>
     <p>
-      That same pattern extends to evaluation: Fred runs <strong>recurring evaluation
-      campaigns</strong> against your team's agents on a schedule, in production — not
-      a one-off test suite that only ran the day someone remembered to run it. If an
-      agent's behavior drifts, you find out from a scheduled check, not a support
-      ticket.
+      That also means <strong>no lock-in</strong>: Fred runs on your own infrastructure
+      — Kubernetes, on-premise if that's what you need — with your own models and your
+      own data stores. You're not a tenant of a hosted service. Models, vector stores,
+      and storage backends are pluggable; you swap one out without leaving Fred.
     </p>
     <p>
-      Conversations themselves stream over a standard HTTP connection directly
-      between the browser and the runtime pod running the agent — no broker in the
-      middle relaying every token, secured by the same per-request authorization
-      described above rather than a fragile session-affinity trick.
+      And it's <strong>inspectable</strong>: nothing here has to be taken on trust,
+      because the code that decides how the platform behaves is there to read. That's
+      a statement of fact about the platform, not a promise you have to believe.
     </p>
     <div class="callout">
-      <strong>In practice:</strong> this is what lets ingestion, evaluation, and
-      execution keep working at real document volumes and real usage levels — the
-      kind of load a weekend prototype never has to survive.
+      <strong>In practice:</strong> clone the repo, run it against your own models and
+      data on your own cluster. Nothing about the platform is hidden behind a paid tier
+      or a hosted-only feature.
     </div>
   </section>
 
@@ -280,6 +276,10 @@
       <a class="ref-card" href="architecture.html">
         <div class="ref-topic">Platform Architecture →</div>
         <div class="ref-path">what each component does, how they talk</div>
+      </a>
+      <a class="ref-card" href="durable-execution.html">
+        <div class="ref-topic">Durable execution →</div>
+        <div class="ref-path">the Temporal-backed engine behind ingestion, evaluation and agent runs</div>
       </a>
       <a class="ref-card" href="/learn/">
         <div class="ref-topic">About Fred →</div>

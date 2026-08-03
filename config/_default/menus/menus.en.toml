@@ -128,6 +128,11 @@
   weight = 60
 
 [[docs_highlights]]
+  name = "Durable execution"
+  url = "/docs/durable-execution.html"
+  weight = 65
+
+[[docs_highlights]]
   name = "Observability & KPIs"
   url = "/docs/observability-and-kpis.html"
   weight = 70
