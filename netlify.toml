@@ -71,6 +71,18 @@
   status = 301
   force = true
 
+[[redirects]]
+  from = "/guides/"
+  to = "/releases/swift/guides/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/docs/quickstart/getting-started/"
+  to = "/docs/getting-started.html"
+  status = 301
+  force = true
+
 # Custom headers — https://docs.netlify.com/routing/headers/#syntax-for-the-netlify-configuration-file
 [[headers]]
   for = "/*"
