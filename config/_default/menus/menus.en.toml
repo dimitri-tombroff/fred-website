@@ -30,7 +30,7 @@
 
 [[main]]
   name = "About"
-  url = "/learn/"
+  url = "/docs/what-is-fred.html"
   weight = 10
 
 [[main]]

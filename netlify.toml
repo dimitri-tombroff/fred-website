@@ -63,6 +63,14 @@
   status = 301
   force = true
 
+# Legacy Hugo/Doks pages removed during the 2026-08 cleanup, redirected to
+# their replacement.
+[[redirects]]
+  from = "/learn/"
+  to = "/docs/what-is-fred.html"
+  status = 301
+  force = true
+
 # Custom headers — https://docs.netlify.com/routing/headers/#syntax-for-the-netlify-configuration-file
 [[headers]]
   for = "/*"
