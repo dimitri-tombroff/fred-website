@@ -38,4 +38,4 @@ Fred releases one production version at a time. Here is where things stand.
 - [Swift 2.0](/releases/swift/) — developer preview, GA summer 2026
 - [Kea 1.5](/releases/kea/) — current stable release
 - [Release lifecycle](/releases/lifecycle/) — how Fred versions work, branch model, support windows
-- [Roadmap](/releases/roadmap/) — what's coming and when
+- [Roadmap](/docs/roadmap.html) — where Fred is headed

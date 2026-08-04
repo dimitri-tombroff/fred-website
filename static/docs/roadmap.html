@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Roadmap</title>
+  <meta name="description" content="Fred is evolving from a collection of powerful components into a coherent open-source platform for building, evaluating, deploying, and operating agentic applications.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;   /* control plane / direction */
+      --r:      #059669;  --r-bg: #ecfdf5;   /* runtime / today */
+      --s:      #b45309;  --s-bg: #fffbeb;   /* sdk / extension */
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    200px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.65;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ─── Sidebar ─────────────────────────────────────────── */
+    nav {
+      width: var(--nav);
+      min-width: var(--nav);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 2rem 1.25rem 2rem 1.5rem;
+      border-right: 1px solid var(--border);
+      background: var(--bg2);
+      flex-shrink: 0;
+    }
+
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a {
+      display: block;
+      padding: 0.28rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.12s, background 0.12s;
+    }
+    nav li a:hover { color: var(--text); background: var(--border); }
+
+    .nav-section {
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+      padding: 0.5rem 0.5rem 0.2rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    /* ─── Main ────────────────────────────────────────────── */
+    main {
+      width: 100%;
+      margin: 0 auto;
+      max-width: 760px;
+      padding: 3rem 3.5rem 6rem;
+    }
+
+    /* ─── Page header ─────────────────────────────────────── */
+    .hd {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .hd-eyebrow {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .hd h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+      margin-bottom: 0.9rem;
+    }
+    .hd-lead {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 620px;
+    }
+
+    /* ─── Sections ────────────────────────────────────────── */
+    section { margin-bottom: 3.5rem; }
+
+    h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.1rem;
+    }
+
+    h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 1.75rem 0 0.6rem;
+    }
+
+    p {
+      font-size: 0.9rem;
+      margin-bottom: 0.85rem;
+      max-width: 680px;
+    }
+    p.muted { color: var(--muted); }
+
+    /* ─── Callout ─────────────────────────────────────────── */
+    .callout {
+      background: var(--bg2);
+      border-left: 3px solid var(--border);
+      padding: 0.8rem 1.1rem;
+      border-radius: 0 var(--rad) var(--rad) 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0.9rem 0 1.4rem;
+      max-width: 680px;
+    }
+    .callout strong { color: var(--text); }
+    .callout.info  { border-left-color: var(--c); }
+    .callout.ok    { border-left-color: var(--r); }
+    .callout.warn  { border-left-color: var(--s); }
+
+    /* ─── Overview grid (Fred today) ──────────────────────── */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin: 1rem 0;
+    }
+    @media (max-width: 560px) { .overview-grid { grid-template-columns: 1fr; } }
+
+    .overview-card {
+      padding: 0.9rem 1.05rem;
+      border: 1px solid var(--border);
+      border-radius: var(--rad);
+      font-size: 0.82rem;
+    }
+    .ov-title {
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+    }
+    .ov-body { color: var(--muted); line-height: 1.55; }
+
+    /* ─── Lifecycle strip ─────────────────────────────────── */
+    .lifecycle {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1.3rem 0 0.4rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+    .lifecycle span.step {
+      padding: 0.32rem 0.7rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      color: var(--text);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .lifecycle span.arrow { color: var(--muted); }
+
+    /* ─── Tag list (primitives) ───────────────────────────── */
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin: 0.7rem 0 1.1rem;
+    }
+    .tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ─── Related documents ───────────────────────────────── */
+    .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
+    @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
+    .ref-card { padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.8rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; }
+    .ref-card:hover { border-color: var(--muted); }
+    .ref-topic { font-weight: 700; margin-bottom: 0.2rem; }
+    .ref-path { color: var(--muted); }
+
+    /* ─── Footer ──────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--c); }
+  </style>
+</head>
+<body>
+
+<!-- ─── Sidebar navigation ─────────────────────────────────── -->
+<nav>
+  <a class="nav-back" href="https://fredk8.dev">← fredk8.dev</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Roadmap</div>
+  <ul>
+    <li class="nav-section">Platform</li>
+    <li><a href="#today">Fred today</a></li>
+
+    <li class="nav-section">Next three months</li>
+    <li><a href="#journey">Developer journey</a></li>
+    <li><a href="#extensible">Extensible applications</a></li>
+    <li><a href="#distributed">Distributed execution</a></li>
+
+    <li class="nav-section">Direction</li>
+    <li><a href="#direction">Architecture</a></li>
+    <li><a href="#success">What success looks like</a></li>
+    <li><a href="#related">Related documents</a></li>
+  </ul>
+</nav>
+
+<!-- ─── Main ────────────────────────────────────────────────── -->
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">docs / ROADMAP</div>
+    <h1>Fred Roadmap</h1>
+    <div class="hd-lead">Fred is evolving from a collection of powerful components into a coherent open-source platform for building, evaluating, deploying, and operating agentic applications in the enterprise.</div>
+  </div>
+
+  <!-- ── Fred today ────────────────────────────────────────── -->
+  <section id="today">
+    <h2>Fred today</h2>
+    <p>Fred already covers most of what it takes to bring an agentic system into production. You can build ReAct agents, graph-based agents, and coordinated teams of agents, each backed by a typed SDK and a runtime that handles execution, memory, and streaming. Individual capabilities — tools, models, and agent templates — are independently governed per team, with a full audit trail of every access decision. Deployment is cloud-native by default, evaluation is a first-class citizen rather than an afterthought, and the interface can be extended without touching Fred's core.</p>
+
+    <div class="overview-grid">
+      <div class="overview-card">
+        <div class="ov-title">Agents &amp; teams</div>
+        <div class="ov-body">ReAct agents, graph-based agents, and coordinated teams of agents, authored against a typed SDK and executed by a runtime that handles memory and streaming.</div>
+      </div>
+      <div class="overview-card">
+        <div class="ov-title">Governed capabilities</div>
+        <div class="ov-body">Tools, models, and agent templates are enabled and controlled per team, so what a team can do with Fred is explicit and independently managed.</div>
+      </div>
+      <div class="overview-card">
+        <div class="ov-title">Security &amp; audit</div>
+        <div class="ov-body">Relationship-based access control, identity managed through Keycloak, and a complete audit trail of every authorization decision.</div>
+      </div>
+      <div class="overview-card">
+        <div class="ov-title">Cloud-native deployment</div>
+        <div class="ov-body">Kubernetes-native, with Helm charts and GitOps workflows for reproducible, auditable deployments.</div>
+      </div>
+      <div class="overview-card">
+        <div class="ov-title">Evaluation platform</div>
+        <div class="ov-body">Recurring evaluation campaigns against real agents in production, not just one-off tests at launch.</div>
+      </div>
+      <div class="overview-card">
+        <div class="ov-title">Durable workflows</div>
+        <div class="ov-body">Long-running, Temporal-backed execution already runs in several parts of the stack, built to survive restarts and recover cleanly.</div>
+      </div>
+      <div class="overview-card">
+        <div class="ov-title">UI contributions</div>
+        <div class="ov-body">Typed contribution points — side panels, chat controls, upload slots — let a capability extend the interface without forking it.</div>
+      </div>
+      <div class="overview-card">
+        <div class="ov-title">Apache 2.0</div>
+        <div class="ov-body">The full stack — runtime, SDK, and every capability described here — stays open source, top to bottom.</div>
+      </div>
+    </div>
+
+    <p class="muted">Individually, none of this is new. What Fred needs next is to make these pieces work together as one coherent story:</p>
+    <div class="lifecycle">
+      <span class="step">Build</span><span class="arrow">→</span>
+      <span class="step">Test</span><span class="arrow">→</span>
+      <span class="step">Evaluate</span><span class="arrow">→</span>
+      <span class="step">Deploy</span><span class="arrow">→</span>
+      <span class="step">Operate</span>
+    </div>
+  </section>
+
+  <!-- ── Vision ────────────────────────────────────────────── -->
+  <section id="vision">
+    <h2>Our vision for the next three months</h2>
+    <div class="callout info">
+      <strong>A direction, not a delivery calendar.</strong> What follows sets out where we're putting our attention next — not a list of dated commitments.
+    </div>
+
+    <h3 id="journey">A coherent developer journey</h3>
+    <p>Much of what a developer needs already exists across Fred and its companion projects for evaluation and deployment. Today, using all of it together takes more effort than it should. Our priority is to make the path from a local build to an evaluated, deployed, operated agentic application coherent and well-documented end to end — with reference examples that actually run, consistent versioning, and documentation that reflects what's genuinely production-ready rather than lagging behind it. This is largely about connecting and clarifying what's already there, not inventing new layers.</p>
+
+    <h3 id="extensible">Extensible agentic applications</h3>
+    <p>Third-party teams should be able to extend Fred without modifying the platform itself. Agents already work this way: an external team can author one against the SDK and register it with a running Fred deployment. We're extending that same model to processors — the components that transform and ingest data, such as turning a spreadsheet into a knowledge graph. A processor should be a self-contained, independently deliverable unit, the same way an agent already is, rather than code that has to live inside Fred's core ingestion pipeline.</p>
+    <p class="muted">The underlying idea is composability, not a growing list of new frameworks-within-the-framework. A team assembles an agentic application from independent, well-governed building blocks — agents, tools, models, processors, and UI contributions — rather than being handed a single, one-size-fits-all structure to fill in.</p>
+
+    <h3 id="distributed">Distributed and durable execution</h3>
+    <p>Fred already pairs a fast synchronous API with Temporal-backed durable workflows for ingestion and evaluation — see <a href="durable-execution.html">Durable execution</a>. The next step is extending that same pattern to agents themselves: letting a graph of agents and teams of agents cross runtime boundaries, with one agent invoking another that's deployed independently, elsewhere.</p>
+    <p>Two different needs sit behind that, and we're treating them as distinct rather than collapsing them into one mechanism. Some agent-to-agent interactions are conversational — one agent needs an answer from another within the same exchange, and that call should be fast and direct. Others are delegations of longer-running work, where the calling agent hands off a task that may take minutes or hours and needs to survive a restart, be retried, and be tracked to completion. For that second case, we're extending Fred's durable execution model so it becomes a standard option for agents, not just for ingestion and evaluation. The result is a platform where independently deployed components can genuinely collaborate as one system, whichever kind of interaction the task calls for.</p>
+  </section>
+
+  <!-- ── Architectural direction ──────────────────────────────── -->
+  <section id="direction">
+    <h2>Our architectural direction</h2>
+    <p>Fred is built on composable building blocks, each independently discoverable, deployable, and governed:</p>
+    <div class="tag-list">
+      <span class="tag">agent</span>
+      <span class="tag">tool</span>
+      <span class="tag">model</span>
+      <span class="tag">processor</span>
+    </div>
+    <p>This is a deliberate choice: rather than defining a single, opinionated application structure that every team must fit into, Fred lets teams compose their own applications from primitives the platform already knows how to secure, observe, and operate.</p>
+    <p class="muted">This keeps Fred open at the edges. A team's application can be as simple as one agent with a couple of tools, or as involved as a graph of agents, several processors, and a custom panel in the interface — with no lock-in to a single application shape, and no growing core just to accommodate what teams want to build on top of it.</p>
+  </section>
+
+  <!-- ── What success looks like ──────────────────────────────── -->
+  <section id="success">
+    <h2>What success looks like</h2>
+    <p>Success is an external developer who can pick up Fred, build an agent or a small team of agents against the SDK, add a processor to handle their own data source, evaluate the result against real scenarios, deploy it through the standard pipeline, and operate it with the same visibility the platform gives every other team — all without forking Fred or waiting on its core team. Fred stops being a framework you run agents on, and becomes the platform a team builds, ships, and operates its own agentic application with.</p>
+
+    <div class="callout ok">
+      <strong>This roadmap is shaped by the teams building on Fred.</strong> Fred stays Apache 2.0, top to bottom. If you're evaluating it, extending it, or see this direction differently, the conversation is open on <a href="https://github.com/ThalesGroup/fred" target="_blank" rel="noopener">GitHub</a>.
+    </div>
+  </section>
+
+  <!-- ── Related ────────────────────────────────────────── -->
+  <section id="related">
+    <h2>Related documents</h2>
+    <div class="ref-grid">
+      <a class="ref-card" href="durable-execution.html">
+        <div class="ref-topic">Durable execution →</div>
+        <div class="ref-path">the Temporal-backed pattern this roadmap extends</div>
+      </a>
+      <a class="ref-card" href="architecture.html">
+        <div class="ref-topic">Platform Architecture →</div>
+        <div class="ref-path">where the runtime and workers fit today</div>
+      </a>
+      <a class="ref-card" href="what-is-fred.html">
+        <div class="ref-topic">What is Fred? →</div>
+        <div class="ref-path">the non-technical overview</div>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    Fred — Apache 2.0. <a href="https://github.com/ThalesGroup/fred" target="_blank" rel="noopener">github.com/ThalesGroup/fred</a>
+  </footer>
+
+</main>
+</body>
+</html>

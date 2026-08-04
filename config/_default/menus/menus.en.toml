@@ -33,7 +33,7 @@
 
 [[main]]
   name = "Roadmap"
-  url = "/releases/roadmap/"
+  url = "/docs/roadmap.html"
   weight = 24
 
 [[main]]
