@@ -74,6 +74,3 @@ Swift is built around three principles:
 
 For a complete inventory of what Swift supports — ingestion formats, SSE event contracts, APIs, agent templates, governance model, security posture — see the **[Feature Reference](/docs/features.html)**.
 
-## Guides
-
-Swift guides are being written now. See [Swift Guides](/releases/swift/guides/) as they are published.

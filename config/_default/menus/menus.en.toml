@@ -32,11 +32,6 @@
   weight = 22
 
 [[main]]
-  name = "Guides"
-  url = "/releases/swift/guides/"
-  weight = 23
-
-[[main]]
   name = "Roadmap"
   url = "/releases/roadmap/"
   weight = 24

@@ -39,13 +39,6 @@ The full changelog is available inside the running application under **Release N
 
 Current patch: **1.5.x** — see the in-app release notes for the latest changelog.
 
-## Guides
-
-- [Kea User Guide](/releases/kea/guides/user-guide/) — for daily users
-- [Kea Developer Guide](/releases/kea/guides/developer-guide/) — for agent authors
-- [Kea Operations Guide](/releases/kea/guides/operations/) — for operators and DevOps teams
-- [Kea Configuration Guide](/releases/kea/guides/configuration/) — configuration reference
-
 ## Migration to Swift
 
 When Swift GA arrives, a step-by-step migration guide will walk through every Helm and configuration change required. No changes are needed today.
