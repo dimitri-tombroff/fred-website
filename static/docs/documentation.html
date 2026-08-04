@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fred — Documentation</title>
+  <meta name="description" content="Fred's documentation hub: slide decks covering architecture, deployment, and value proposition, and Key Topics — focused reference pages on how the platform actually works.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --c:      #2563eb;  --c-bg: #eff6ff;
+      --r:      #059669;  --r-bg: #ecfdf5;
+      --s:      #b45309;  --s-bg: #fffbeb;
+      --text:   #111827;
+      --muted:  #6b7280;
+      --bg:     #ffffff;
+      --bg2:    #f9fafb;
+      --border: #e5e7eb;
+      --nav:    212px;
+      --rad:    8px;
+      --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c:      #60a5fa;  --c-bg: #1e3a5f30;
+        --r:      #34d399;  --r-bg: #06402b30;
+        --s:      #fbbf24;  --s-bg: #78350f30;
+        --text:   #f3f4f6;
+        --muted:  #9ca3af;
+        --bg:     #111827;
+        --bg2:    #1f2937;
+        --border: #374151;
+      }
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
+
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
+    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
+    .nav-back:hover { color: var(--text); }
+    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
+    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 1px; }
+    nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
+    nav li a:hover { color: var(--text); background: var(--border); }
+    .nav-section { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 0.5rem 0.5rem 0.2rem; margin-top: 1rem; }
+    @media (max-width: 640px) { nav { display: none; } body { display: block; } }
+
+    main { width: 100%; max-width: 900px; margin: 0 auto; padding: 3rem 3.5rem 6rem; }
+    @media (max-width: 640px) { main { padding: 2rem 1.35rem 4rem; } }
+
+    .hd { margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .hd-eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .hd h1 { font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; line-height: 1.12; margin-bottom: 0.7rem; }
+    .hd-lead { font-size: 1.02rem; color: var(--muted); max-width: 620px; }
+
+    section { margin-bottom: 3rem; }
+    h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.02em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.1rem; }
+    .section-sub { color: var(--muted); font-size: 0.88rem; margin: -0.6rem 0 1.1rem; max-width: 640px; }
+
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    @media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } }
+    .card { padding: 1rem 1.15rem; border: 1px solid var(--border); border-radius: var(--rad); font-size: 0.85rem; text-decoration: none; color: inherit; display: block; transition: border-color 0.12s; background: var(--bg2); }
+    .card:hover { border-color: var(--muted); }
+    .card .topic { font-weight: 650; font-size: 0.92rem; margin-bottom: 0.35rem; color: var(--text); }
+    .card .desc { color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
+    .card.featured { grid-column: 1 / -1; }
+
+    .cta-row { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-top: 1.3rem; }
+    .cta { display: inline-block; padding: 0.6rem 1.3rem; border-radius: 999px; font-size: 0.88rem; font-weight: 650; text-decoration: none; }
+    .cta.primary { background: var(--text); color: var(--bg); }
+    .cta.ghost { border: 1px solid var(--border); color: var(--text); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-back" href="/">← Home</a>
+  <div class="nav-logo">Fred</div>
+  <div class="nav-tag">Documentation</div>
+  <ul>
+    <li class="nav-section">In this document</li>
+    <li><a href="#decks">Slide decks</a></li>
+    <li><a href="#key-topics">Key Topics</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="hd">
+    <div class="hd-eyebrow">docs</div>
+    <h1>Documentation</h1>
+    <p class="hd-lead">
+      Slide decks for the bigger picture, and Key Topics for how each part of
+      the platform actually works.
+    </p>
+    <div class="cta-row">
+      <a class="cta primary" href="getting-started.html">Get Started →</a>
+      <a class="cta ghost" href="what-is-fred.html">What is Fred?</a>
+    </div>
+  </div>
+
+  <!-- ── Slide decks ────────────────────────────────────── -->
+  <section id="decks">
+    <h2>Slide decks</h2>
+    <p class="section-sub">Presentation-style overviews — open any deck full-screen.</p>
+    <div class="card-grid">
+      <a class="card" href="/slides/building_agentic_app.html">
+        <div class="topic">Agentic Apps: From Demo to Industrial Reality</div>
+        <div class="desc">The architectural patterns behind building production-grade agentic applications with Fred.</div>
+      </a>
+      <a class="card" href="/slides/fred_value_proposition.html">
+        <div class="topic">Fred: The Open Agentic Platform for the Enterprise</div>
+        <div class="desc">A high-level value-proposition deck for first-contact / innovation conversations.</div>
+      </a>
+      <a class="card" href="/slides/fred_deployment_pattern.html">
+        <div class="topic">Deploying Fred: A GitOps Deployment Pattern</div>
+        <div class="desc">The reference deployment design — a frozen infrastructure layer plus a GitOps-managed application layer.</div>
+      </a>
+      <a class="card" href="/slides/agent_capabilities.html">
+        <div class="topic">Capabilities: One Switch For Everything An Agent Can Do</div>
+        <div class="desc">Fred's capability model for teams and architects: what ships as a capability today, and where it's headed.</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── Key Topics ─────────────────────────────────────── -->
+  <section id="key-topics">
+    <h2>Key Topics</h2>
+    <p class="section-sub">Focused reference pages, architecture first.</p>
+    <div class="card-grid">
+      <a class="card featured" href="architecture.html">
+        <div class="topic">Platform Architecture →</div>
+        <div class="desc">Component topology, data flows, storage boundaries, network layout, and the security perimeter.</div>
+      </a>
+      <a class="card" href="erasure-you-can-prove.html">
+        <div class="topic">Erasure you can prove →</div>
+        <div class="desc">How Fred deletes a conversation — completely, provably, and on the team's own terms.</div>
+      </a>
+      <a class="card" href="deploy-gke.html">
+        <div class="topic">Deploying on GCP / GKE →</div>
+        <div class="desc">A typical GKE deployment: workloads, managed services, Workload Identity, TLS, secrets, GitOps.</div>
+      </a>
+      <a class="card" href="nothing-enabled-by-default.html">
+        <div class="topic">Bootstrap, capabilities &amp; teams →</div>
+        <div class="desc">From zero admins to a running platform: one-shot bootstrap, deliberate capability enablement.</div>
+      </a>
+      <a class="card" href="add-your-agent.html">
+        <div class="topic">Add your agent →</div>
+        <div class="desc">Build a custom agent with fred-sdk and fred-runtime, run it locally, enroll it with the control plane.</div>
+      </a>
+      <a class="card" href="access-model.html">
+        <div class="topic">Access model →</div>
+        <div class="desc">Keycloak identity, ReBAC (OpenFGA) enforcement, the display-only RBAC catalog, per-endpoint checks.</div>
+      </a>
+      <a class="card" href="llm-routing.html">
+        <div class="topic">Policy-based LLM routing →</div>
+        <div class="desc">How Fred resolves the effective model for an agent — capability, context, profiles, rules.</div>
+      </a>
+      <a class="card" href="durable-execution.html">
+        <div class="topic">Durable execution →</div>
+        <div class="desc">Why ingestion, evaluation, and agent execution pair a fast API with a Temporal-backed workflow.</div>
+      </a>
+      <a class="card" href="observability-and-kpis.html">
+        <div class="topic">Observability &amp; KPIs →</div>
+        <div class="desc">What Fred exports to Prometheus, where, and where it deliberately doesn't.</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

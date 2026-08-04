@@ -23,7 +23,7 @@
 
 [[main]]
   name = "Docs"
-  url = "/docs/getting-started.html"
+  url = "/docs/documentation.html"
   weight = 20
 
 [[main]]
