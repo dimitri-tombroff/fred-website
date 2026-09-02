@@ -14,8 +14,8 @@ and operate the setup.
   has the access to fix it. The site content there is frozen since
   2026-07-23.
 - **To ship a change**: push to the `swift` branch of the `personal` remote
-  (see "Remotes" below). Netlify auto-builds on push, once its production
-  branch setting is updated (see "Still to do").
+  (see "Remotes" below). Netlify auto-builds on push — production branch is
+  already set to `swift`.
 
 ## Remotes — which one actually matters
 
@@ -55,16 +55,12 @@ git push origin swift
   "Private") or every URL 401s behind Netlify's own login gate — this is
   under Project overview → "Make public".
 
-### Still to do in Netlify (needs a human click, not scriptable from here)
+### Netlify production branch (resolved 2026-09-02)
 
-- **Production branch is still set to `main`.** GitHub's default branch on
-  `personal` is now `swift`, but Netlify's own "Production branch" setting
-  (Site configuration → Build & deploy → Continuous deployment) is separate
-  and still says `main`. Change it to `swift` there, or nothing pushed to
-  `swift` will auto-deploy.
-- Once that's changed, a push to `personal`'s `swift` branch should trigger
-  an automatic build (webhook already exists from the initial GitHub
-  connection).
+Production branch is set to `swift` — confirmed via the Deploys tab, which shows
+a continuous run of `Production: swift@<hash>` builds tracking real commits,
+each auto-deployed within ~20s of push. A push to `personal`'s `swift` branch
+triggers an automatic build with no manual step needed.
 
 ### Netlify domain UI gotcha (so you don't repeat the loop)
 
