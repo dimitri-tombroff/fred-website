@@ -263,6 +263,7 @@
     <li><a href="#journey">Developer journey</a></li>
     <li><a href="#extensible">Extensible applications</a></li>
     <li><a href="#distributed">Distributed execution</a></li>
+    <li><a href="#platform-guidance">Platform-wide guidance</a></li>
 
     <li class="nav-section">Direction</li>
     <li><a href="#direction">Architecture</a></li>
@@ -343,10 +344,18 @@
     <h3 id="extensible">Extensible agentic applications</h3>
     <p>Third-party teams should be able to extend Fred without modifying the platform itself. Agents already work this way: an external team can author one against the SDK and register it with a running Fred deployment. We're extending that same model to processors — the components that transform and ingest data, such as turning a spreadsheet into a knowledge graph. A processor should be a self-contained, independently deliverable unit, the same way an agent already is, rather than code that has to live inside Fred's core ingestion pipeline.</p>
     <p class="muted">The underlying idea is composability, not a growing list of new frameworks-within-the-framework. A team assembles an agentic application from independent, well-governed building blocks — agents, tools, models, processors, and UI contributions — rather than being handed a single, one-size-fits-all structure to fill in.</p>
+    <p>That same principle now extends one level further: a team can host an entire independently built product surface — its own UI, and optionally its own API — inside Fred's shell, without forking Fred or rebuilding it alongside their own release cycle. It's governed the same way everything else is, through the platform's existing team and capability model, rather than a separate plugin system bolted on top.</p>
+    <div class="callout warn">
+      <strong>Early, and deliberately gated.</strong> This exists in code today but stays off by default while the design for how a hosted application's own API gets authorized is still being worked out — the goal is to get that right before it's on by default, not to ship it first and tighten it later.
+    </div>
 
     <h3 id="distributed">Distributed and durable execution</h3>
     <p>Fred already pairs a fast synchronous API with Temporal-backed durable workflows for ingestion and evaluation — see <a href="durable-execution.html">Durable execution</a>. The next step is extending that same pattern to agents themselves: letting a graph of agents and teams of agents cross runtime boundaries, with one agent invoking another that's deployed independently, elsewhere.</p>
     <p>Two different needs sit behind that, and we're treating them as distinct rather than collapsing them into one mechanism. Some agent-to-agent interactions are conversational — one agent needs an answer from another within the same exchange, and that call should be fast and direct. Others are delegations of longer-running work, where the calling agent hands off a task that may take minutes or hours and needs to survive a restart, be retried, and be tracked to completion. For that second case, we're extending Fred's durable execution model so it becomes a standard option for agents, not just for ingestion and evaluation. The result is a platform where independently deployed components can genuinely collaborate as one system, whichever kind of interaction the task calls for.</p>
+
+    <h3 id="platform-guidance">Platform-wide guidance, without breaking the platform</h3>
+    <p>Today, the only thing that sits above every agent's own instructions is a fixed, non-editable output contract. An operator running a Fred deployment has no way to add deployment-wide guidance — tone, organizational context, a standing disclaimer — without editing every agent individually. We're building a platform-wide instruction layer that renders ahead of every agent's own system prompt, paired with a second, fixed layer of baseline behavior an admin cannot accidentally break. The split is deliberate: personality and organizational context stay editable; the guarantees the platform depends on for reliable behavior do not.</p>
+    <p class="muted">Alongside this, we're working through how much of what gets sent to a model on every single call is duplicated or redundant — tool descriptions repeated across overlapping specifications, formatting instructions restated where a shorter contract would do — and cutting it down, since every token in a system prompt is paid for on every turn, not just the first.</p>
   </section>
 
   <!-- ── Architectural direction ──────────────────────────────── -->

@@ -309,7 +309,28 @@
      (processing.profiles.fast.input_processors); apps/fred-agents/fred_agents/general_assistant.py,
      deep_assistant.py, react_rag_mcp.py (agent_id); apps/frontend/src/rework/components/pages/
      ManagedChatPage/useChatAttachments.ts; docs/swift/design/RUNTIME-EXECUTION-CONTRACT.md
-     (RFC RUNTIME-07 rev. 2, §2.2, §8.11). -->
+     (RFC RUNTIME-07 rev. 2, §2.2, §8.11).
+
+     Re-verified against origin/swift @ 8f01f1fd, 2026-09-02 (content-digest-2026-09-02.md
+     "Shipped" items). Key files checked: apps/control-plane-backend/control_plane_backend/
+     product/{schemas.py,api.py,service.py}, prompts/store.py (Prompts Marketplace, fred#2320);
+     libs/fred-capability-html-artifact/fred_capability_html_artifact/capability.py,
+     apps/frontend/src/rework/features/capabilities/html_artifact/HtmlArtifactPane.tsx,
+     htmlArtifactDocument.ts (HTML artifact capability, fred#2482); libs/fred-runtime/
+     fred_runtime/app/platform_sql.py, libs/fred-capability-platform-ops/
+     fred_capability_platform_ops/postgres/capability.py, apps/fred-agents/fred_agents/
+     platform_ops.py (platform_postgres + platform_ops, fred#2467); libs/fred-runtime/
+     fred_runtime/capabilities/document_similarity/capability.py, apps/knowledge-flow-backend/
+     knowledge_flow_backend/features/vector_search/vector_search_service.py (document_similarity,
+     fred#2463); apps/control-plane-backend/control_plane_backend/users/{api.py,platform_roles.py},
+     libs/fred-core/fred_core/logs/audit_log.py (platform-role management, fred#2411);
+     apps/frontend/src/rework/features/capabilities/ReasoningChip.tsx, libs/fred-sdk/fred_sdk/
+     contracts/context.py (RuntimeContext.reasoning, fred#2339); apps/fred-agents/fred_agents/
+     general_assistant.py, deep_assistant.py (plain-language agent-mode rename, fred#2414); libs/
+     fred-runtime/fred_runtime/capabilities/document_verbatim/capability.py, document_extract/
+     capability.py (document reading capabilities, fred#2293); apps/frontend/src/rework/
+     components/shared/organisms/DocumentUploadDrawer/droppedPaths.ts, apps/knowledge-flow-backend/
+     knowledge_flow_backend/features/tag/structure.py (folder-level ingestion UX). -->
 
 <!-- ─── Sidebar navigation ─────────────────────────────────── -->
 <nav>
@@ -325,6 +346,7 @@
     <li><a href="#formats">Supported formats</a></li>
     <li><a href="#profiles">Processing profiles</a></li>
     <li><a href="#audio">Audio &amp; video</a></li>
+    <li><a href="#upload">Upload &amp; folders</a></li>
 
     <li class="nav-section">Execution</li>
     <li><a href="#sse">SSE event stream</a></li>
@@ -336,12 +358,17 @@
     <li><a href="#bundled">Bundled agents</a></li>
     <li><a href="#react">ReAct engine</a></li>
     <li><a href="#mcp">MCP tools</a></li>
+    <li><a href="#capabilities">Agent capabilities</a></li>
 
     <li class="nav-section">Chat UI</li>
     <li><a href="#markdown">Markdown rendering</a></li>
     <li><a href="#trace">Reasoning trace</a></li>
+    <li><a href="#reasoning">Reasoning selector</a></li>
     <li><a href="#attachments">Attachments</a></li>
     <li><a href="#sessions">Sessions</a></li>
+
+    <li class="nav-section">Prompts</li>
+    <li><a href="#marketplace">Library &amp; marketplace</a></li>
 
     <li class="nav-section">Governance</li>
     <li><a href="#roles">Role model</a></li>
@@ -667,6 +694,40 @@
   </section>
 
 
+  <!-- ── Upload & folders ───────────────────────────────────── -->
+  <section id="upload">
+    <h2>Upload &amp; folder management</h2>
+    <p>
+      The Resources (Corpus) workspace ingests whole folder trees, not just
+      individual files, and gives upfront feedback before spending upload
+      bandwidth or ingestion time.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>Detail</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Full-page drag-and-drop</td>
+          <td>The whole page is a drop target for the folder being viewed, not just a dropzone widget. A dropped directory keeps its on-disk structure: each subdirectory becomes a nested document tag, and files upload under their own subdirectory's tag instead of flattening into the drop target.</td>
+        </tr>
+        <tr>
+          <td>Subtree ingestion state</td>
+          <td>Folder rows carry the same <code>StatusChip status="processing"</code> as document rows for as long as any document anywhere under them — own files plus every sub-folder, at any depth — is still ingesting, clearing once the last one settles. Unions the currently loaded tag view with the live SSE task feed.</td>
+        </tr>
+        <tr>
+          <td>Upload quota precheck</td>
+          <td><code>POST /knowledge-flow/v1/quota/precheck</code> checks a whole upload batch's declared total size against the destination's quota (owning team or personal space) in one round trip before any file bytes are sent. An over-quota batch is rejected wholesale; the drawer stays open showing the server's numbers, with Save disabled until the file list changes.</td>
+        </tr>
+        <tr>
+          <td>Folder-depth cap</td>
+          <td>Dropped or manually created folder trees are capped at <code>MAX_FOLDER_DEPTH = 15</code> levels, counting the destination path — enforced server-side in the tag-path validator (<code>MAX_TAG_PATH_DEPTH</code>, 422 past the cap) and pre-filtered client-side on every drop surface, with a toast naming the skipped file count.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+
   <!-- ══════════════════════════════════════════════════════════
        EXECUTION
        ══════════════════════════════════════════════════════════ -->
@@ -891,9 +952,9 @@
       <tbody>
         <tr>
           <td><code>fred.github.assistant</code></td>
-          <td>General assistant</td>
+          <td>Custom assistant</td>
           <td>Optional</td>
-          <td>Blank-slate ReAct agent with access to all pod MCP tools; operator selects tools and writes the prompt at enrollment</td>
+          <td>Build-your-own ReAct agent; operator chooses the tools (document search, data analysis, ...) and writes the prompt at enrollment — no default capabilities pre-selected</td>
         </tr>
         <tr>
           <td><code>fred.github.rag_expert</code></td>
@@ -903,9 +964,9 @@
         </tr>
         <tr>
           <td><code>fred.github.deep_assistant</code></td>
-          <td>Deep assistant</td>
+          <td>Custom planning assistant</td>
           <td>Optional</td>
-          <td>Blank-slate planning assistant on the LangGraph deep-agent runtime; plans multi-step tasks before executing; no filesystem tools by default</td>
+          <td>Plans before it acts on the LangGraph deep-agent runtime — breaks complex requests into steps and checks intermediate results; operator chooses tools and prompt; no filesystem tools by default</td>
         </tr>
         <tr>
           <td><code>fred.github.react_rag_mcp</code></td>
@@ -930,6 +991,12 @@
           <td>Test harness</td>
           <td>N/A</td>
           <td>No-LLM deterministic agent covering all SSE event types, HITL flows, markdown rendering, error scenarios; used for integration and UI testing</td>
+        </tr>
+        <tr>
+          <td><code>fred.github.platform_ops</code></td>
+          <td>Platform ops</td>
+          <td>No</td>
+          <td>ReAct admin agent defaulting to the <code>platform_postgres</code> capability (see <a href="#capabilities">Agent capabilities</a>); raised per-turn tool-call cap (30, vs. 12 default) for unattended multi-query investigation, with guardrails steering it to ground on the discovered schema, aggregate in SQL, and fix rather than blindly retry failed queries</td>
         </tr>
       </tbody>
     </table>
@@ -980,6 +1047,50 @@
         <tr><td>Server selection</td><td>Agent instance holds tri-state: inherit pod defaults · empty list · explicit subset of server IDs</td></tr>
         <tr><td>Locked servers</td><td>Servers marked <code>locked=True</code> cannot be toggled by team managers — operator-controlled only</td></tr>
         <tr><td>Bundled servers</td><td>Knowledge Flow text search, Knowledge Flow corpus; extensible via custom MCP server deployment</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ── Agent capabilities ─────────────────────────────────── -->
+  <section id="capabilities">
+    <h2>Agent capabilities</h2>
+    <p>
+      Beyond MCP-backed tools, agent pods ship native capabilities registered via
+      <code>fred.capabilities</code> entry points. Each declares a <code>team_scope</code>:
+      <code>ADMIN_GATED</code> (default) requires a platform admin to enable it per team;
+      <code>DEFAULT_ON</code> capabilities are usable by every team out of the box.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Capability ID</th><th>Tool(s)</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>html_artifact</code></td>
+          <td><code>render_html_artifact(title, html, css)</code></td>
+          <td>Renders agent-authored static HTML/CSS in a read-only side panel (Preview/HTML/CSS tabs, download). Capped at 256 KB combined HTML+CSS. ReAct-only. Rendered client-side in a <code>sandbox=""</code> <code>&lt;iframe srcDoc&gt;</code> (no <code>allow-scripts</code>, no <code>allow-same-origin</code>), with author markup passed through DOMPurify and an injected <code>default-src 'none'</code> CSP — no script execution and no network egress on any output path.</td>
+        </tr>
+        <tr>
+          <td><code>platform_postgres</code></td>
+          <td><code>postgres_list_tables()</code>, <code>postgres_run_query(sql)</code></td>
+          <td>Read-only SQL access to the platform's own database, governed rather than raw. Read-only is enforced server-side in three layers — single-statement parsing (rejects stacked statements before execution), an explicit <code>READ ONLY</code> transaction, and a connect-time read-only session default — not by client-side SQL validation. Results are capped at 200 rows and 1000 chars/cell; query timeout is configurable, 1-120s. Bundled by the <code>platform_ops</code> agent template (see <a href="#bundled">Bundled agent templates</a>).</td>
+        </tr>
+        <tr>
+          <td><code>document_similarity</code></td>
+          <td><code>find_similar_passages(anchor, document_uids, top_k?)</code></td>
+          <td>Ranks passages most similar to a given anchor passage within one or more explicitly named documents — a targeted comparison primitive, not corpus-wide search; at least one target document is required. Calls Knowledge Flow's vector-search similarity endpoint: embedding-based retrieval over a widened candidate pool, reordered by a cross-encoder. Configurable <code>default_top_k</code> (1-50), <code>rerank</code>, <code>min_score</code>.</td>
+        </tr>
+        <tr>
+          <td><code>document_verbatim</code></td>
+          <td><code>read_document(uid, ...)</code></td>
+          <td>Positional, literal document read, one bounded page at a time ("what does the first paragraph say?", "read section 3") — distinct from a lossy summary.</td>
+        </tr>
+        <tr>
+          <td><code>document_extract</code></td>
+          <td><code>extract_from_document(uid, criterion)</code></td>
+          <td>Exhaustive enumeration by criterion ("list ALL the requirements"), run server-side in Knowledge Flow as a map-reduce over every chunk rather than paged into the agent's own context. Gated behind a human proceed/cancel confirmation by default (<code>require_confirmation</code>, per-instance configurable) — the gate runs before extraction starts, so a cancel spends no extraction tokens.</td>
+        </tr>
       </tbody>
     </table>
   </section>
@@ -1038,6 +1149,29 @@
   </section>
 
 
+  <!-- ── Reasoning selector ─────────────────────────────────── -->
+  <section id="reasoning">
+    <h2>Reasoning selector</h2>
+    <p>
+      A composer control showing which model is actually routed for the next
+      turn, plus a boolean toggle for whether that model reasons — not a
+      low/medium/high effort picker.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Property</th><th>Detail</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Wire field</td><td><code>RuntimeContext.reasoning: bool | None</code> — tri-state: unset (agent doesn't offer reasoning at all), <code>false</code> (offered, left off), <code>true</code> (requested). A permission, not a guarantee: a platform-level ceiling can still suppress it.</td></tr>
+        <tr><td>Reasoning effort</td><td>Not user-controlled. Fixed per model by the ops-authored thinking-profile config and only displayed, never chosen per turn — a per-turn effort override was tried and withdrawn because some providers reject unsupported effort values.</td></tr>
+        <tr><td>Model identity</td><td>The chip displays the model actually routed for the next turn, independent of whether reasoning is offered on it.</td></tr>
+        <tr><td>Component</td><td><code>ReasoningChip</code> in the composer's bottom row (widget id <code>reasoning_toggle</code>), sourced from <code>ExecutionPreparation.chat_controls[]</code> — only rendered for widgets the active agent actually exposes.</td></tr>
+        <tr><td>Persistence</td><td>Session-scoped only (stored client-side per session id), default off; not a global or account-level preference.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
   <!-- ── Attachments ────────────────────────────────────────── -->
   <section id="attachments">
     <h2>Chat attachments</h2>
@@ -1080,14 +1214,43 @@
 
 
   <!-- ══════════════════════════════════════════════════════════
+       PROMPTS
+       ══════════════════════════════════════════════════════════ -->
+  <section id="marketplace">
+    <h2>Prompt library &amp; marketplace</h2>
+    <p>
+      Every team has a private, team-scoped prompt library. On top of it, a
+      cross-team marketplace lets teams publish, discover, use, and import
+      each other's prompt templates.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Endpoint</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>POST /teams/{team_id}/prompts/{prompt_id}/publish</code></td><td>Sets a live <code>published</code> flag on the team's own prompt row — the marketplace listing reads that same row, so edits and the usage counter propagate immediately, no review step. Team-editor only; personal-space prompts cannot be published (400).</td></tr>
+        <tr><td><code>POST /teams/{team_id}/prompts/{prompt_id}/unpublish</code></td><td>Withdraws it from the marketplace; the team keeps its own private copy unchanged.</td></tr>
+        <tr><td><code>GET /marketplace/prompts</code></td><td>Lists every published prompt platform-wide, most-used first. Not team-scoped — open to any authenticated user.</td></tr>
+        <tr><td><code>GET /marketplace/prompts/{prompt_id}</code></td><td>Full text of one published prompt, fetched on demand when its card is opened (listing payload carries only a preview).</td></tr>
+        <tr><td><code>POST /marketplace/prompts/{prompt_id}/use</code></td><td>Records a "use" (copy to clipboard) by incrementing the prompt's shared usage counter.</td></tr>
+        <tr><td><code>POST /marketplace/prompts/{prompt_id}/import</code></td><td>Copy-by-value into one or more of the caller's own teams: a fresh prompt row (new id, version 1, counters reset, unpublished) per target; name collisions get an <code>_imported-N</code> suffix.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════
        GOVERNANCE
        ══════════════════════════════════════════════════════════ -->
   <section id="roles">
     <h2>Role model</h2>
     <p>
-      Fred enforces two orthogonal role axes. Platform roles are global (Keycloak groups).
-      Team roles are per-relationship (OpenFGA tuples). Neither axis grants access to the
-      other's surfaces — this is enforced at the API layer, not only in the UI.
+      Fred enforces two orthogonal role axes. Platform roles are global, held as
+      direct ReBAC relations on the platform-wide <code>organization</code>
+      singleton (see <a href="#scoping">Team scoping</a>). Team roles are
+      per-relationship (OpenFGA tuples) on each team. Neither axis grants access
+      to the other's surfaces — this is enforced at the API layer, not only in
+      the UI.
     </p>
     <table>
       <thead>
@@ -1110,20 +1273,38 @@
           <td>Use team agents, use visible prompts, manage own personal-team prompts and agents</td>
         </tr>
         <tr>
-          <td><code>admin</code></td>
-          <td>Platform (RBAC)</td>
-          <td>Access internal/admin APIs (e.g., runtime binding resolver); does not inherit team-level access</td>
+          <td><code>platform_admin</code></td>
+          <td>Platform (ReBAC)</td>
+          <td>Full org-level administration — access internal/admin APIs, grant/revoke <code>platform_observer</code>. Only the bootstrap-root admin may grant/revoke <code>platform_admin</code> itself, and the root cannot be revoked.</td>
         </tr>
         <tr>
-          <td><code>editor</code> / <code>viewer</code></td>
-          <td>Platform (RBAC)</td>
-          <td>Application-level read/write permissions distinct from team governance</td>
+          <td><code>platform_observer</code></td>
+          <td>Platform (ReBAC)</td>
+          <td>Read-only platform-level access; grantable and revocable by any <code>platform_admin</code></td>
         </tr>
       </tbody>
     </table>
     <div class="callout">
       <strong>Orthogonality rule:</strong> <code>owner</code> cannot manage agents or prompts.
       <code>manager</code> cannot touch platform policy or quotas. Hardcoded in the authorization layer.
+    </div>
+
+    <h3>Platform-role management</h3>
+    <table>
+      <thead>
+        <tr><th>Endpoint</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>GET /users/platform-roles</code></td><td>List every platform-role holder, plus whether the caller is the bootstrap root</td></tr>
+        <tr><td><code>POST /users/{user_id}/platform-roles</code></td><td>Grant <code>platform_admin</code> or <code>platform_observer</code> to a user</td></tr>
+        <tr><td><code>DELETE /users/{user_id}/platform-roles/{relation}</code></td><td>Revoke a platform role from a user</td></tr>
+      </tbody>
+    </table>
+    <div class="callout info">
+      <strong>Imputability audit logs:</strong> every grant and revoke emits a structured audit-log
+      event (<code>authz.relation.granted</code> / <code>authz.relation.revoked</code>) carrying the
+      acting user, the subject, the relation, and the resource — a durable record of who assigned
+      what to whom.
     </div>
   </section>
 
