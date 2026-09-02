@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fred — Durable execution</title>
-  <meta name="description" content="Why ingestion, evaluation, and agent execution in Fred all pair a fast synchronous API with a Temporal-backed durable workflow underneath, and what that buys you at real production volumes.">
+  <meta name="description" content="Why ingestion and evaluation in Fred pair a fast synchronous API with a Temporal-backed durable workflow underneath, what that buys you at real production volumes, and why a live conversation deliberately doesn't follow the same pattern.">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -103,10 +103,11 @@
     <div class="hd-eyebrow">docs / durable execution</div>
     <h1>Durable execution</h1>
     <p class="hd-lead">
-      Ingestion, evaluation, and agent execution all pair a fast, synchronous
-      API with a Temporal-backed worker underneath for the heavy, long-running
-      work — built to survive real document volumes and real usage levels,
-      not just a demo.
+      Ingestion and evaluation pair a fast, synchronous API with a
+      Temporal-backed worker underneath for the heavy, long-running work —
+      built to survive real document volumes and real usage levels, not just
+      a demo. A live conversation turn deliberately doesn't follow this
+      pattern; it stays synchronous end to end instead.
     </p>
   </div>
 
@@ -114,12 +115,11 @@
   <section id="idea">
     <h2>Not a script that happens to work</h2>
     <p>
-      Every Fred service — document ingestion, agent evaluation, agent execution
-      itself — separates the part a user waits on from the part that does the
-      actual work. The synchronous API responds fast: an upload is accepted, an
-      evaluation run is scheduled, a conversation turn starts streaming. The
-      heavy lifting behind each of those runs as a durable, <strong>Temporal-backed
-      workflow</strong>.
+      Fred's ingestion and evaluation services separate the part a user waits
+      on from the part that does the actual work. The synchronous API
+      responds fast: an upload is accepted, an evaluation run is scheduled.
+      The heavy lifting behind each one runs as a durable,
+      <strong>Temporal-backed workflow</strong>.
     </p>
     <p>
       That separation matters the moment something takes longer than a request
@@ -129,10 +129,15 @@
       against a live model.
     </p>
     <div class="callout info">
-      <strong>In practice:</strong> this is what lets ingestion, evaluation, and
-      execution keep working at real document volumes and real usage levels —
-      the kind of load a weekend prototype never has to survive.
+      <strong>In practice:</strong> this is what lets ingestion and evaluation
+      keep working at real document volumes and real usage levels — the kind
+      of load a weekend prototype never has to survive.
     </div>
+    <p>
+      Agent execution — a live chat turn — deliberately does <strong>not</strong>
+      follow this pattern; see <a href="#streaming">Streaming without a
+      broker</a> below for why.
+    </p>
   </section>
 
   <!-- ── Ingestion ──────────────────────────────────────── -->
@@ -171,9 +176,17 @@
     <p>
       Conversations themselves stream over a standard HTTP connection directly
       between the browser and the runtime pod running the agent — no broker in
-      the middle relaying every token. Access is secured by the same
-      per-request authorization used everywhere else in Fred, rather than a
-      fragile session-affinity trick that ties a conversation to one specific pod.
+      the middle relaying every token, and no Temporal workflow behind it
+      either. Access is secured by the same per-request authorization used
+      everywhere else in Fred, rather than a fragile session-affinity trick
+      that ties a conversation to one specific pod.
+    </p>
+    <p>
+      That's a deliberate difference from ingestion and evaluation, not a gap:
+      someone watching an answer stream in cares about sub-second
+      responsiveness far more than about surviving a mid-turn crash, and each
+      turn already gets its own resume point without needing a durable
+      workflow underneath it.
     </p>
   </section>
 

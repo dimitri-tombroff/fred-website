@@ -236,7 +236,8 @@
     <pre><code>tool_name, status, error_code, exception_type, http_status,
 template_agent_id, model, model_name, finish_reason,
 runtime_id, source_runtime_id, service, env, cluster,
-route, method, actor_type, file_type, agent_step</code></pre>
+route, method, actor_type, file_type, agent_step,
+runtime_stage, rebac_operation, pdf_stage</code></pre>
     <p>
       Deliberately excluded: <code>user_id</code>, <code>session_id</code>, <code>exchange_id</code>
       (identity); <code>team_id</code>, <code>agent_instance_id</code>, <code>agent_instance_name</code>,
@@ -276,6 +277,7 @@ route, method, actor_type, file_type, agent_step</code></pre>
           <tr><td class="k">agent.turn_error_total</td><td class="k">counter</td><td>same as above; only emitted when the turn errors</td></tr>
           <tr><td class="k">agent.turn_completed_quantity_input_tokens_total<br>agent.turn_completed_quantity_output_tokens_total<br>agent.turn_completed_quantity_tool_count_total</td><td class="k">counter</td><td>same labels as <code>agent.turn_completed</code> — auto-derived per-call from its <code>quantities</code>; this is where token counts actually live today, not any <code>cost.*</code> series</td></tr>
           <tr><td class="k">agent.suspended_total<br>agent.suspension_cleared_total</td><td class="k">counter</td><td>none informative — <code>team_id</code>, <code>agent_instance_id</code>, <code>reason</code> are all sent but all dropped</td></tr>
+          <tr><td class="k">runtime.stage_latency_ms</td><td class="k">histogram</td><td><code>runtime_stage</code> — pre-LLM turn setup, timed per stage</td></tr>
         </tbody>
       </table>
     </div>
@@ -289,6 +291,7 @@ route, method, actor_type, file_type, agent_step</code></pre>
           <tr><td class="k">api.error_total</td><td class="k">counter</td><td>same as above; only on non-2xx/3xx</td></tr>
           <tr><td class="k">error.total</td><td class="k">counter</td><td>generic error counter emitted alongside <code>api.error_total</code>, same labels</td></tr>
           <tr><td class="k">llm.call_latency_ms</td><td class="k">histogram</td><td><code>model_name</code> only — <code>agent_id</code> and <code>operation</code> are sent but dropped</td></tr>
+          <tr><td class="k">rebac.call_latency_ms<br>rebac.call_total</td><td class="k">timer/counter</td><td><code>rebac_operation</code> — every OpenFGA authorization check, platform-wide</td></tr>
         </tbody>
       </table>
     </div>
@@ -309,6 +312,7 @@ route, method, actor_type, file_type, agent_step</code></pre>
           <tr><td class="k">temporal.system.activity_duration_ms</td><td class="k">histogram</td><td><code>status</code>, <code>error_code</code>, <code>file_type</code> — <code>phase</code>, <code>activity_type</code>, <code>task_queue</code>, <code>workflow_type</code>, <code>attempt</code>, <code>source_type</code>, <code>source_tag</code> are sent but dropped</td></tr>
           <tr><td class="k">temporal.ingestion.documents_total</td><td class="k">counter</td><td><code>status</code>, <code>error_code</code>, <code>file_type</code> — same dims as <code>temporal.system.activity_duration_ms</code> above; the rest dropped</td></tr>
           <tr><td class="k">temporal.ingestion.workflows_total</td><td class="k">counter</td><td><code>status</code> only — <code>task_queue</code>, <code>workflow_type</code>, <code>has_error</code>, <code>has_document_uid</code>, <code>has_filename</code>, <code>workflow_id_prefix</code> are sent but dropped</td></tr>
+          <tr><td class="k">knowledge_flow.pdf.image_loop_latency_ms<br>knowledge_flow.pdf.image_description_latency_ms</td><td class="k">histogram</td><td><code>pdf_stage</code> — PDF image extraction and vision-model captioning during ingestion</td></tr>
         </tbody>
       </table>
     </div>

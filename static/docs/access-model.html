@@ -201,11 +201,17 @@
         <tbody>
           <tr><td class="k">can_create_team · can_list_all_teams · can_delete_team · can_rescue_team_admin</td><td class="k">platform_admin</td></tr>
           <tr><td class="k">can_edit_agent_class_path</td><td class="k">platform_admin</td></tr>
-          <tr><td class="k">can_manage_platform · can_administer_users · can_run_benchmark</td><td class="k">platform_admin</td></tr>
+          <tr><td class="k">can_manage_platform · can_administer_users</td><td class="k">platform_admin</td></tr>
           <tr><td class="k">can_observe_platform</td><td class="k">platform_observer</td></tr>
         </tbody>
       </table>
     </div>
+    <p>
+      Granting or revoking <code>platform_observer</code> is itself an admin action any
+      <code>platform_admin</code> can take. <code>platform_admin</code> is narrower: only the
+      bootstrap root may grant or revoke it, and the root cannot be revoked at all — there's always
+      exactly one identity that can't be locked out.
+    </p>
     <div class="callout info">
       AUTHZ-05 removed the legacy Keycloak <code>admin</code>/<code>editor</code>/<code>viewer</code> bridge
       and the "any connected user" organization tier (<code>can_create_agent</code>,

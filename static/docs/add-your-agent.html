@@ -251,11 +251,17 @@ class WeatherAgent(ReActAgent):
 WEATHER_AGENT = WeatherAgent()</code></pre>
     <p>
       The required fields on any definition are <code>agent_id</code>, <code>role</code>, and
-      <code>description</code>. The <code>ToolContext</code> gives a tool the caller's
-      <code>user_id</code>, <code>team_id</code>, <code>session_id</code>, <code>language</code>,
-      and access token — and <code>invoke_agent()</code> to call another agent. Tools can be local
-      Python (as above), built-in tool refs, or <strong>MCP</strong>-backed for external systems.
+      <code>description</code>. The <code>ToolContext</code> gives a tool access to the caller's
+      identity and session context — user, team, session, language — through its runtime binding.
+      Tools can be local Python (as above), built-in tool refs, or <strong>MCP</strong>-backed for
+      external systems.
     </p>
+    <div class="callout info">
+      <strong>Beyond a single tool:</strong> a capability that bundles several tools, a HITL prompt,
+      and its own per-team config — the pattern behind Fred's own built-in capabilities — is packaged
+      as a <em>capability</em> rather than a bare tool. See <a href="features.html#capabilities">Agent
+      capabilities</a> for what that looks like today.
+    </div>
   </section>
 
   <!-- ── Shapes ─────────────────────────────────────────── -->

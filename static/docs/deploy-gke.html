@@ -338,14 +338,14 @@
     <h2>How it is deployed</h2>
     <p>The deployment splits cleanly into two layers with different change cadences:</p>
     <div class="wip-grid">
-      <div class="wip-item"><span class="wip-badge data">foundation</span><div><div class="wip-label">Foundation — imperative Helm</div><div class="wip-desc">The slow-moving base: Postgres, Keycloak, OpenFGA, OpenSearch, Temporal, Grafana, GMP frontend, kube-state-metrics, the shared Ingress, the managed certificates, and the one Secret. Provisioning runs as Helm hook Jobs — create databases and users, seed the Keycloak realm and clients, apply schema migrations, register the Temporal namespace.</div></div></div>
+      <div class="wip-item"><span class="wip-badge data">foundation</span><div><div class="wip-label">Foundation — imperative Helm</div><div class="wip-desc">The slow-moving base: Postgres, Keycloak, OpenFGA, OpenSearch, Temporal, Grafana, GMP frontend, kube-state-metrics, the shared Ingress, the managed certificates, and the one Secret. Provisioning runs as Helm hook Jobs — create databases and users, seed the Keycloak realm and clients, register the Temporal namespace.</div></div></div>
       <div class="wip-item"><span class="wip-badge core">apps</span><div><div class="wip-label">Apps — GitOps via Argo&nbsp;CD</div><div class="wip-desc">The five stateless workloads, delivered continuously. A single Argo CD Application tracks a multi-workload chart; per-app enable flags and pinned image tags live in a values file. Sync is deliberately manual (server-side apply), so a rollout is an explicit, reviewable action.</div></div></div>
     </div>
     <div class="callout info">
       <strong>Autopilot-friendly.</strong> Every workload sets explicit CPU/memory requests and runs
-      unprivileged. App Deployments replace in place (<code>maxSurge: 0</code>) rather than surging a
-      second copy of all five at once — which would spike memory and node auto-provisioning on a
-      small cluster. Postgres uses a modest persistent volume on a standard storage class.
+      unprivileged. App Deployments roll one pod at a time (<code>maxSurge: 1</code>, <code>maxUnavailable: 0</code>)
+      rather than surging a second copy of all five at once — which would spike memory and node
+      auto-provisioning on a small cluster. Postgres uses a modest persistent volume on a standard storage class.
     </div>
   </section>
 
@@ -359,7 +359,7 @@
       <li><strong>Fill secrets.</strong> Copy the example values file, fill the required secret values, and keep it out of version control.</li>
       <li><strong>Deploy the foundation.</strong> Install the foundation chart. Its hook Jobs provision the databases and users, seed the Keycloak realm and clients, and register the Temporal namespace. Confirm the provisioning Jobs completed.</li>
       <li><strong>Build images.</strong> Build the component images at one shared, date-stamped tag via Cloud Build, so a release round is one coherent version.</li>
-      <li><strong>Run migrations.</strong> Apply the control-plane and knowledge-flow schema migrations (each tracks its own migration version).</li>
+      <li><strong>Run migrations.</strong> Enable and apply the control-plane, knowledge-flow, and fred-agents schema migrations — each ships off by default and tracks its own migration version.</li>
       <li><strong>Deploy the apps.</strong> Bring up <code>control-plane-backend</code>, then <code>knowledge-flow</code> (backend + worker) and <code>fred-agents</code>, and the <code>fred-frontend</code> last — it resolves backend DNS at startup.</li>
       <li><strong>Provision identity.</strong> Create the initial users, teams, and groups so the <code>groups</code> claim is populated.</li>
       <li><strong>Verify.</strong> Run the status/completeness check until it is fully green (see below), then log in over HTTPS and run an ingestion smoke test.</li>

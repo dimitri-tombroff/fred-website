@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fred — Policy-based LLM routing</title>
-  <meta name="description" content="How Fred resolves the effective model for an agent: capability, runtime context, model profiles, routing rules, and a deterministic resolution algorithm.">
+  <meta name="description" content="How Fred resolves the effective model for an agent: capability, model profiles, agent-level overrides, and platform-wide controls — deterministic and auditable.">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -108,7 +108,7 @@
     <li><a href="#concepts">Concepts</a></li>
     <li><a href="#catalog">The model catalog</a></li>
     <li><a href="#providers">Providers</a></li>
-    <li><a href="#rules">Rules &amp; resolution</a></li>
+    <li><a href="#resolution">Resolution</a></li>
     <li><a href="#runtime">Runtime behavior</a></li>
     <li><a href="#where">Where routing lives</a></li>
     <li><a href="#governance">Governance position</a></li>
@@ -134,13 +134,12 @@
     <p>
       An agent definition declares an id, a role, tools, and behavior — but <strong>no provider,
       no model name, not even a capability</strong>. When it runs, the runtime asks a routing
-      resolver for the effective model, keyed by the capability it needs and the request context
-      (team, user, agent, operation). The resolver returns a <strong>model profile</strong>; a
-      model factory builds the concrete client.
+      resolver for the effective model, keyed by the capability it needs and which agent is asking.
+      The resolver returns a <strong>model profile</strong>; a model factory builds the concrete client.
     </p>
     <div class="callout info">
       Result: model choice is governed centrally from a catalog, decoupled from agent code — you
-      can change models, add a faster model for a phase, or swap a provider without touching an agent.
+      can change models, override one agent, or swap a provider without touching an agent's code.
     </div>
   </section>
 
@@ -152,9 +151,8 @@
         <thead><tr><th class="k">Concept</th><th>Meaning</th></tr></thead>
         <tbody>
           <tr><td class="k">capability</td><td>The technical model family the runtime needs — one of <code>chat</code>, <code>language</code>, <code>embedding</code>, <code>image</code>. The runtime sets this (chat for ReAct/Graph); the author never declares it.</td></tr>
-          <tr><td class="k">operation</td><td>The pipeline phase of a multi-step agent (e.g. <code>routing</code>, <code>planning</code>, or a graph node name). The primary routing dimension.</td></tr>
-          <tr><td class="k">purpose</td><td>Optional business-intent discriminator (e.g. <code>rag</code>, <code>chatbot</code>).</td></tr>
           <tr><td class="k">model profile</td><td>A named, reusable model configuration — <code>profile_id</code> + <code>capability</code> + <code>model</code> (<code>provider</code>, <code>name</code>, <code>settings</code>).</td></tr>
+          <tr><td class="k">agent override</td><td>An optional, per-agent profile pick that takes precedence over the capability's catalog default.</td></tr>
         </tbody>
       </table>
     </div>
@@ -173,7 +171,6 @@
       <li><code>common_model_settings_by_capability</code> — defaults merged per capability.</li>
       <li><code>default_profile_by_capability</code> — <strong>required</strong>: the fallback profile for each capability.</li>
       <li><code>profiles</code> — the concrete model profiles.</li>
-      <li><code>rules</code> — routing overrides (empty by default).</li>
     </ul>
     <p>Settings merge deterministically: <code>common_model_settings</code> → <code>common_model_settings_by_capability[capability]</code> → <code>profile.model.settings</code> (later wins).</p>
     <pre><code>version: v1
@@ -193,16 +190,7 @@ profiles:
     model: { provider: openai, name: gpt-4o-mini }
   - profile_id: chat.quality
     capability: chat
-    model: { provider: openai, name: gpt-4o }
-rules:
-  - rule_id: react.routing.fast
-    capability: chat
-    operation: routing
-    target_profile_id: chat.fast
-  - rule_id: react.planning.quality
-    capability: chat
-    operation: planning
-    target_profile_id: chat.quality</code></pre>
+    model: { provider: openai, name: gpt-4o }</code></pre>
     <p class="src">Source: fred-runtime <code>model_routing/catalog.py</code> · example <code>apps/fred-agents/config/models_catalog.yaml</code></p>
   </section>
 
@@ -232,39 +220,39 @@ rules:
     <p class="src">Source: fred-core <code>model/models.py</code> (<code>ModelProvider</code>) · <code>model/factory.py</code></p>
   </section>
 
-  <!-- ── Rules ──────────────────────────────────────────── -->
-  <section id="rules">
-    <h2>Rules &amp; resolution</h2>
-    <p>
-      A rule maps a context to a profile. Required fields are <code>rule_id</code>, <code>capability</code>,
-      and <code>target_profile_id</code>; optional criteria are <code>operation</code>, <code>purpose</code>,
-      <code>agent_id</code>, <code>team_id</code>, <code>user_id</code>. A rule with any criterion must set
-      <code>operation</code> — catch-all rules are rejected (use the capability default instead).
-    </p>
-    <p>For one selection request, the resolver:</p>
+  <!-- ── Resolution ─────────────────────────────────────── -->
+  <section id="resolution">
+    <h2>Resolution</h2>
+    <p>For one chat turn, the effective model is decided in a fixed order, highest precedence first:</p>
     <ol>
-      <li>Keeps rules whose <code>capability</code> equals the request's.</li>
-      <li>Keeps rules whose every defined criterion matches the context (an absent criterion is a wildcard).</li>
-      <li>Picks the winner by <strong>specificity</strong> (most defined criteria), tie-broken by declaration order.</li>
-      <li>If nothing matches, uses <code>default_profile_by_capability[capability]</code> — and errors if there is no default for that capability.</li>
+      <li><strong>Platform-wide binding</strong> — an operator can pin the model every agent on the
+        deployment uses, overriding everything below it.</li>
+      <li><strong>Agent override</strong> — a team can point a specific agent at a different profile
+        than the capability's catalog default.</li>
+      <li><strong>Capability default</strong> — <code>default_profile_by_capability[capability]</code>
+        from the catalog, used when nothing more specific applies.</li>
     </ol>
     <p>
-      The decision is returned as a result carrying its <code>source</code> (<code>rule</code> or
-      <code>default</code>), the <code>profile_id</code>, the resolved <code>model</code>, the matched
-      <code>rule_id</code>, and the matched criteria — deterministic and testable.
+      The decision is made once per turn and returned as a result carrying the resolved
+      <code>profile_id</code>, the concrete <code>model</code>, and which of the three levels decided
+      it — deterministic and auditable.
     </p>
-    <p class="src">Source: fred-runtime <code>model_routing/resolver.py</code> (<code>ModelRoutingResolver</code>) · <code>contracts.py</code></p>
+    <p class="src">Source: fred-runtime <code>model_routing/resolver.py</code>, <code>provider.py</code></p>
   </section>
 
   <!-- ── Runtime ────────────────────────────────────────── -->
   <section id="runtime">
     <h2>Runtime behavior</h2>
     <ul>
-      <li><strong>ReAct agents</strong> resolve a model <em>per phase</em>: the operation is inferred from the conversation — <code>routing</code> after a user message, <code>planning</code> after a tool result — so you can route a fast model for routing and a stronger model for planning.</li>
-      <li><strong>Graph agents</strong> can resolve per node (the operation is the node name); otherwise the model is resolved once when the graph is built.</li>
+      <li><strong>ReAct and Graph agents</strong> both resolve their model once per turn, not once per
+        step — the same call, the same timing, regardless of shape.</li>
+      <li><strong>Reasoning</strong> is a separate, boolean on/off dimension a user can request per
+        turn, layered on top of whichever model resolution picked — not a way to pick a different
+        model, and not a low/medium/high effort choice (effort itself stays admin-configured). See
+        <a href="features.html#reasoning">Reasoning selector</a> for the chat-side control.</li>
       <li><strong>Embeddings</strong> for ingestion are configured separately in the Knowledge Flow config, not through the chat routing path.</li>
     </ul>
-    <p class="src">Source: fred-runtime <code>react_tool_loop.py</code>, <code>react_model_adapter.py</code>, <code>graph_runtime.py</code></p>
+    <p class="src">Source: fred-runtime <code>react_runtime.py</code>, <code>graph_runtime.py</code></p>
   </section>
 
   <!-- ── Where ──────────────────────────────────────────── -->
@@ -275,7 +263,7 @@ rules:
       <li><strong>Decide which profile</strong> — <code>fred-runtime</code>'s <code>model_routing</code> package: a pure, deterministic resolver over the loaded policy (no I/O, no model construction).</li>
       <li><strong>Build the client</strong> — <code>fred-core</code>'s model factory turns the chosen profile's configuration into the concrete LangChain client.</li>
     </ul>
-    <p>The agent pod wires these together at startup, exposing a model-factory port to the runtime; the agent only ever asks for "a model for this operation".</p>
+    <p>The agent pod wires these together at startup, exposing a model-factory port to the runtime; the agent only ever asks for "a model for this turn".</p>
     <p class="src">Source: fred-runtime <code>model_routing/provider.py</code>, <code>app/agent_app.py</code> · fred-core <code>model/factory.py</code></p>
   </section>
 
