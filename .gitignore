@@ -9,3 +9,6 @@ public
 resources
 node_modules
 .hugo_build.lock
+
+# content-digest skill scratch output — not site content
+.claude/content-digest-*.md
