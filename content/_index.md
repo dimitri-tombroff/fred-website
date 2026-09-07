@@ -33,3 +33,9 @@ seo:
     </div>
   </div>
 </section>
+
+<p class="text-center text-muted mt-4 mb-0">
+  Fred isn't another agent-calling API — it's the corpus, the capabilities, and
+  the platform underneath it, plus the SDK to build your own agents on top.
+  <a href="/docs/what-is-fred.html#platform">See what makes Fred different →</a>
+</p>

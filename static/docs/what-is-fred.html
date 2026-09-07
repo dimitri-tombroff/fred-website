@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<!-- Verified against the `fred` monorepo, branch consolidation-22-07, and this
-     site's own roadmap.md / capability slide deck research (2026-07-23). This
+<!-- Verified against the `fred` monorepo, branch swift (2026-09-07). This
      page is the non-technical companion to the homepage claim ("Governed.
      Open. Composable.") — it exists to answer "what is this, really"
      before a visitor commits to the developer-oriented Getting Started page.
@@ -135,6 +134,7 @@
   <div class="nav-tag">What is Fred?</div>
   <ul>
     <li class="nav-section">In this document</li>
+    <li><a href="#platform">Not just an agent API</a></li>
     <li><a href="#governed">Governed</a></li>
     <li><a href="#open">Open</a></li>
     <li><a href="#composable">Composable</a></li>
@@ -161,6 +161,50 @@
     </div>
     <p class="hd-lead">This page says what each of those actually means.</p>
   </div>
+
+  <!-- ── Not just an agent API ─────────────────────────── -->
+  <section id="platform">
+    <h2>Not just an agent API</h2>
+    <p class="pillar-sub">Most agent frameworks give you one layer: a way to call a model with tools. Fred gives you four, already wired together.</p>
+    <p>
+      LangChain, CrewAI, AutoGen, the various "agent SDKs" — they're good at the
+      reasoning loop: tool-calling, planning, multi-agent coordination. Fred uses
+      that ecosystem rather than competing with it. What Fred adds is everything
+      a reasoning loop needs to actually run on your organization's data, for
+      your organization's teams, in production — the parts a thin agent wrapper
+      leaves as an exercise for you.
+    </p>
+    <div class="who-grid">
+      <div class="who-card">
+        <b>Corpus</b>
+        <span>Your team's documents, ingested and indexed today — and, as an SDK-defined contract, increasingly able to <em>pull itself</em> from external systems instead of waiting for someone to upload a file.</span>
+      </div>
+      <div class="who-card">
+        <b>Capabilities</b>
+        <span>Everything an agent can use, from a single tool to a whole specialist agent — one uniform, admin-governed catalog. See <a class="inline" href="#composable">Composable</a> below.</span>
+      </div>
+      <div class="who-card">
+        <b>Platform</b>
+        <span>Teams, roles, audit, and now a real application-hosting surface: a team's own product — its own UI, backend, and agents if it has any — can run inside Fred, in its own container, without forking the platform to add it.</span>
+      </div>
+      <div class="who-card">
+        <b>Agent SDK</b>
+        <span><code>fred-sdk</code> + <code>fred-runtime</code>: write and ship your own agent pod independently, on your own release cycle, registered with the platform instead of merged into it.</span>
+      </div>
+    </div>
+    <p>
+      No single one of these is unique to Fred. Building all four as one coherent,
+      governed platform — rather than an agent loop you then have to wire into
+      your own corpus, your own auth, your own deployment story — is the part
+      other frameworks leave to you.
+    </p>
+    <div class="callout">
+      <strong>Where this is going:</strong> the platform and capability layers
+      are shipped and in production today. The corpus layer is actively growing
+      the same way — from upload-only toward SDK-defined, self-updating sources.
+      Read more in <a class="inline" href="/blog/framework-war-02-26/">Beyond Agent Framework Wars</a>.
+    </div>
+  </section>
 
   <!-- ── Governed ───────────────────────────────────────── -->
   <section id="governed">
