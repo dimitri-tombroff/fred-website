@@ -11,6 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fred — What is Fred?</title>
   <meta name="description" content="A high-level answer to what Fred actually is: governed by a real role and audit model, open source under Apache 2.0 end to end, and composable down to individual tools and agents.">
+  <script src="assets/theme-sync.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -30,8 +31,10 @@
       --govern: #6b3f92;  --open: #b8548f;  --compose: #3f6ec9;
     }
 
+    /* Dark palette: OS preference by default, overridden either way by the
+       site's own light/dark toggle via data-bs-theme (see assets/theme-sync.js). */
     @media (prefers-color-scheme: dark) {
-      :root {
+      :root:not([data-bs-theme="light"]) {
         --c:      #60a5fa;  --c-bg: #1e3a5f30;
         --r:      #34d399;  --r-bg: #06402b30;
         --s:      #fbbf24;  --s-bg: #78350f30;
@@ -42,6 +45,17 @@
         --border: #374151;
         --govern: #c6a3ea;  --open: #f0a9cf;  --compose: #9ec0f5;
       }
+    }
+    :root[data-bs-theme="dark"] {
+      --c:      #60a5fa;  --c-bg: #1e3a5f30;
+      --r:      #34d399;  --r-bg: #06402b30;
+      --s:      #fbbf24;  --s-bg: #78350f30;
+      --text:   #f3f4f6;
+      --muted:  #9ca3af;
+      --bg:     #111827;
+      --bg2:    #1f2937;
+      --border: #374151;
+      --govern: #c6a3ea;  --open: #f0a9cf;  --compose: #9ec0f5;
     }
 
     html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
