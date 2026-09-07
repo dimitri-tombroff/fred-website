@@ -224,13 +224,14 @@
     <div class="kicker">Fred · Swift platform · Capabilities, for teams &amp; architects</div>
     <h1>One Switch For Everything An Agent Can Do</h1>
     <p class="sub" style="margin-top:22px; max-width: 920px;">
-      A tool. A whole agent. Soon, a packaged bundle of several agents plus their
-      supporting pieces. Different sizes, <strong>same abstraction</strong> — turned on
-      or off per team, the same way, enforced the same way.
+      A tool. A whole specialist agent. Both are a <strong>capability</strong> —
+      same catalog, same switch. A whole <strong>application</strong> — its own UI,
+      its own backend, its own agents — is turned on the same way, but it isn't
+      a bigger capability. It's a different, sibling kind of feature.
     </p>
     <p class="muted" style="margin-top:60px; font-size:19px;">
-      Fred · July 2026 · verified against branch <code class="mono" style="color:var(--accent); font-size:17px;">consolidation-22-07</code><br>
-      Engineering detail: <code class="mono" style="color:var(--accent); font-size:17px;">docs/swift/rfc/AGENT-CAPABILITY-RFC.md</code>
+      Fred · September 2026 · verified against branch <code class="mono" style="color:var(--accent); font-size:17px;">swift</code><br>
+      Engineering detail: <code class="mono" style="color:var(--accent); font-size:17px;">docs/swift/design/CONTROL-PLANE-PRODUCT-CONTRACT.md §17</code>
       and the CAPAB-01 team deck
     </p>
   </div>
@@ -239,18 +240,18 @@
 <!-- ============ 2 · THE IDEA ============ -->
 <section class="slide">
   <div class="kicker">The idea, in one line</div>
-  <h2>A capability is anything you can turn on for an agent.</h2>
+  <h2>A capability is anything an agent can use — turned on with one switch.</h2>
   <div style="border:1px solid rgba(45,212,191,.4); background:var(--accent-dim); border-radius:12px; padding:26px 32px; margin-bottom:30px;">
     <p style="font-size:27px; line-height:1.5;">
-      A search tool. A document editor. A whole specialist agent. Eventually, a bundle
-      of several agents working together. <strong>It doesn't matter which</strong> —
-      granting one to a team is the same click, in the same place.
+      A search tool. A document editor. A whole specialist agent, ready to use.
+      <strong>It doesn't matter which</strong> — granting one to a team is the
+      same click, in the same place.
     </p>
   </div>
   <ul>
     <li>Every capability has a name, a description, and <strong>one switch</strong> a platform or team admin controls.</li>
     <li>That switch is enforced the same way everywhere — the same permission check, whether it gates a tool or an entire agent.</li>
-    <li>This deck walks through what's shipped today, why the switch matters, and where the same idea is headed next.</li>
+    <li>This deck walks through what's shipped today, why the switch matters, and how it relates to the platform's other admin-activated features — agents, models, and applications.</li>
   </ul>
 </section>
 
@@ -344,57 +345,69 @@
   <p class="punch">One lever, two payoffs: teams get exactly the surface they need — and nothing they don't.</p>
 </section>
 
-<!-- ============ 6 · NEXT HORIZON ============ -->
+<!-- ============ 6 · APPLICATIONS ARE A SIBLING, NOT A BIGGER CAPABILITY ============ -->
 <section class="slide">
-  <div class="kicker">Next horizon · a direction, not a shipped feature</div>
-  <h2 style="margin-bottom:14px;">A capability doesn't have to stop at one agent</h2>
+  <div class="kicker">Shipped now · a different kind of feature</div>
+  <h2 style="margin-bottom:14px;">An application is not a bigger capability</h2>
   <p class="sub" style="margin-bottom:20px; font-size:20px;">
-    Worked example: <strong>"Move to cloud"</strong> — packaged as one capability,
-    one switch, one thing a team turns on. Underneath, it's an assembly:
+    Worked example: <strong>"Move to cloud"</strong> could be a whole team-owned
+    <strong>application</strong> — its own UI, its own backend, its own agents if
+    it has any. It's switched on the same way a capability is. It is deliberately
+    <em>not</em> modeled as one.
   </p>
-  <div class="vmod v1">
-    <b>Five collaborating agents</b>
-    <span>discovery, cost estimation, migration planning, execution, validation — the kind of multi-agent crew the platform's agent-composition model already builds today.</span>
+  <div class="cols">
+    <div class="col">
+      <h4 class="colhead">Capability</h4>
+      <ul class="tight">
+        <li>Something an <strong>agent</strong> uses, or a whole agent itself — <code class="mono" style="font-size:15px;">kind="tool"</code> or <code class="mono" style="font-size:15px;">kind="agent"</code> in the same catalog.</li>
+        <li>Lives inside an agent's own turn: a tool call, or the agent's own reasoning.</li>
+        <li>No container image of its own — it runs inside the platform's existing agent pods.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4 class="colhead">Application</h4>
+      <ul class="tight">
+        <li>A complete product: one or two <strong>container images</strong>, built and deployed on its own release cycle — Fred compiles none of its code.</li>
+        <li>Rendered in its own sandboxed panel; the app and the host talk only over a closed <code class="mono" style="font-size:15px;">postMessage</code> protocol.</li>
+        <li>May contain its own agents internally — but from the platform's point of view, it is one product, not a set of capabilities.</li>
+      </ul>
+    </div>
   </div>
-  <div class="vmod v2">
-    <b>A processor</b>
-    <span>the background work behind the scenes — scanning inventory, running migration steps — the same kind of job a capability's own backend route already does for the PowerPoint generator.</span>
-  </div>
-  <div class="vmod v3">
-    <b>A UI</b>
-    <span>a dedicated panel for the whole workflow — the same side-panel slot a capability already gets today for its own view.</span>
-  </div>
-  <p class="punch">Nothing here is a new mechanism — an agent is already a capability; a capability already gets its own backend and its own panel. "Move to cloud" is what happens when we package those existing pieces as <strong style="color:var(--amber);">one switchable product</strong> instead of five separate things a team has to assemble by hand.</p>
+  <p class="punch">Same admin gesture — one switch, one per-team grant — for two genuinely different things. That's deliberate: an application doesn't reuse the capability id space, because <strong style="color:var(--amber);">"capability" stays reserved for what an agent uses</strong>, never for what a team hosts.</p>
 </section>
 
 <!-- ============ 7 · TAKEAWAY ============ -->
 <section class="slide">
   <div style="margin:auto 0; width:100%;">
     <div class="kicker">Take away</div>
-    <h2>Same idea, three sizes</h2>
-    <div class="road">
-      <div class="road-step">
-        <b>A tool</b>
-        <span>Document access, Writable document, PowerPoint generator — shipped</span>
-      </div>
-      <div class="road-arrow">→</div>
+    <h2>One admin gesture, several sibling kinds of feature</h2>
+    <div class="road" style="gap:20px;">
       <div class="road-step hot">
-        <b>A whole agent</b>
-        <span>Mindmap, SQL expert, and others — now in the same catalog, same switch, shipped</span>
+        <b>Capability</b>
+        <span>a tool or a whole specialist agent — Document access, Mindmap, SQL expert — shipped</span>
       </div>
-      <div class="road-arrow">→</div>
+      <div class="road-step">
+        <b>Application</b>
+        <span>a complete team-owned product — its own UI, backend, agents — shipped (Integrated Applications Framework)</span>
+      </div>
+      <div class="road-step">
+        <b>Model</b>
+        <span>which LLM a team or a call is routed to — shipped</span>
+      </div>
       <div class="road-step horizon">
-        <b>A packaged assembly</b>
-        <span>"Move to cloud" — several agents + a processor + a UI, as one switch — next horizon</span>
+        <b>Corpus</b>
+        <span>a source of knowledge a team enables, increasingly self-updating — in progress</span>
       </div>
     </div>
     <p style="font-size:24px; line-height:1.5;">
-      Every size is the <strong>same underlying model</strong>: a capability, with a manifest
-      and a switch a team admin controls. That's what makes the next size — assemblies —
-      reachable without reinventing anything.
+      None of these is a bigger or smaller version of another. What they
+      <strong>share</strong> is the gesture: a named, described, per-team switch
+      a platform admin controls. What they don't share is a type — a capability
+      is what an agent uses; an application is what a team hosts. Keeping that
+      boundary sharp is what makes each one simple to reason about on its own.
     </p>
     <p class="muted" style="margin-top:40px; font-size:19px;">
-      Engineering detail: <code class="mono" style="color:var(--accent); font-size:17px;">docs/swift/rfc/AGENT-CAPABILITY-RFC.md</code>
+      Engineering detail: <code class="mono" style="color:var(--accent); font-size:17px;">docs/swift/design/CONTROL-PLANE-PRODUCT-CONTRACT.md §17</code>
       and the CAPAB-01 team presentation deck
     </p>
   </div>

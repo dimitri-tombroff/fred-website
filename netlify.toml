@@ -90,7 +90,15 @@
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
     X-Content-Type-Options = "nosniff"
     X-XSS-Protection = "1; mode=block"
-    Content-Security-Policy = "default-src 'self'; manifest-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' https://avatars.githubusercontent.com data:; script-src 'self' 'nonce-dXNlcj0iaGVsbG8iLGRvbWFpbj0iaGVua3ZlcmxpbmRlLmNvbSIsZG9jdW1lbnQud3JpdGUodXNlcisiQCIrZG9tYWluKTs=' 'sha256-aWZ3y/RxbBYKHXH0z8+8ljrHG1mSBvyzSfxSMjBSaXk='; style-src 'self' 'unsafe-inline'"
+    # script-src hashes below cover the inline nav scripts in static/slides/*.html
+    # (4 standalone slide decks, each with no <script src> — sha256 over the exact
+    # <script>...</script> text). The Marp-built decks (fred_value_proposition,
+    # fred_deployment_pattern, building_agentic_app) share 2 identical hashes since
+    # `marp` emits byte-identical runtime JS regardless of deck content; the
+    # hand-authored agent_capabilities.html has its own single hash. Recompute with
+    # `python3 -c "import re,hashlib,base64; ..."` (see git history) if any deck's
+    # <script> block itself is edited — editing slide prose does not change these.
+    Content-Security-Policy = "default-src 'self'; manifest-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' https://avatars.githubusercontent.com data:; script-src 'self' 'sha256-D+O68mToZEw/dxyCM+3dsWbfovhlJAHl9cZj3ciBW6g=' 'sha256-Z4HMb1TZZsv/1G1Mab6N+iauuexRaFJnHAECXCpxyWY=' 'sha256-LAenlPISlHfDULoZ0Es1od1MkFw6zll5SAGSKQyQagM='; style-src 'self' 'unsafe-inline'"
     X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "strict-origin"
     Permissions-Policy = "geolocation=(self), microphone=(), camera=()"
