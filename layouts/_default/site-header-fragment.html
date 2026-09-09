@@ -1,0 +1,11 @@
+{{- /*
+Bare output: no <html>/<head>/<body> wrapper, just what a standalone static
+page needs to reproduce the real Hugo header inside a Shadow DOM — the
+compiled stylesheet link, the header markup itself, and the same footer
+scripts (Bootstrap JS, the theme's own app.js, FlexSearch) that make it
+interactive. static/docs/assets/site-header.js fetches this and splits it
+back apart; keep this file to exactly those three parts.
+*/ -}}
+{{ partialCached "head/stylesheet" . }}
+{{ partial "header/header.html" . }}
+{{ partial "footer/script-footer" . }}

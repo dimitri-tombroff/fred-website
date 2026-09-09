@@ -18,7 +18,7 @@
       --bg:     #ffffff;
       --bg2:    #f9fafb;
       --border: #e5e7eb;
-      --nav:    200px;
+      --nav:    212px;
       --rad:    8px;
       --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
@@ -63,19 +63,14 @@
       width: var(--nav);
       min-width: var(--nav);
       position: sticky;
-      top: 0;
-      height: 100vh;
+      top: var(--fred-header-h, 0);
+      height: calc(100vh - var(--fred-header-h, 0px));
       overflow-y: auto;
       padding: 2rem 1.25rem 2rem 1.5rem;
       border-right: 1px solid var(--border);
       background: var(--bg2);
       flex-shrink: 0;
     }
-
-    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
-    .nav-back:hover { color: var(--text); }
-    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
-    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
 
     nav ul { list-style: none; }
     nav li { margin-bottom: 1px; }
@@ -260,12 +255,12 @@
   </style>
 </head>
 <body>
+<fred-site-header></fred-site-header>
+<script src="assets/site-header.js" defer></script>
+
 
 <!-- ─── Sidebar navigation ─────────────────────────────────── -->
 <nav>
-  <a class="nav-back" href="/">← Home</a>
-  <div class="nav-logo">Fred</div>
-  <div class="nav-tag">Roadmap</div>
   <ul>
     <li class="nav-section">Platform</li>
     <li><a href="#today">Fred today</a></li>

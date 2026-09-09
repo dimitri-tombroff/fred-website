@@ -17,7 +17,7 @@
       --bg:     #ffffff;
       --bg2:    #f9fafb;
       --border: #e5e7eb;
-      --nav:    196px;
+      --nav:    212px;
       --rad:    8px;
       --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
@@ -50,11 +50,7 @@
     body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.65; display: flex; min-height: 100vh; }
 
     /* ─── Sidebar ─────────────────────────────────────────── */
-    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
-    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
-    .nav-back:hover { color: var(--text); }
-    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
-    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
+    nav { width: var(--nav); min-width: var(--nav); position: sticky; top: var(--fred-header-h, 0); height: calc(100vh - var(--fred-header-h, 0px)); overflow-y: auto; padding: 2rem 1.25rem 2rem 1.5rem; border-right: 1px solid var(--border); background: var(--bg2); flex-shrink: 0; }
     nav ul { list-style: none; }
     nav li { margin-bottom: 1px; }
     nav li a { display: block; padding: 0.28rem 0.5rem; border-radius: 4px; font-size: 0.78rem; color: var(--muted); text-decoration: none; transition: color 0.12s, background 0.12s; }
@@ -124,11 +120,11 @@
   </style>
 </head>
 <body>
+<fred-site-header></fred-site-header>
+<script src="assets/site-header.js" defer></script>
+
 
 <nav>
-  <a class="nav-back" href="/">← Home</a>
-  <div class="nav-logo">Fred</div>
-  <div class="nav-tag">Platform Architecture</div>
   <ul>
     <li class="nav-section">In this document</li>
     <li><a href="#scope">Scope &amp; audience</a></li>

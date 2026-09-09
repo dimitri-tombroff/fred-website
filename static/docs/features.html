@@ -17,7 +17,7 @@
       --bg:     #ffffff;
       --bg2:    #f9fafb;
       --border: #e5e7eb;
-      --nav:    200px;
+      --nav:    212px;
       --rad:    8px;
       --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
@@ -62,19 +62,14 @@
       width: var(--nav);
       min-width: var(--nav);
       position: sticky;
-      top: 0;
-      height: 100vh;
+      top: var(--fred-header-h, 0);
+      height: calc(100vh - var(--fred-header-h, 0px));
       overflow-y: auto;
       padding: 2rem 1.25rem 2rem 1.5rem;
       border-right: 1px solid var(--border);
       background: var(--bg2);
       flex-shrink: 0;
     }
-
-    .nav-back { display: block; font-size: 0.72rem; color: var(--muted); text-decoration: none; margin-bottom: 1.25rem; transition: color 0.12s; }
-    .nav-back:hover { color: var(--text); }
-    .nav-logo { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.03em; }
-    .nav-tag  { font-size: 0.7rem; color: var(--muted); margin-bottom: 2rem; }
 
     nav ul { list-style: none; }
     nav li { margin-bottom: 1px; }
@@ -311,6 +306,9 @@
   </style>
 </head>
 <body>
+<fred-site-header></fred-site-header>
+<script src="assets/site-header.js" defer></script>
+
 
 <!-- Verified against fred monorepo branch consolidation-22-07, corrected 2026-07-23.
      Key files checked: libs/fred-runtime/fred_runtime/app/agent_app.py (execute_stream
@@ -341,13 +339,18 @@
      fred-runtime/fred_runtime/capabilities/document_verbatim/capability.py, document_extract/
      capability.py (document reading capabilities, fred#2293); apps/frontend/src/rework/
      components/shared/organisms/DocumentUploadDrawer/droppedPaths.ts, apps/knowledge-flow-backend/
-     knowledge_flow_backend/features/tag/structure.py (folder-level ingestion UX). -->
+     knowledge_flow_backend/features/tag/structure.py (folder-level ingestion UX).
+
+     Added 2026-09-09, from branch feat/team-wiki — NOT YET MERGED to swift at the time of
+     writing (PR pending review): the "Team wiki" section and its team_wiki row in Agent
+     capabilities. Key files checked: apps/control-plane-backend/control_plane_backend/
+     team_wiki/{store.py,service.py,api.py}, libs/fred-capability-team-wiki/
+     fred_capability_team_wiki/wiki/capability.py (tool names, ReAct-only execution_models),
+     docs/swift/design/CONTROL-PLANE-PRODUCT-CONTRACT.md §49. Re-verify this section once the
+     PR merges, in case its shape changed during review. -->
 
 <!-- ─── Sidebar navigation ─────────────────────────────────── -->
 <nav>
-  <a class="nav-back" href="/">← Home</a>
-  <div class="nav-logo">Fred</div>
-  <div class="nav-tag">Feature Reference</div>
   <ul>
     <li class="nav-section">Platform</li>
     <li><a href="#overview">Overview</a></li>
@@ -380,6 +383,9 @@
 
     <li class="nav-section">Prompts</li>
     <li><a href="#marketplace">Library &amp; marketplace</a></li>
+
+    <li class="nav-section">Wiki</li>
+    <li><a href="#wiki">Team wiki</a></li>
 
     <li class="nav-section">Governance</li>
     <li><a href="#roles">Role model</a></li>
@@ -1102,6 +1108,11 @@
           <td><code>extract_from_document(uid, criterion)</code></td>
           <td>Exhaustive enumeration by criterion ("list ALL the requirements"), run server-side in Knowledge Flow as a map-reduce over every chunk rather than paged into the agent's own context. Gated behind a human proceed/cancel confirmation by default (<code>require_confirmation</code>, per-instance configurable) — the gate runs before extraction starts, so a cancel spends no extraction tokens.</td>
         </tr>
+        <tr>
+          <td><code>team_wiki</code></td>
+          <td><code>wiki_list_pages()</code>, <code>wiki_read_page(path)</code>, <code>wiki_propose_page(title, content_md, parent_path?)</code>, <code>wiki_propose_page_text(path, content_md)</code>, <code>wiki_publish_proposal(id)</code></td>
+          <td>Read and propose changes to the team's <a href="#wiki">wiki</a>. Every write is a human-approved proposal, never direct — <code>wiki_publish_proposal</code> only submits it for approval, and is HITL-gated. ReAct-only: the rules page reaches the model through a prompt fragment a Graph agent's own composer does not support.</td>
+        </tr>
       </tbody>
     </table>
   </section>
@@ -1245,6 +1256,38 @@
         <tr><td><code>GET /marketplace/prompts/{prompt_id}</code></td><td>Full text of one published prompt, fetched on demand when its card is opened (listing payload carries only a preview).</td></tr>
         <tr><td><code>POST /marketplace/prompts/{prompt_id}/use</code></td><td>Records a "use" (copy to clipboard) by incrementing the prompt's shared usage counter.</td></tr>
         <tr><td><code>POST /marketplace/prompts/{prompt_id}/import</code></td><td>Copy-by-value into one or more of the caller's own teams: a fresh prompt row (new id, version 1, counters reset, unpublished) per target; name collisions get an <code>_imported-N</code> suffix.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       WIKI
+       ══════════════════════════════════════════════════════════ -->
+  <section id="wiki">
+    <h2>Team wiki <span class="pill pill-amber">Beta</span></h2>
+    <p>
+      Every team has a private, structured knowledge base — pages nested in a tree, each
+      with a versioned history. Humans write and edit directly; agents can read the whole
+      tree, but every agent-authored change is a proposal, never a direct write, until a
+      human explicitly approves it.
+    </p>
+    <p>
+      <strong>Beta.</strong> Shipped to gather real usage before a broader rollout —
+      expect it to be enabled for a subset of teams or deployments rather than
+      everywhere at once, and for details on this page to still move.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Property</th><th>Detail</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Structure</td><td>Pages nested up to a fixed depth, each addressed by a stable slug independent of its title. A dedicated "rules" page — read by every agent with wiki access before it answers — cannot have children.</td></tr>
+        <tr><td>Versioning</td><td>Append-only revisions: an edit never overwrites, it publishes a new revision and moves the page's current pointer. Full history with restore, paginated with a keyset cursor rather than an offset.</td></tr>
+        <tr><td>Conflict handling</td><td>Every write is a compare-and-swap against the revision its author actually read. One that moved on since is refused with the current text to rebase onto, never silently overwritten.</td></tr>
+        <tr><td>Agent authoring model</td><td>An agent reads with <code>wiki_read_page</code> and proposes with <code>wiki_propose_page</code> / <code>wiki_propose_page_text</code> (see <a href="#capabilities">Agent capabilities</a>) — no tool writes directly. A published agent proposal leaves the page flagged for review until a human clears it.</td></tr>
+        <tr><td>Proposal lifecycle</td><td>A human approves (<code>wiki_publish_proposal</code>, HITL-gated) or declines a proposal. One nobody acts on expires automatically after a configurable retention window (30 days by default), so it cannot be published later by an unrelated retry.</td></tr>
+        <tr><td>Access</td><td><code>team_editor</code> writes and approves; any team member reads. Same team-scoped ReBAC boundary as the rest of the platform (see <a href="#scoping">Team scoping</a>).</td></tr>
       </tbody>
     </table>
   </section>
