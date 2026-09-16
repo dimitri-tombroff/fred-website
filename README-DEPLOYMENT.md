@@ -9,7 +9,7 @@ and operate the setup.
 
 - **Live site**: https://site.fredlab.dev (Netlify, on your own GCP-adjacent
   domain, free tier).
-- **Old domain** `https://fredk8.dev` is **dead** — its GitLab CI → GCS
+- **Old domain** `https://fredlab.dev` is **dead** — its GitLab CI → GCS
   deploy pipeline is broken (see "The old pipeline" below) and nobody here
   has the access to fix it. The site content there is frozen since
   2026-07-23.
@@ -105,7 +105,7 @@ additive.
 - Before this fix, canonical URLs and `sitemap.xml` were **relative-only**
   (e.g. `/blog/foo/` instead of `https://site.fredlab.dev/blog/foo/`) because
   of the production override above — not because of anything Netlify did.
-- 21 blog posts had a hand-typed `seo.canonical: "https://fredk8.dev/..."` in
+- 21 blog posts had a hand-typed `seo.canonical: "https://fredlab.dev/..."` in
   front matter. These are now blanked (`canonical: ""`), which makes the SEO
   partial (`@thulite/seo`) fall back to Hugo's own `.Permalink` automatically
   — don't hand-type a canonical URL in new posts unless it genuinely needs to
@@ -137,11 +137,11 @@ boilerplate instead of each reinventing its own design tokens.
 pages need inline `<style>` to render at all. If those pages ever move to
 external stylesheets, this could be tightened back to `style-src 'self'`.
 
-## The old pipeline (fredk8.dev via GitLab CI → GCS) — broken, not fixed
+## The old pipeline (fredlab.dev via GitLab CI → GCS) — broken, not fixed
 
 `.gitlab-ci.yml` still builds and tries to `gcloud storage rsync` to
 `gs://fred-website` (a bucket in the corporate GCP project
-`prj-dil-sfrd-punch-sbx-4811`), fronted by the `fredk8.dev` domain. It fails
+`prj-dil-sfrd-punch-sbx-4811`), fronted by the `fredlab.dev` domain. It fails
 at the `gcloud auth activate-service-account` step:
 
 ```
@@ -158,6 +158,6 @@ was deleted or disabled on the GCP side. Fixing it needs someone with:
    that service account's key.
 
 Neither of us had that access today, which is why we moved to Netlify
-instead of fixing this. If someone fixes it later, `fredk8.dev` would come
+instead of fixing this. If someone fixes it later, `fredlab.dev` would come
 back to life independently of the Netlify setup — they're unrelated targets
 building from the same repo.
