@@ -3,7 +3,7 @@ title: "Fred"
 description: "Claude Code and Codex make one person effective. Fred is for when the data can't leave — and the result has to belong to a team."
 eyebrow: "Open-source agentic platform"
 headline: "Put your team to work with agents. On your data. Inside your walls."
-lead: "Claude Code and Codex make one person effective. Fred is for when the data can't leave — and the result has to belong to a team."
+lead: "AI agents started as personal tools. Fred makes them a team capability — on shared data, under shared rules."
 date: 2023-09-07T16:33:54+02:00
 lastmod: 2023-09-07T16:33:54+02:00
 draft: false
