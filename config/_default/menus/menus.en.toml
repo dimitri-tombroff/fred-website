@@ -27,24 +27,14 @@
   weight = 20
 
 [[main]]
-  name = "Architecture"
-  url = "/docs/architecture.html"
-  weight = 22
-
-[[main]]
-  name = "Features"
-  url = "/docs/features.html"
-  weight = 23
-
-[[main]]
-  name = "Roadmap"
-  url = "/docs/roadmap.html"
-  weight = 24
-
-[[main]]
   name = "Releases"
   url = "/releases/"
   weight = 25
+
+[[main]]
+  name = "Showcase"
+  url = "/showcase/"
+  weight = 26
 
 [[main]]
   name = "Blog"

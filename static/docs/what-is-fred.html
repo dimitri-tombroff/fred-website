@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Verified against the `fred` monorepo, branch swift (2026-09-07). This
      page is the non-technical companion to the homepage claim ("Governed.
-     Open. Composable.") — it exists to answer "what is this, really"
+     Open. Collective.") — it exists to answer "what is this, really"
      before a visitor commits to the developer-oriented Getting Started page.
      No install steps, no code — that's what Getting Started is for. -->
 <html lang="en">
@@ -9,7 +9,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fred — What is Fred?</title>
-  <meta name="description" content="A high-level answer to what Fred actually is: governed by a real role and audit model, open source under Apache 2.0 end to end, and composable down to individual tools and agents.">
+  <meta name="description" content="A high-level answer to what Fred actually is: governed by a real role and audit model, open source under Apache 2.0 end to end, and built for a team rather than one person.">
   <script src="assets/theme-sync.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,7 +27,7 @@
       --rad:    8px;
       --font:   system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --mono:   ui-monospace, "Cascadia Code", "Fira Code", "Consolas", monospace;
-      --govern: #6b3f92;  --open: #b8548f;  --compose: #3f6ec9;
+      --govern: #6b3f92;  --open: #b8548f;  --collective: #3f6ec9;
     }
 
     /* Dark palette: OS preference by default, overridden either way by the
@@ -42,7 +42,7 @@
         --bg:     #111827;
         --bg2:    #1f2937;
         --border: #374151;
-        --govern: #c6a3ea;  --open: #f0a9cf;  --compose: #9ec0f5;
+        --govern: #c6a3ea;  --open: #f0a9cf;  --collective: #9ec0f5;
       }
     }
     :root[data-bs-theme="dark"] {
@@ -54,7 +54,7 @@
       --bg:     #111827;
       --bg2:    #1f2937;
       --border: #374151;
-      --govern: #c6a3ea;  --open: #f0a9cf;  --compose: #9ec0f5;
+      --govern: #c6a3ea;  --open: #f0a9cf;  --collective: #9ec0f5;
     }
 
     html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
@@ -82,14 +82,14 @@
     .claim .sep { color: var(--border); font-weight: 400; font-size: 1.6rem; }
     .c-govern { color: var(--govern); }
     .c-open { color: var(--open); }
-    .c-compose { color: var(--compose); }
+    .c-collective { color: var(--collective); }
 
     section { margin-bottom: 3rem; }
     h2 { font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.3rem; display: flex; align-items: center; gap: 0.6rem; }
     h2 .dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; flex: 0 0 auto; }
     h2.govern .dot { background: var(--govern); }
     h2.open .dot { background: var(--open); }
-    h2.compose .dot { background: var(--compose); }
+    h2.collective .dot { background: var(--collective); }
     .pillar-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 1.1rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--border); max-width: 680px; }
     p { font-size: 0.92rem; margin-bottom: 0.8rem; max-width: 680px; }
     p strong { color: var(--text); font-weight: 650; }
@@ -133,7 +133,7 @@
     <li><a href="#platform">Not just an agent API</a></li>
     <li><a href="#governed">Governed</a></li>
     <li><a href="#open">Open</a></li>
-    <li><a href="#composable">Composable</a></li>
+    <li><a href="#collective">Collective</a></li>
     <li><a href="#who">Who this is for</a></li>
     <li><a href="#related">Go further</a></li>
   </ul>
@@ -145,15 +145,15 @@
     <div class="hd-eyebrow">docs / what is fred</div>
     <h1>What is Fred?</h1>
     <p class="hd-lead">
-      Fred is an open-source platform for building and operating AI agents that
-      work with your team's real data — in production, on Kubernetes, under
-      real operational and compliance constraints. The homepage puts it in
-      three words:
+      Fred is an open-source platform for putting a <strong>team</strong> to work
+      with AI agents on its own documents — in production, on your own
+      infrastructure, under the access control, audit and evaluation that
+      regulated work actually requires. The homepage puts it in three words:
     </p>
     <div class="claim">
       <span class="c-govern">Governed</span><span class="sep">·</span>
       <span class="c-open">Open</span><span class="sep">·</span>
-      <span class="c-compose">Composable</span>
+      <span class="c-collective">Collective</span>
     </div>
     <p class="hd-lead">This page says what each of those actually means.</p>
   </div>
@@ -177,7 +177,7 @@
       </div>
       <div class="who-card">
         <b>Capabilities</b>
-        <span>Everything an agent can use, from a single tool to a whole specialist agent — one uniform, admin-governed catalog. See <a class="inline" href="#composable">Composable</a> below.</span>
+        <span>Everything an agent can use, from a single tool to a whole specialist agent — one uniform, admin-governed catalog. See <a class="inline" href="#collective">Collective</a> below.</span>
       </div>
       <div class="who-card">
         <b>Platform</b>
@@ -261,12 +261,24 @@
     </div>
   </section>
 
-  <!-- ── Composable ─────────────────────────────────────── -->
-  <section id="composable">
-    <h2 class="compose"><span class="dot"></span>Composable</h2>
-    <p class="pillar-sub">A tool, a whole specialist agent, or eventually a packaged bundle of several agents — all the same kind of thing, added or removed with one switch.</p>
+  <!-- ── Collective ─────────────────────────────────────── -->
+  <section id="collective">
+    <h2 class="collective"><span class="dot"></span>Collective</h2>
+    <p class="pillar-sub">Fred is built for a team, not for one person: a shared corpus, shared prompts, and a toolbox each team composes for itself.</p>
     <p>
-      Everything an agent can do beyond its base instructions is a
+      A coding assistant on a laptop makes one person remarkably effective. That is a
+      productivity gain, and it stops at that person. Fred is for the other case:
+      <strong>the knowledge belongs to a team, the data cannot leave, and the result
+      has to be usable by people who were not in the conversation.</strong>
+    </p>
+    <p>
+      So everything in Fred has an owner. A team has its own corpus, its own prompt
+      library, its own agents, and its own roles — Admin, Editor, Analyst, Member. A
+      member tries something in their personal space first, then proposes it to their
+      team. That is how a practice becomes shared instead of staying in one person's head.
+    </p>
+    <p>
+      A team's toolbox is composed the same way. Everything an agent can use is a
       <strong>capability</strong> — a self-contained module with a name, a description,
       and an on/off switch a team admin controls. A document-search tool is a
       capability. A PowerPoint generator is a capability. A specialist agent — a
@@ -278,12 +290,6 @@
       its own capability as an installable package, registers it, and it shows up
       in the same admin screen as everything built-in — no platform release required
       to add it, no platform release required to take it away.
-    </p>
-    <p>
-      Where this is heading: a capability doesn't have to stop at one tool or one
-      agent. A whole workflow — several collaborating agents, the background
-      processing behind them, and a dedicated UI — can be packaged and switched on
-      as <strong>one</strong> capability, the same way a single tool is today.
     </p>
     <div class="callout">
       <strong>In practice:</strong> give Finance exactly the tools and agents it

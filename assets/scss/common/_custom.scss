@@ -78,9 +78,8 @@
   margin-top: 0.5rem;
 }
 
-// Homepage triptych: "Governed · Open · Composable"
-// Three verifiable properties, one column each, replaces the old stacked
-// "Governed · Powerful · Composable" claim.
+// Homepage triptych: "Governed · Open · Collective"
+// Three verifiable properties, one column each.
 .fred-triptych {
   max-width: 68.75rem;
   margin: 2.5rem auto 0;
@@ -135,8 +134,8 @@
   color: $primary;
 }
 
-.fred-pillar--composable .fred-pillar-word,
-.fred-pillar--composable .fred-pillar-tick {
+.fred-pillar--collective .fred-pillar-word,
+.fred-pillar--collective .fred-pillar-tick {
   color: $info;
 }
 

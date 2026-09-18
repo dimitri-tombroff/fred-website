@@ -1,9 +1,9 @@
 ---
 title: "Showcase"
-description: "Fred in action — screenshots, slides, and live demos."
-summary: "Gallery, presentation decks, and demo architectures."
+description: "Fred in action — real screenshots of the chatbot UI, from conversations to admin tooling."
+summary: "Screenshots of Fred in action."
 date: 2026-04-30T00:00:00+02:00
-lastmod: 2026-04-30T00:00:00+02:00
+lastmod: 2026-09-09T00:00:00+02:00
 draft: false
 weight: 840
 toc: false
@@ -11,7 +11,268 @@ sidebar:
   collapsed: false
 seo:
   title: "Showcase — Fred"
-  description: "Fred UI gallery, demo architectures, and presentation decks."
+  description: "Real screenshots of the Fred chatbot UI in action."
 ---
 
-Fred in action — screenshots, demo architectures, and presentation decks.
+Below are real screenshots of the Fred chatbot UI: streaming replies, sources preview, and tool call traces.
+
+<style>
+  /* Thumbnails — more vertical air + cleaner layout */
+  .fred-thumbs {
+    display:grid;
+    gap: 22px;                           /* more space between rows */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    max-width: 1120px;
+    margin: 14px auto 28px;              /* extra bottom space */
+    padding-bottom: 8px;
+  }
+
+  /* Each item stacks: [tile] then [caption] */
+  .fred-thumbs > div {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fred-thumb {
+    position:relative; border-radius:12px; overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,.12);
+    aspect-ratio: 16 / 10;
+    background:#111;
+    transition: box-shadow .18s ease, transform .18s ease;
+  }
+  .fred-thumb img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    filter:saturate(1.02);
+    transition: transform .18s ease, filter .18s ease;
+  }
+  .fred-thumb::after {
+    content:"🔍"; position:absolute; right:10px; bottom:8px;
+    font-size:18px; opacity:.0; transition:opacity .18s ease;
+  }
+  .fred-thumb:hover { box-shadow:0 6px 18px rgba(0,0,0,.20); transform: translateY(-1px); }
+  .fred-thumb:hover img { transform: scale(1.03); filter:saturate(1.06); }
+  .fred-thumb:hover::after { opacity:.9; }
+  .fred-thumb:focus-visible { outline: 2px solid rgba(255,255,255,.6); outline-offset: 2px; }
+
+  .fred-caption {
+    margin: 8px 2px 0;                   /* add top margin so it never touches the tile */
+    text-align:center;
+    font-size:12px;
+    line-height: 1.35;
+    color:#666;
+    min-height: 1.4em;                   /* prevents visual overlap on single-line captions */
+  }
+
+  /* Lightbox overlay (unchanged, included here for context if needed) */
+  .fred-lightbox {
+    position:fixed; inset:0; display:none; place-items:center;
+    background:rgba(0,0,0,.85); z-index:9999;
+  }
+  .fred-lightbox.open { display:grid; }
+  .fred-lightbox img {
+    max-width:90vw; max-height:90vh; user-select:none;
+    cursor: zoom-in; transition: transform .2s ease;
+  }
+  .fred-lightbox img.zoomed {
+    cursor: zoom-out; max-width:none; max-height:none;
+    transform: scale(1.4);
+  }
+  .fred-lightbox .ctrl {
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:48px; height:48px; border:none; border-radius:999px;
+    background:rgba(255,255,255,.14); backdrop-filter: blur(4px);
+    display:grid; place-items:center; cursor:pointer;
+  }
+  .fred-lightbox .prev { left:16px; }
+  .fred-lightbox .next { right:16px; }
+  .fred-lightbox .close {
+    top:16px; right:16px; transform:none; width:auto; height:auto; padding:8px 12px; border-radius:10px;
+  }
+  .fred-lightbox .ctrl span { color:#fff; font-size:22px; line-height:1; user-select:none; }
+  .fred-lightbox .caption {
+    position:absolute; left:0; right:0; bottom:16px; text-align:center;
+    color:#fff; font-size:14px; opacity:.9; padding:0 24px;
+  }
+</style>
+
+<div class="fred-thumbs" id="fredGallery">
+  
+  <div>
+    <a class="fred-thumb" href="/images/01-conversation-start.png" data-caption="Starting a new conversation in the UI.">
+      <img src="/images/01-conversation-start.png" alt="Starting a new conversation" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Starting a new conversation</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/library-selection.png" data-caption="Selecting relevant document libraries for a conversation.">
+      <img src="/images/library-selection.png" alt="Per conversation library selection" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Per-conversation library selection</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/06-document-summary.png" data-caption="Generating a summary of a document using a dedicated agent.">
+      <img src="/images/06-document-summary.png" alt="Document summary generation" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Document summary generation</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/09-document-source-citation.png" data-caption="Citations and source links included in the final answer.">
+      <img src="/images/09-document-source-citation.png" alt="Citations and source links" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Source citation in replies</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/07-document-preview.png" data-caption="Previewing the referenced source document without leaving the chat.">
+      <img src="/images/07-document-preview.png" alt="In-chat document preview" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">In-chat document preview</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/thoughts.png" data-caption="The optional 'Thoughts' panel showing the LLM's step-by-step reasoning.">
+      <img src="/images/thoughts.png" alt="Chain of thoughts" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Chain of thoughts panel</div>
+  </div>
+
+  <div>
+    <a class="fred-thumb" href="/images/04-document-libraries.png" data-caption="Organizing documents into distinct knowledge libraries.">
+      <img src="/images/04-document-libraries.png" alt="Document libraries management" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Document library overview</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/03-add-document.png" data-caption="Uploading new documents to a knowledge library.">
+      <img src="/images/03-add-document.png" alt="Uploading new documents" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Adding a new document</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/05-document-labels.png" data-caption="Applying labels (tags) to documents for better filtering and context.">
+      <img src="/images/05-document-labels.png" alt="Applying document labels" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Document labeling and metadata</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/08-document-agent-search.png" data-caption="Searching through documents using an Agent's retrieval capabilities.">
+      <img src="/images/08-document-agent-search.png" alt="Agent-driven document search" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Agent-driven document search</div>
+  </div>
+  
+  <div>
+    <a class="fred-thumb" href="/images/02-agent-hub.png" data-caption="The Agent Hub for managing all available agents.">
+      <img src="/images/02-agent-hub.png" alt="Agent Hub management page" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Agent Hub overview</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/10-agents-crew.png" data-caption="Configuring agent grouping and availability in the Agent Hub.">
+      <img src="/images/10-agents-crew.png" alt="Agent grouping editor" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Agent grouping editor</div>
+  </div>
+  
+  <div>
+    <a class="fred-thumb" href="/images/20-ops-logs.png" data-caption="The operational logs console for monitoring requests and traces.">
+      <img src="/images/20-ops-logs.png" alt="Operational logs console" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Operational logs console</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/21-ops-kpis.png" data-caption="The KPI dashboard showing performance metrics (latency, usage, cost).">
+      <img src="/images/21-ops-kpis.png" alt="KPI monitoring dashboard" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">KPI monitoring dashboard</div>
+  </div>
+
+  <div>
+    <a class="fred-thumb" href="/images/fred-oss.png" data-caption="The original Fred open-source chat interface.">
+      <img src="/images/fred-oss.png" alt="Fred OSS overview" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Fred OSS overview</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/rico-pro.png" data-caption="An example of a powerful, specialized agent.">
+      <img src="/images/rico-pro.png" alt="Rico Pro answering with sources" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Specialized agent in action (Rico Pro)</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/sentinel.png" data-caption="Detailed tool call traces for transparency and debugging.">
+      <img src="/images/sentinel.png" alt="Sentinel: tool traces and steps" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Sentinel tool traces</div>
+  </div>
+</div>
+
+
+<div class="fred-lightbox" id="fredLightbox" aria-hidden="true">
+  <button class="ctrl close" id="lbClose" aria-label="Close"><span>✕</span></button>
+  <button class="ctrl prev" id="lbPrev" aria-label="Previous"><span>‹</span></button>
+  <button class="ctrl next" id="lbNext" aria-label="Next"><span>›</span></button>
+  <img id="lbImg" alt="">
+  <div class="caption" id="lbCaption"></div>
+</div>
+
+<script>
+(function() {
+  const thumbs = Array.from(document.querySelectorAll('#fredGallery a'));
+  const box = document.getElementById('fredLightbox');
+  const img = document.getElementById('lbImg');
+  const caption = document.getElementById('lbCaption');
+  const btnPrev = document.getElementById('lbPrev');
+  const btnNext = document.getElementById('lbNext');
+  const btnClose = document.getElementById('lbClose');
+  let idx = 0;
+
+  function openAt(i) {
+    idx = i;
+    const a = thumbs[idx];
+    img.src = a.getAttribute('href');
+    img.alt = a.querySelector('img')?.alt || '';
+    caption.textContent = a.getAttribute('data-caption') || img.alt || '';
+    img.classList.remove('zoomed');
+    box.classList.add('open');
+    box.setAttribute('aria-hidden', 'false');
+  }
+  function close() {
+    box.classList.remove('open');
+    box.setAttribute('aria-hidden', 'true');
+    img.src = '';
+    img.classList.remove('zoomed');
+  }
+  function prev() { openAt((idx - 1 + thumbs.length) % thumbs.length); }
+  function next() { openAt((idx + 1) % thumbs.length); }
+
+  // Thumb click
+  thumbs.forEach((a, i) => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      openAt(i);
+    });
+  });
+
+  // Controls
+  btnPrev.addEventListener('click', prev);
+  btnNext.addEventListener('click', next);
+  btnClose.addEventListener('click', close);
+
+  // Click outside to close; click image to zoom
+  box.addEventListener('click', (e) => {
+    if (e.target === box || e.target === caption) close();
+  });
+  img.addEventListener('click', (e) => {
+    e.stopPropagation();
+    img.classList.toggle('zoomed');
+  });
+
+  // Keyboard: ESC, arrows
+  window.addEventListener('keydown', (e) => {
+    if (!box.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowLeft') prev();
+    else if (e.key === 'ArrowRight') next();
+  });
+})();
+</script>
