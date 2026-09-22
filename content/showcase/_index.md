@@ -1,9 +1,9 @@
 ---
 title: "Showcase"
-description: "Fred in action — real screenshots of the chatbot UI, from conversations to admin tooling."
+description: "Fred in action — real screenshots of agent creation, platform features, and team administration."
 summary: "Screenshots of Fred in action."
 date: 2026-04-30T00:00:00+02:00
-lastmod: 2026-09-09T00:00:00+02:00
+lastmod: 2026-09-22T00:00:00+02:00
 draft: false
 weight: 840
 toc: false
@@ -11,10 +11,10 @@ sidebar:
   collapsed: false
 seo:
   title: "Showcase — Fred"
-  description: "Real screenshots of the Fred chatbot UI in action."
+  description: "Explore Fred through screenshots of agent creation, capabilities, models, knowledge bases, and team governance."
 ---
 
-Below are real screenshots of the Fred chatbot UI: streaming replies, sources preview, and tool call traces.
+Explore Fred through real screenshots: manage platform features, enable agents and knowledge bases, configure models, create agents, and define team roles and responsibilities.
 
 <style>
   /* Thumbnails — more vertical air + cleaner layout */
@@ -97,112 +97,53 @@ Below are real screenshots of the Fred chatbot UI: streaming replies, sources pr
 </style>
 
 <div class="fred-thumbs" id="fredGallery">
-  
   <div>
-    <a class="fred-thumb" href="/images/01-conversation-start.png" data-caption="Starting a new conversation in the UI.">
-      <img src="/images/01-conversation-start.png" alt="Starting a new conversation" loading="lazy" decoding="async">
+    <a class="fred-thumb" href="/images/features.png" data-caption="Managing platform capabilities, default availability, and enablement by team.">
+      <img src="/images/features.png" alt="Platform feature catalog" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">Starting a new conversation</div>
+    <div class="fred-caption">Platform feature catalog</div>
   </div>
   <div>
-    <a class="fred-thumb" href="/images/library-selection.png" data-caption="Selecting relevant document libraries for a conversation.">
-      <img src="/images/library-selection.png" alt="Per conversation library selection" loading="lazy" decoding="async">
+    <a class="fred-thumb" href="/images/enabling-agents.png" data-caption="Controlling which agent templates are available across the platform and to each team.">
+      <img src="/images/enabling-agents.png" alt="Enabling agents by team" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">Per-conversation library selection</div>
+    <div class="fred-caption">Enabling agents by team</div>
   </div>
   <div>
-    <a class="fred-thumb" href="/images/06-document-summary.png" data-caption="Generating a summary of a document using a dedicated agent.">
-      <img src="/images/06-document-summary.png" alt="Document summary generation" loading="lazy" decoding="async">
+    <a class="fred-thumb" href="/images/models.png" data-caption="Managing model availability, reasoning options, and platform model bindings.">
+      <img src="/images/models.png" alt="Model management" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">Document summary generation</div>
+    <div class="fred-caption">Model management</div>
   </div>
   <div>
-    <a class="fred-thumb" href="/images/09-document-source-citation.png" data-caption="Citations and source links included in the final answer.">
-      <img src="/images/09-document-source-citation.png" alt="Citations and source links" loading="lazy" decoding="async">
+    <a class="fred-thumb" href="/images/enabling-knowledge-bases.png" data-caption="Making Git repositories and WebDAV knowledge bases available to teams.">
+      <img src="/images/enabling-knowledge-bases.png" alt="Enabling knowledge bases" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">Source citation in replies</div>
+    <div class="fred-caption">Enabling knowledge bases</div>
   </div>
   <div>
-    <a class="fred-thumb" href="/images/07-document-preview.png" data-caption="Previewing the referenced source document without leaving the chat.">
-      <img src="/images/07-document-preview.png" alt="In-chat document preview" loading="lazy" decoding="async">
+    <a class="fred-thumb" href="/images/create-agents.png" data-caption="Choosing an agent template to create an assistant for your team.">
+      <img src="/images/create-agents.png" alt="Creating an agent" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">In-chat document preview</div>
+    <div class="fred-caption">Creating an agent</div>
   </div>
   <div>
-    <a class="fred-thumb" href="/images/thoughts.png" data-caption="The optional 'Thoughts' panel showing the LLM's step-by-step reasoning.">
-      <img src="/images/thoughts.png" alt="Chain of thoughts" loading="lazy" decoding="async">
+    <a class="fred-thumb" href="/images/capabilities.png" data-caption="Selecting the resources and tools an agent can use, with optional folder restrictions.">
+      <img src="/images/capabilities.png" alt="Agent capabilities" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">Chain of thoughts panel</div>
-  </div>
-
-  <div>
-    <a class="fred-thumb" href="/images/04-document-libraries.png" data-caption="Organizing documents into distinct knowledge libraries.">
-      <img src="/images/04-document-libraries.png" alt="Document libraries management" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Document library overview</div>
+    <div class="fred-caption">Agent capabilities</div>
   </div>
   <div>
-    <a class="fred-thumb" href="/images/03-add-document.png" data-caption="Uploading new documents to a knowledge library.">
-      <img src="/images/03-add-document.png" alt="Uploading new documents" loading="lazy" decoding="async">
+    <a class="fred-thumb" href="/images/roles.png" data-caption="Assigning administrator, editor, and analyst roles to team members.">
+      <img src="/images/roles.png" alt="Team roles" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">Adding a new document</div>
+    <div class="fred-caption">Team roles</div>
   </div>
   <div>
-    <a class="fred-thumb" href="/images/05-document-labels.png" data-caption="Applying labels (tags) to documents for better filtering and context.">
-      <img src="/images/05-document-labels.png" alt="Applying document labels" loading="lazy" decoding="async">
+    <a class="fred-thumb" href="/images/responsabilities.png" data-caption="Reviewing the team administrator charter and responsibilities.">
+      <img src="/images/responsabilities.png" alt="Team administrator responsibilities" loading="lazy" decoding="async">
     </a>
-    <div class="fred-caption">Document labeling and metadata</div>
-  </div>
-  <div>
-    <a class="fred-thumb" href="/images/08-document-agent-search.png" data-caption="Searching through documents using an Agent's retrieval capabilities.">
-      <img src="/images/08-document-agent-search.png" alt="Agent-driven document search" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Agent-driven document search</div>
-  </div>
-  
-  <div>
-    <a class="fred-thumb" href="/images/02-agent-hub.png" data-caption="The Agent Hub for managing all available agents.">
-      <img src="/images/02-agent-hub.png" alt="Agent Hub management page" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Agent Hub overview</div>
-  </div>
-  <div>
-    <a class="fred-thumb" href="/images/10-agents-crew.png" data-caption="Configuring agent grouping and availability in the Agent Hub.">
-      <img src="/images/10-agents-crew.png" alt="Agent grouping editor" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Agent grouping editor</div>
-  </div>
-  
-  <div>
-    <a class="fred-thumb" href="/images/20-ops-logs.png" data-caption="The operational logs console for monitoring requests and traces.">
-      <img src="/images/20-ops-logs.png" alt="Operational logs console" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Operational logs console</div>
-  </div>
-  <div>
-    <a class="fred-thumb" href="/images/21-ops-kpis.png" data-caption="The KPI dashboard showing performance metrics (latency, usage, cost).">
-      <img src="/images/21-ops-kpis.png" alt="KPI monitoring dashboard" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">KPI monitoring dashboard</div>
-  </div>
-
-  <div>
-    <a class="fred-thumb" href="/images/fred-oss.png" data-caption="The original Fred open-source chat interface.">
-      <img src="/images/fred-oss.png" alt="Fred OSS overview" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Fred OSS overview</div>
-  </div>
-  <div>
-    <a class="fred-thumb" href="/images/rico-pro.png" data-caption="An example of a powerful, specialized agent.">
-      <img src="/images/rico-pro.png" alt="Rico Pro answering with sources" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Specialized agent in action (Rico Pro)</div>
-  </div>
-  <div>
-    <a class="fred-thumb" href="/images/sentinel.png" data-caption="Detailed tool call traces for transparency and debugging.">
-      <img src="/images/sentinel.png" alt="Sentinel: tool traces and steps" loading="lazy" decoding="async">
-    </a>
-    <div class="fred-caption">Sentinel tool traces</div>
+    <div class="fred-caption">Team administrator responsibilities</div>
   </div>
 </div>
 
