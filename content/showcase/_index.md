@@ -14,7 +14,7 @@ seo:
   description: "Explore Fred through screenshots of agent creation, capabilities, models, knowledge bases, and team governance."
 ---
 
-Explore Fred through real screenshots: manage platform features, enable agents and knowledge bases, configure models, create agents, and define team roles and responsibilities.
+Explore Fred through real screenshots: select conversation resources, explore available data, manage platform features, enable agents and knowledge bases, configure models, create agents, and define team roles and responsibilities.
 
 <style>
   /* Thumbnails — more vertical air + cleaner layout */
@@ -98,6 +98,18 @@ Explore Fred through real screenshots: manage platform features, enable agents a
 
 <div class="fred-thumbs" id="fredGallery">
   <div>
+    <a class="fred-thumb" href="/images/new-conversation.png" data-caption="Starting a conversation with TheDoc and selecting a resource subfolder to define the accessible documents.">
+      <img src="/images/new-conversation.png" alt="Selecting conversation resources" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Selecting conversation resources</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/tabular-search.png" data-caption="Asking TheDoc what data is available in the selected folder, with a visible document-tree tool call listing PDF and CSV resources.">
+      <img src="/images/tabular-search.png" alt="Exploring available data" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Exploring available data</div>
+  </div>
+  <div>
     <a class="fred-thumb" href="/images/features.png" data-caption="Managing platform capabilities, default availability, and enablement by team.">
       <img src="/images/features.png" alt="Platform feature catalog" loading="lazy" decoding="async">
     </a>
@@ -114,6 +126,12 @@ Explore Fred through real screenshots: manage platform features, enable agents a
       <img src="/images/models.png" alt="Model management" loading="lazy" decoding="async">
     </a>
     <div class="fred-caption">Model management</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/resources.png" data-caption="The default push mode: teams upload and organize documents in Resources. Fred indexes them in its internal corpus and makes them available to agents.">
+      <img src="/images/resources.png" alt="Team resources: uploaded documents in the indexed corpus" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Team resources — push mode</div>
   </div>
   <div>
     <a class="fred-thumb" href="/images/enabling-knowledge-bases.png" data-caption="Making Git repositories and WebDAV knowledge bases available to teams.">
