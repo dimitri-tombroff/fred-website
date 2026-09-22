@@ -14,7 +14,7 @@ seo:
   description: "Explore Fred through screenshots of agent creation, capabilities, models, knowledge bases, and team governance."
 ---
 
-Explore Fred through real screenshots: select conversation resources, explore available data, manage platform features, enable agents and knowledge bases, configure models, create agents, and define team roles and responsibilities.
+Explore Fred through real screenshots: select conversation resources, explore available data, create slides and co-write documents, manage platform features, enable agents and knowledge bases, configure models, create agents, and define team roles and responsibilities.
 
 <style>
   /* Thumbnails — more vertical air + cleaner layout */
@@ -108,6 +108,12 @@ Explore Fred through real screenshots: select conversation resources, explore av
       <img src="/images/tabular-search.png" alt="Exploring available data" loading="lazy" decoding="async">
     </a>
     <div class="fred-caption">Exploring available data</div>
+  </div>
+  <div>
+    <a class="fred-thumb" href="/images/writing.png" data-caption="Creating PowerPoint slides and co-writing Word documents with the Writer agent: generate content through conversation, then review, edit, and export it alongside the chat.">
+      <img src="/images/writing.png" alt="PowerPoint generation and collaborative document editing with the Writer agent" loading="lazy" decoding="async">
+    </a>
+    <div class="fred-caption">Creating slides and co-writing documents</div>
   </div>
   <div>
     <a class="fred-thumb" href="/images/features.png" data-caption="Managing platform capabilities, default availability, and enablement by team.">
