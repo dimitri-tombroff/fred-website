@@ -142,7 +142,9 @@
       this.style.zIndex = "1000";
 
       const root = this.attachShadow({ mode: "open" });
-      fetch(FRAGMENT_URL)
+      // no-cache = revalidate (cheap ETag 304), so a menu change on the
+      // real site is never masked by a stale browser copy of the fragment.
+      fetch(FRAGMENT_URL, { cache: "no-cache" })
         .then((res) => (res.ok ? res.text() : Promise.reject(new Error(res.status))))
         .then((html) => this._render(root, html))
         .catch(() => {

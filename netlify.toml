@@ -102,7 +102,9 @@
     X-Frame-Options = "SAMEORIGIN"
     Referrer-Policy = "strict-origin"
     Permissions-Policy = "geolocation=(self), microphone=(), camera=()"
-    Cache-Control= '''
-    public,
-    max-age=31536000'''
+    # No Cache-Control override: Netlify's default (max-age=0, must-revalidate
+    # + ETag) is what lets a deploy show up immediately. A site-wide 1-year
+    # max-age pinned unfingerprinted files (HTML pages, docs/assets/*.js,
+    # /partials/site-header.html) in browsers, so menu changes never reached
+    # the static docs pages.
     Access-Control-Allow-Origin = "*"
