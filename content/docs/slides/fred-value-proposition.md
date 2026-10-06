@@ -3,7 +3,7 @@ title: "Fred: The Open Agentic Platform for the Enterprise"
 description: "A high-level value-proposition deck for first-contact / innovation conversations: what Fred is, why it is sovereign and production-grade, and where it converges with an organization's concrete needs."
 toc: false
 draft: false
-weight: 812
+weight: 811
 ---
 
 A bizdev-oriented walkthrough of Fred's value proposition — an open, sovereign, production-grade agentic platform — framed for first-contact innovation conversations with enterprises and the search for convergence points with their concrete needs.

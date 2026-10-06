@@ -1,0 +1,209 @@
+Building with Fred — author notes
+
+Working HTML: static/slides/building_with_fred.html (standalone, authored directly).
+Language: English. Visual reference: static/slides/agent_capabilities.html.
+Scope: 31 slides in six parts — understand Fred (1–5), first agent (6–10), tools and
+workflows (11–15), applications (16–20), documents (21–25), local platform (26–31), then the repositories (32).
+User reviews browser rendering; no automated visual review requested.
+Published at /docs/slides/building-with-fred-a-developer-introduction/. Example commands have been checked against source,
+not executed against a running model service.
+
+Sources for slides 5–8 (2026-10-06)
+- fred/libs/fred-sdk/fred_sdk/authoring/api.py: ReActAgent authoring surface.
+- fred-samples/agents/fred_samples_agents/general_assistant.py: shipped assistant.
+- fred-samples/agents/fred_samples_agents/main.py and __main__.py: app and launch.
+- fred-samples/agents/Makefile and pyproject.toml: run/cli and local package sources.
+- fred-samples/agents/config/configuration.yaml: base URL, port, dev auth.
+- fred/libs/fred-runtime/fred_runtime/cli/pod_client.py: HTTP request payload.
+- fred/libs/fred-sdk/fred_sdk/contracts/execution.py: direct versus managed execution.
+- fred/apps/control-plane-backend/control_plane_backend/product/service.py:
+  discover_agent_templates and enrollment/instance behavior.
+Slide 5 is a simplified equivalent using ReActAgent, not a verbatim sample file.
+The tool-bearing agent and application preview slides are reserved for later blocks.
+
+Documentation discrepancies found while preparing the Fred developer presentation
+Recorded: 2026-10-06
+Scope: targeted source inspection, not an exhaustive documentation audit.
+Baseline: /home/dimi/Fred/fred at cf8814ae5, including existing local changes;
+/home/dimi/Fred/fred-samples at 1fcec12. No repository files changed by this task.
+Evidence below is static code inspection, not a live execution test.
+
+D01 — Execution authorization described as a Control Plane signed grant
+Status: confirmed; repository correction pending.
+Documentation:
+- fred/docs/swift/platform/PLATFORM_RUNTIME_MAP.md:15 says all execution is
+  authorized via ExecutionGrant from the Control Plane.
+- Same file:27 assigns ExecutionGrant issuance to the Control Plane.
+Code:
+- fred/libs/fred-runtime/fred_runtime/app/agent_app.py:1901
+  _authorize_execution_or_raise implements pod-side authorization.
+- Same file:1981 and :2035 call the permission check using
+  TeamPermission.CAN_USE_TEAM_AGENTS.
+- Same file:2320, :5780 and :6019 explicitly describe the removal of signed grants.
+- fred/apps/frontend/src/rework/core/hooks/useChatSse.ts around :1000 prepares
+  execution then constructs runtime context including team_id; its adjacent
+  comment explicitly says no signed grant.
+- fred/apps/control-plane-backend/control_plane_backend/product/schemas.py:393
+  ExecutionPreparation defines runtime URLs and context/settings, not a signed grant.
+Current behavior: for managed execution with security/ReBAC enabled, the runtime
+checks the authenticated user's team permission per request. Development modes
+can bypass authorization; direct template execution has separate profile rules.
+Correction: describe Control Plane preparation separately from runtime authorization;
+remove claims that the Control Plane issues a signed execution grant.
+Presentation impact: corrected in opening.html slides 2–3. Earlier index.html
+three-slide design preview still contains the obsolete grant explanation and is
+superseded for technical content; do not reuse its first slide unchanged.
+
+D02 — Sample assistant ID is stale in the README
+Status: confirmed; repository correction pending.
+Documentation:
+- fred-samples/README.md:49 says Agent ID: assistant.
+- fred-samples/README.md:351 shows Current agent: assistant.
+Code:
+- fred-samples/agents/fred_samples_agents/general_assistant.py:50 sets
+  agent_id = "fred.samples.assistant".
+- fred-samples/agents/fred_samples_agents/registry.py build_registry uses the
+  definition's agent_id as the registry key, with no "assistant" alias there.
+Correction: update the documented identifier; re-record the CLI transcript against
+its actual configuration before claiming exact startup output.
+Presentation impact: use fred.samples.assistant in upcoming commands/examples.
+
+D03 — Evaluation preparation docstring promises an absent short-lived grant
+Status: confirmed schema/docstring mismatch; full evaluation flow not audited.
+Documentation:
+- fred/apps/control-plane-backend/control_plane_backend/product/schemas.py:381
+  RuntimeAgentExecutionPreparation's docstring promises a short-lived grant.
+Code:
+- Same class:376–390 defines runtime_id, agent_id, team_id and evaluate_url;
+  no grant field is present.
+Correction: align the docstring with the returned schema; verify evaluation
+handlers separately if documenting their full authorization flow.
+Presentation impact: none in the opening block; retain for later evaluator work.
+
+Non-discrepancies / boundaries to preserve
+- The sample application UIs use raw postMessage rather than @fred-oss/iframe-sdk.
+  This is a different implementation level, not by itself erroneous documentation.
+- Local npm candidate APIs are not proof of registry publication.
+- Knowledge Base authoring is documented as beta; do not present it as stable.
+
+Continuation rule: append only evidence-backed findings, separating confirmed
+mismatches from hypotheses. Record code/doc locations, baseline, correction and
+presentation impact. Do not silently promote comments or design docs over code.
+
+
+Block 3 — Tools and workflows (slides 9–12), 2026-10-06
+- Slide 9 reuses the approved illustrative tool and ReActAgent example, verified
+  against fred/libs/fred-sdk/fred_sdk/authoring/api.py. Not a shipped samples agent.
+- Slide 10: fred-samples/agents/fred_samples_agents/bank_transfer/graph_agent.py,
+  default_mcp_servers; MCPServerRef in fred-sdk contracts/models.py.
+- Slide 11: hello_graph/graph_agent.py, graph_state.py and graph_steps.py.
+  The displayed workflow is reformatted from the sample; node/state definitions
+  are explained but not all repeated. Routing can involve a model decision.
+- Slide 12: bank_transfer/graph_steps.py, confirm_transfer_step and
+  confirm_risk_step; graph_agent.py confirmed/cancelled routes.
+  The excerpt intentionally omits cancellation state updates for readability.
+- User continues to review rendering; no live LLM/MCP call was made.
+
+D04 — Minimal MCP sample described as echo instead of random numbers
+Status: confirmed; repository correction pending.
+Documentation: fred-samples/README.md, MCP servers table, describes the minimal
+MCP server as a template with one echo tool.
+Code: fred-samples/servers/mcp/python/minimal-mcp-server/minimal_mcp_server/
+server_mcp.py exposes random_numbers(count, min_value, max_value).
+Correction: describe the random-number tool rather than echo.
+Presentation impact: slide 10 uses the verified bank sample instead.
+
+Requested addition — Comfortable local development
+User requested a short section on fred-deployment-factory covering Docker Compose
+and k3d. Place after pod startup / local testing, before managed UI enrollment.
+Pending: inspect the actual deployment-factory checkout and commands before
+writing slides. Do not infer current setup from Fred's older deployment docs.
+
+
+Block 4 — Applications (slides 13–16), 2026-10-06
+- Slide 13 reuses the approved application/API preview; its topology describes
+  progress-tracker, not document-triage's read-service capability.
+- Slide 14 checked against fred/libs/frontend/iframe-sdk/src/index.ts:
+  createFredApplicationClient, connect, request, hostOrigin/applicationId.
+  The sample tasks path is in progress-tracker/api/app.py. The Fred host supplies
+  /app-services/<app>/teams/<team>; do not repeat team segments in iframe requests.
+  UI/design-token package roles checked against their manifests/READMEs.
+  Checkout manifests are alpha candidates, not proof of published npm versions.
+  Both samples still use raw postMessage; no SDK migration is implied.
+- Slide 15 entry point copied from document-triage/capability/pyproject.toml;
+  AgentCapability manifest/tools inspected in its capability.py. The slide avoids
+  implying package installation alone grants a team access.
+- Slide 16 checked against both apps' api/app.py and capability implementations:
+  document-triage forwards the person's bearer for workspace writes; its
+  capability reads injected services. Progress-tracker uses aiosqlite and checks
+  a shared service key for agent calls, distinct from the person's bearer path.
+- No live service calls or visual browser checks performed; user reviews rendering.
+
+
+Knowledge Flow block and chapter introductions, 2026-10-06
+Deck now contains 25 physical slides: 20 content slides and 5 chapter dividers.
+Each divider carries one short English message. Chapter starts: 1, 6, 11, 16, 21.
+Existing content reordered only by inserting dividers; content kickers no longer
+contain obsolete physical page numbers.
+Knowledge Flow content occupies physical slides 22–25.
+Sources: fred-sdk/knowledge_base/documents.py publish/wait/retract; local-folder
+knowledge_base.py, document_boundary.py and Makefile; fred-runtime/integrations/
+v2_runtime/adapters.py _invoke_knowledge_search.
+The publisher code is a pedagogical handler excerpt, not the sample's exact code.
+The local-folder sample's boundary currently calls publish without wait; its counters
+reflect accepted publication, not proof of successful ingestion. Slide 23/24 draws
+this distinction and does not claim the sample waits for indexing.
+The offline scan only logs when Fred configuration is absent; it is not a live
+Knowledge Flow ingestion demonstration. KB authoring beta status retained.
+Live calls and visual checks deferred as requested; the user checks rendering.
+
+
+Documentation remediation / refreshed baseline: samples 22f8f61, 2026-10-06
+The checkout changed since the earlier 1fcec12 inspection. Earlier app-slide
+source notes describe that historical snapshot and are superseded by this entry.
+Current apps no longer ship capability packages or a shared agent key. Progress
+Tracker and Review Board mount MCP; both validate user or delegated identity.
+Physical slides 17, 19, 20 were updated accordingly; slide 19 now teaches MCP
+exposure instead of the deleted document-triage Python package.
+The model catalog now defaults to Mistral through the OpenAI adapter; startup
+slide clarified. Local-folder dry-run slide now explicitly suppresses config.
+
+Samples documentation fixes on codex/samples-developer-docs:
+- D02 assistant ID and D04 minimal MCP tool description corrected.
+- Added agents/README.md (also fixes the missing packaging readme path).
+- Clarified Mistral default/OpenAI alternative, sibling packages, UV_NO_SOURCES,
+  separate MCP terminals, API/CLI paths and managed-instance distinction.
+- Contributor docs aligned with three apps and MCP; stale version/RFC claims removed.
+- Knowledge Base docs corrected: WebDAV has no local ledger, Git full passes do
+  reconcile deletions, local-folder dry-run configuration must be explicit,
+  accepted writes do not prove ingestion, dry/live ledgers must be separate.
+- App test command now selects its actual venv interpreter.
+Validation: root make test: 306 passed, 1 deselected. Local-folder declaration
+and two offline runs succeeded (created 1, then unchanged 1). CLI help succeeded.
+Markdown local path scan: 35 files, no missing targets. make code-quality stopped
+on existing detect-secrets findings in deploy/k3d/identities.yaml:9 and
+values.yaml:29. No unrelated config or code fixes made; lockfile side effects
+from validation were reverted. Live assistant/Hello Graph smoke test requested
+from user; result pending. No complete live application deployment was tested.
+
+Sources for Part 6, "Develop close to production" (slides 26–31, 2026-10-06)
+- fred-deployment-factory README.md and docs/LOCAL-DEVELOPMENT.md (swift at b222358):
+  Docker Compose quick start, k3d section, "The k3d application contract", identities.
+- fred-deployment-factory bin/k3d-app.sh, bin/k3d-identities, bin/k3d-observe: commands.
+- fred Makefile: setup-env, run, run-fred-agents.
+- fred/deploy/k3d, fred-agent-evaluator/deploy/k3d,
+  fred-samples/knowledge-bases/webdav/deploy/k3d: the deploy/k3d examples.
+Verified by a deployment from a wiped k3d cluster (fred, evaluator, webdav KB) on
+2026-10-06. The identities.yaml on slide 30 is a generic example, not a shipped file.
+`make bootstrap-local` is fred's apps/control-plane-backend target (slide 28 note).
+
+Speaker notes moved out of the slides (2026-10-06)
+- Slide 18: the samples currently use raw postMessage; the slide shows the iframe SDK
+  API of the current checkout.
+- Slide 19: these samples install no application-specific Python capability package
+  into the agent pod.
+
+Slide 32, "The three repositories" (2026-10-06): fred (github.com/ThalesGroup/fred),
+fred-samples and fred-deployment-factory (github.com/fred-agent/...), from each checkout's
+origin remote. Its cards are links; the slide sits above the edge click zones
+(.with-links), so arrow keys navigate it but edge clicks do not.

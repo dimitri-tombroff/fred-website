@@ -3,8 +3,10 @@ title: "Deploying Fred: A GitOps Deployment Pattern"
 description: "The reference deployment design for Fred — a two-layer split (frozen stateful infrastructure vs. a GitOps-managed application layer) plus an out-of-band secrets layer. How the four apps are operated reproducibly, and the path from playground to a corporate, sovereign-grade standard."
 toc: false
 draft: false
-weight: 813
+weight: 815
 ---
+
+> **Archive.** This deck describes the GitOps (ArgoCD) deployment Fred used on a GKE cluster until September 2026. That deployment has been retired. To run Fred close to production today, see Part 6 of [Building with Fred](/docs/slides/building-with-fred-a-developer-introduction/): fred-deployment-factory with Docker Compose and k3d.
 
 A platform-engineering walkthrough of how Fred is deployed and operated: the clean split between a frozen, stateful infrastructure layer and a GitOps-managed (ArgoCD) application layer, the boundary contract between them, and the honest roadmap from the current playground to a corporate-grade standard.
 

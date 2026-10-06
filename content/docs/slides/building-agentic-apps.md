@@ -3,7 +3,7 @@ title: "Agentic Apps: From Demo to Industrial Reality"
 description: "A slide deck covering the key architectural patterns behind building production-grade agentic applications with Fred."
 toc: false
 draft: false
-weight: 811
+weight: 812
 ---
 
 A walkthrough of the architectural patterns and design decisions behind building production-grade agentic applications — from simple demos to industrialized systems.
