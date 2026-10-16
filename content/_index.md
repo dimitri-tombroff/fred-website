@@ -24,7 +24,7 @@ seo:
     <div class="fred-pillar fred-pillar--open">
       <p class="fred-pillar-word">Open</p>
       <p class="fred-pillar-desc">Apache 2.0, end to end. Read it, fork it, run it on your own infrastructure. A third party can install the whole thing without us — that is deliberate.</p>
-      <p class="fred-pillar-proof"><span class="fred-pillar-tick" aria-hidden="true">&check;</span> ThalesGroup/fred · Apache 2.0</p>
+      <p class="fred-pillar-proof"><span class="fred-pillar-tick" aria-hidden="true">&check;</span> ThalesGroup/fred · Apache 2.0 · <a href="https://artifacthub.io/packages/helm/fred/fred">Helm chart on Artifact Hub</a></p>
     </div>
     <div class="fred-pillar fred-pillar--collective">
       <p class="fred-pillar-word">Collective</p>

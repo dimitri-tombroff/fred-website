@@ -297,6 +297,37 @@
   <p class="punch">The same chart and the same images, from a laptop to a production cluster.</p>
 </section>
 
+<!-- ============ 6b . ARTIFACT HUB ============ -->
+<section class="slide">
+  <div class="kicker">Self-documented</div>
+  <h2 style="margin-bottom:16px;">One public page tells an operator everything</h2>
+  <div class="cols" style="gap:40px;">
+    <div class="col" style="flex:1.1;">
+      <div style="border:1px solid var(--line); background:var(--code-bg); border-radius:14px; overflow:hidden; box-shadow:0 22px 60px rgba(0,0,0,.4);">
+        <div style="display:flex; align-items:center; gap:12px; padding:10px 18px; background:var(--chip-bg); border-bottom:1px solid var(--line); font-size:15px; color:var(--muted);">
+          <span style="display:flex; gap:6px;"><i style="width:10px;height:10px;border-radius:50%;background:var(--faint);opacity:.45;display:block;"></i><i style="width:10px;height:10px;border-radius:50%;background:var(--faint);opacity:.45;display:block;"></i><i style="width:10px;height:10px;border-radius:50%;background:var(--faint);opacity:.45;display:block;"></i></span>
+          <span class="mono">artifacthub.io/packages/helm/fred/fred</span>
+        </div>
+        <div style="padding:14px 20px;">
+          <p style="font-size:24px; font-weight:700; margin-bottom:10px;">fred <span class="muted" style="font-size:17px; font-weight:500;">3.6.1 &middot; Apache-2.0</span></p>
+                    <div class="vmod v4" style="margin-bottom:7px; padding:8px 14px;"><b style="font-size:17px;">Install</b><span class="mono" style="font-size:14px;">helm install fred oci://ghcr.io/thalesgroup/fred-helm/fred</span></div>
+          <div class="vmod v1" style="margin-bottom:7px; padding:8px 14px;"><b style="font-size:17px;">README</b><span style="font-size:15px;">what it deploys, requirements, credentials, first login</span></div>
+          <div class="vmod v2" style="margin-bottom:7px; padding:8px 14px;"><b style="font-size:17px;">Default values and their schema</b><span style="font-size:15px;">every setting documented; a wrong key is refused at install</span></div>
+          <div class="vmod v3" style="margin-bottom:0; padding:8px 14px;"><b style="font-size:17px;">Versions, operator guides, security report</b><span style="font-size:15px;">every release, and a scan of every image it runs</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <ul class="tight">
+        <li><strong>No meeting, no account, no contract:</strong> a Kubernetes operator reads one page and installs Fred with one command.</li>
+        <li><strong>Nothing to keep in sync:</strong> the page is generated from what each release publishes: the chart's README, its values and schema, its images.</li>
+        <li><strong>The same on every platform:</strong> GKE, AKS, on-premises or a laptop. k3d, in part 3, is this same install made comfortable.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="punch">That is cloud-native: standard tools, one public page, one command.</p>
+</section>
+
 <!-- ============ 7 . PART 2 ============ -->
 <section class="slide divider">
   <div class="partno">Part 2 / 3</div>
@@ -634,11 +665,72 @@
       </div>
     </div>
     <table style="font-size:17px;">
-      <tr><td><b>Fred</b></td><td><code>github.com/ThalesGroup/fred</code></td><td><b>Charts</b></td><td><code>artifacthub.io</code>, search "fred"</td></tr>
+      <tr><td><b>Fred</b></td><td><code>github.com/ThalesGroup/fred</code></td><td><b>Charts</b></td><td><code>artifacthub.io/packages/helm/fred/fred</code></td></tr>
       <tr><td><b>Evaluator</b></td><td><code>github.com/fred-agent/fred-agent-evaluator</code></td><td><b>Samples</b></td><td><code>github.com/fred-agent/fred-samples</code></td></tr>
       <tr><td><b>Local instance</b></td><td><code>github.com/fred-agent/fred-deployment-factory</code></td><td><b>Docs</b></td><td><code>site.fredlab.dev</code></td></tr>
     </table>
   </div>
+</section>
+
+<!-- ============ 21 . UPGRADES ============ -->
+<section class="slide">
+  <div class="kicker">Upgrades, rehearsed before production</div>
+  <h2 style="margin-bottom:16px;">Every new release is upgraded on k3d first</h2>
+  <div style="border:1px solid rgba(45,212,191,.4); background:var(--accent-dim); border-radius:12px; padding:18px 26px; margin-bottom:6px;">
+    <p style="font-size:22px; line-height:1.5;">
+      <strong>Renovate</strong> is a bot that watches the published charts. When Fred or an
+      application publishes a release, it opens a pull request in
+      <strong>fred-deployment-factory</strong> that raises the pinned version, for example
+      <code class="inl" style="white-space:nowrap">3.6.1 &rarr; 3.7.0</code>.
+    </p>
+  </div>
+  <div class="road" style="margin:20px 0 22px;">
+    <div class="road-step">
+      <b>1 &middot; Release</b>
+      <span>Fred or an application publishes a new chart and images.</span>
+    </div>
+    <div class="road-arrow">&rarr;</div>
+    <div class="road-step">
+      <b>2 &middot; Renovate PR</b>
+      <span>The factory's pinned version is raised; its CI checks the instance's values against the new chart.</span>
+    </div>
+    <div class="road-arrow">&rarr;</div>
+    <div class="road-step">
+      <b>3 &middot; Merge</b>
+      <span>The factory now deploys the new release by default.</span>
+    </div>
+    <div class="road-arrow">&rarr;</div>
+    <div class="road-step hot">
+      <b>4 &middot; Upgrade k3d</b>
+      <span><code class="inl">git pull</code> the factory, then <code class="inl">make k3d-app APP=fred</code>: an in-place upgrade, data kept.</span>
+    </div>
+  </div>
+  <p class="sub" style="font-size:20px;">
+    Step 4 is the upgrade an operator runs in production: the same chart, the same database
+    migrations, the same new settings, on a cluster that already holds accounts and documents.
+  </p>
+  <p class="punch">The progress: an upgrade of Fred or of any application is tested on k3d, with data, before it reaches production.</p>
+</section>
+
+<!-- ============ 22 . CHEAT SHEET ============ -->
+<section class="slide">
+  <div class="kicker">Cheat sheet &middot; from fred-deployment-factory</div>
+  <h2 style="margin-bottom:10px;">I want to...</h2>
+  <p class="sub" style="font-size:19px; margin-bottom:14px;">
+    <code class="inl">make k3d-app</code> converges: the first run installs, the next ones upgrade in place and keep the data.
+  </p>
+  <table style="font-size:18px;">
+    <tr><th>I want to...</th><th>Run</th></tr>
+    <tr><td><b>Install everything on a new cluster</b></td><td><code>make k3d-up</code>, the model key Secret, <code>make k3d-app APP=fred</code>, <code style="white-space:nowrap">make k3d-app APP=fred-evaluator</code></td></tr>
+    <tr><td><b>Rehearse the upgrade to a new release</b></td><td>Once its Renovate PR is merged: <code>git pull</code> in fred-deployment-factory, then <code>make k3d-app APP=fred</code></td></tr>
+    <tr><td><b>Run another published release</b></td><td><code>make k3d-app APP=fred RELEASE=x.y.z</code></td></tr>
+    <tr><td><b>Test my Fred code</b></td><td><code>make k3d-app APP=fred DIR=../fred</code>, rerun after any change</td></tr>
+    <tr><td><b>Go back to the published release</b></td><td><code>make k3d-app APP=fred</code>, without <code>DIR</code></td></tr>
+    <tr><td><b>Deploy my own application</b></td><td><code>make k3d-app DIR=../&lt;application&gt;</code></td></tr>
+    <tr><td><b>Stop the cluster, keep the data</b></td><td><code>make k3d-down</code>, then <code>make k3d-up</code> to resume</td></tr>
+    <tr><td><b>Start over</b></td><td><code>make k3d-wipe</code>, then <code>make k3d-up</code>: deletes accounts, documents and runs</td></tr>
+  </table>
+  <p class="muted" style="margin-top:12px; font-size:16px;">No in-place downgrade: database migrations do not go back. To run an older release, start over.</p>
 </section>
 
 <script>
