@@ -304,7 +304,103 @@
   <p class="sub" style="margin-top:20px; max-width:900px;">Your agents, your sources, your products: next to Fred, never inside it.</p>
 </section>
 
-<!-- ============ 8 . THE RULE ============ -->
+<!-- ============ 8 . THE CONSTELLATION ============ -->
+<section class="slide">
+  <div class="kicker">The picture</div>
+  <h2 style="margin-bottom:12px;">Fred at the centre, extensions around it, Kubernetes underneath</h2>
+  <svg viewBox="0 0 1128 430" style="width:100%; flex:1; min-height:0;" role="img"
+       aria-label="A Kubernetes cluster holding the infrastructure services, Fred at its centre, and around Fred the applications, agent pods and Knowledge Bases">
+    <style>
+      .lbl { font: 600 13px "Segoe UI", system-ui, sans-serif; letter-spacing: .14em; }
+      .bx  { font: 600 16px "Segoe UI", system-ui, sans-serif; fill: #e6edf5; }
+      .sb  { font: 400 12.5px "Segoe UI", system-ui, sans-serif; fill: #8b96a8; }
+      .mono{ font: 400 12.5px ui-monospace, Consolas, monospace; fill: #8b96a8; }
+      .inf { font: 500 14px "Segoe UI", system-ui, sans-serif; fill: #c9d4e3; }
+    </style>
+    <defs>
+      <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#55617a"/>
+      </marker>
+    </defs>
+
+    <!-- the cluster -->
+    <rect x="150" y="8" width="830" height="414" rx="18" fill="rgba(255,255,255,.015)" stroke="#55617a" stroke-dasharray="7 6"/>
+    <text x="172" y="34" class="lbl" fill="#8b96a8">KUBERNETES CLUSTER</text>
+
+    <!-- infrastructure -->
+    <rect x="170" y="356" width="790" height="48" rx="10" fill="#161e30" stroke="#60a5fa" stroke-opacity=".35"/>
+    <text x="188" y="385" class="lbl" fill="#60a5fa">INFRASTRUCTURE</text>
+    <text x="360" y="385" class="inf">PostgreSQL</text>
+    <text x="465" y="385" class="inf">OpenSearch</text>
+    <text x="572" y="385" class="inf">Keycloak</text>
+    <text x="662" y="385" class="inf">OpenFGA</text>
+    <text x="750" y="385" class="inf">Temporal</text>
+    <text x="840" y="385" class="inf">S3 storage</text>
+
+    <!-- applications (top) -->
+    <text x="565" y="34" class="lbl" fill="#fbbf24" text-anchor="middle">APPLICATIONS</text>
+    <rect x="395" y="46" width="155" height="58" rx="10" fill="rgba(251,191,36,.08)" stroke="rgba(251,191,36,.5)"/>
+    <text x="472" y="71" class="bx" text-anchor="middle">Evaluation</text>
+    <text x="472" y="91" class="mono" text-anchor="middle">/apps/evaluation/</text>
+    <rect x="580" y="46" width="155" height="58" rx="10" fill="rgba(251,191,36,.08)" stroke="rgba(251,191,36,.5)"/>
+    <text x="657" y="71" class="bx" text-anchor="middle">Your product</text>
+    <text x="657" y="91" class="mono" text-anchor="middle">/apps/&lt;id&gt;/</text>
+    <line x1="472" y1="104" x2="520" y2="140" stroke="#fbbf24" stroke-opacity=".6" stroke-width="2"/>
+    <line x1="657" y1="104" x2="610" y2="140" stroke="#fbbf24" stroke-opacity=".6" stroke-width="2"/>
+
+    <!-- Fred (centre) -->
+    <rect x="440" y="140" width="250" height="176" rx="16" fill="rgba(45,212,191,.08)" stroke="#2dd4bf" stroke-width="2"/>
+    <text x="565" y="170" text-anchor="middle" style="font: 700 24px 'Segoe UI', system-ui, sans-serif;" fill="#2dd4bf">Fred</text>
+    <text x="565" y="190" class="sb" text-anchor="middle">one Helm chart, four images</text>
+    <rect x="455" y="204" width="105" height="44" rx="8" fill="#161e30" stroke="#232c3f"/>
+    <text x="507" y="231" class="sb" text-anchor="middle" style="fill:#e6edf5;">Web UI</text>
+    <rect x="570" y="204" width="105" height="44" rx="8" fill="#161e30" stroke="#232c3f"/>
+    <text x="622" y="231" class="sb" text-anchor="middle" style="fill:#e6edf5;">Agent runtime</text>
+    <rect x="455" y="258" width="105" height="44" rx="8" fill="#161e30" stroke="#232c3f"/>
+    <text x="507" y="285" class="sb" text-anchor="middle" style="fill:#e6edf5;">Knowledge Flow</text>
+    <rect x="570" y="258" width="105" height="44" rx="8" fill="#161e30" stroke="#232c3f"/>
+    <text x="622" y="285" class="sb" text-anchor="middle" style="fill:#e6edf5;">Control plane</text>
+    <line x1="565" y1="316" x2="565" y2="352" stroke="#55617a" stroke-width="2" marker-end="url(#arw)"/>
+
+    <!-- agent pods (left) -->
+    <text x="255" y="140" class="lbl" fill="#c084fc" text-anchor="middle">AGENT PODS</text>
+    <rect x="180" y="152" width="150" height="56" rx="10" fill="rgba(192,132,252,.08)" stroke="rgba(192,132,252,.5)"/>
+    <text x="255" y="176" class="bx" text-anchor="middle">Your agents</text>
+    <text x="255" y="195" class="mono" text-anchor="middle">agent-pod chart</text>
+    <rect x="180" y="220" width="150" height="56" rx="10" fill="rgba(192,132,252,.08)" stroke="rgba(192,132,252,.5)"/>
+    <text x="255" y="244" class="bx" text-anchor="middle">Sample agents</text>
+    <text x="255" y="263" class="mono" text-anchor="middle">agent-pod chart</text>
+    <text x="255" y="300" class="sb" text-anchor="middle">listed in Fred's agent catalog</text>
+    <line x1="330" y1="180" x2="440" y2="215" stroke="#c084fc" stroke-opacity=".6" stroke-width="2"/>
+    <line x1="330" y1="248" x2="440" y2="245" stroke="#c084fc" stroke-opacity=".6" stroke-width="2"/>
+
+    <!-- knowledge bases (right) -->
+    <text x="875" y="140" class="lbl" fill="#60a5fa" text-anchor="middle">KNOWLEDGE BASES</text>
+    <rect x="788" y="152" width="174" height="56" rx="10" fill="rgba(96,165,250,.08)" stroke="rgba(96,165,250,.5)"/>
+    <text x="875" y="176" class="bx" text-anchor="middle">Git repository</text>
+    <text x="875" y="195" class="mono" text-anchor="middle">knowledge-base chart</text>
+    <rect x="788" y="220" width="174" height="56" rx="10" fill="rgba(96,165,250,.08)" stroke="rgba(96,165,250,.5)"/>
+    <text x="875" y="244" class="bx" text-anchor="middle">Shared folder</text>
+    <text x="875" y="263" class="mono" text-anchor="middle">knowledge-base chart</text>
+    <text x="875" y="300" class="sb" text-anchor="middle">keep team libraries in sync</text>
+    <line x1="788" y1="180" x2="690" y2="215" stroke="#60a5fa" stroke-opacity=".6" stroke-width="2"/>
+    <line x1="788" y1="248" x2="690" y2="270" stroke="#60a5fa" stroke-opacity=".6" stroke-width="2"/>
+
+    <!-- outside: users and external sources -->
+    <rect x="8" y="46" width="120" height="58" rx="10" fill="#161e30" stroke="#232c3f"/>
+    <text x="68" y="71" class="bx" text-anchor="middle">Users</text>
+    <text x="68" y="90" class="sb" text-anchor="middle">one sign-in</text>
+    <line x1="128" y1="80" x2="436" y2="150" stroke="#55617a" stroke-width="2" marker-end="url(#arw)"/>
+    <rect x="1000" y="176" width="122" height="78" rx="10" fill="#161e30" stroke="#232c3f"/>
+    <text x="1061" y="202" class="bx" text-anchor="middle">Sources</text>
+    <text x="1061" y="221" class="sb" text-anchor="middle">folders, Git,</text>
+    <text x="1061" y="238" class="sb" text-anchor="middle">document servers</text>
+    <line x1="1000" y1="215" x2="966" y2="215" stroke="#55617a" stroke-width="2" marker-end="url(#arw)"/>
+  </svg>
+  <p class="punch" style="margin-top:8px;">Each extension: its own repository, its own chart, its own release, enabled per team inside Fred.</p>
+</section>
+
+<!-- ============ 9 . THE RULE ============ -->
 <section class="slide">
   <div class="kicker">The rule</div>
   <h2>Never fork Fred: deploy next to it</h2>
