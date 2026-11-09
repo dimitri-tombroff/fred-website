@@ -5,7 +5,7 @@ description: "An architectural comparison of Fred Weaver, OpenAI, Anthropic, Mic
 summary: "An analysis of governed spaces, reusable expertise and the separation between agent execution and business processes in Fred Weaver and four major platforms."
 date: 2026-11-08T10:00:00+01:00
 lastmod: 2026-11-09T10:00:00+01:00
-draft: true
+draft: false
 weight: 50
 categories: [platform, architecture]
 tags: [weaver, agents, skills, governance]
@@ -18,7 +18,7 @@ seo:
   description: "Fred Weaver in architectural context: spaces, skills, agents and explicit business processes, illustrated with diagrams from its architecture documentation."
 ---
 
-Fred is an open-source environment for combining data, tools and AI assistance within governed business activities. The Weaver release consolidates this architecture around shared spaces, reusable resources and distinct responsibilities for governance, knowledge processing and agent execution.
+Fred is an open-source environment for combining data, tools and AI assistance within governed business activities. **Weaver is its next major release, currently under development and available as an incomplete developer preview.** It builds on Fred's existing foundations to support shared workspaces, reusable resources and a clear separation between access control, document processing and agent execution.
 
 This article examines that architecture alongside selected mechanisms from OpenAI, Anthropic, Microsoft and Salesforce. The comparison concerns architectural responsibilities, rather than feature coverage or measured performance. It identifies convergent design choices and the questions Fred is investigating.
 
@@ -81,25 +81,31 @@ Fred similarly exposes service operations through capabilities. Its architectura
 
 ## Separation of responsibilities in Fred
 
-The Weaver architecture assigns access decisions and resource placement to the **Control Plane**, assistant execution and capability libraries to **Agent Pods**, and document processing and retrieval to **Knowledge Flow**. The following diagram shows the Agent Pod execution path; it is a responsibility view, not a complete deployment topology.
+When someone asks an assistant to work with documents, Fred must check what that person may access, run the assistant with the appropriate tools, and retrieve relevant content. Weaver separates these responsibilities into three services:
+
+- **Access and resource management** (*Control Plane*): determines where documents, tools and other resources belong, and who may use them.
+- **Assistant execution** (*Agent Pods*): runs assistants and provides the tools they use.
+- **Document processing and search** (*Knowledge Flow*): prepares documents for use and retrieves authorized content.
+
+The diagram shows how these services cooperate during an interaction with an assistant.
 
 {{< mermaiddiagram >}}
 flowchart TB
-    ui["Frontend<br/>Work in a selected space"]
-    cp["Control Plane<br/>Rights, placement and lifecycle"]
-    pod["Agent Pod<br/>Agents and capability libraries"]
-    kf["Knowledge Flow<br/>Document processing and retrieval"]
+    ui["User interface<br/>Work in a selected space"]
+    cp["Access and resources<br/>(Control Plane)"]
+    pod["Assistant execution and tools<br/>(Agent Pod)"]
+    kf["Document processing and search<br/>(Knowledge Flow)"]
     ui -->|"Manage resources"| cp
     ui <-->|"Chat"| pod
-    pod -->|"Resolve authorized context"| cp
+    pod -->|"Check access and obtain context"| cp
     pod -->|"Search authorized documents"| kf
-    cp -.->|"Processing via Temporal"| kf
+    cp -.->|"Request document processing"| kf
 
     classDef fred fill:#DBEAFE,stroke:#2563EB,color:#172554
     class ui,cp,pod,kf fred
 {{< /mermaiddiagram >}}
 
-*Figure 2. Components serving a space. Reproduced from the Weaver [system overview](https://github.com/ThalesGroup/fred/blob/weaver/docs/architecture/01-system-overview.md#11-components-serving-the-space). Blue denotes Fred components.*
+*Figure 2. Access control, assistant execution and document processing. Simplified from the Weaver [system overview](https://github.com/ThalesGroup/fred/blob/weaver/docs/architecture/01-system-overview.md#11-components-serving-the-space).*
 
 These component boundaries support a corresponding distinction in business applications:
 
