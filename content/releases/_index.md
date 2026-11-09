@@ -1,9 +1,9 @@
 ---
 title: "Releases"
 description: "Fred release generations — what's stable, what's coming, and how to move between them."
-summary: "Kea 1.5 is the current production release. Swift 2.0 is the next generation, available as a developer preview today."
+summary: "Explore Kea 1.5, Swift 3.x and the compass guiding Weaver 5.x."
 date: 2026-05-02T00:00:00+02:00
-lastmod: 2026-05-02T00:00:00+02:00
+lastmod: 2026-11-08T00:00:00+01:00
 draft: false
 weight: 840
 layout: single
@@ -13,12 +13,14 @@ sidebar:
   collapsed: false
 seo:
   title: "Releases — Fred"
-  description: "Fred release generations: Kea 1.5 stable, Swift 2.0 preview, lifecycle policy and roadmap."
+  description: "Fred release generations: Kea 1.5, Swift 3.x, the Weaver 5.x compass, lifecycle policy and roadmap."
 ---
 
-Fred releases one production version at a time. Here is where things stand.
+Fred releases one production version at a time.
 
-| | [Swift 2.0](/releases/swift/) | [Kea 1.5](/releases/kea/) |
+**[Weaver 5.x — the release compass](/releases/weaver/)** sets the direction for the release in development: bringing people, data and tools together for AI-assisted business workflows in governed spaces.
+
+| | [Swift 3.x](/releases/swift/) | [Kea 1.5](/releases/kea/) |
 |---|---|---|
 | **Status** | Developer preview — **next** | Production — stable |
 | **Runtime** | `fred-runtime` + `fred-sdk` | `agentic-backend` |
@@ -35,7 +37,8 @@ Fred releases one production version at a time. Here is where things stand.
 
 ---
 
-- [Swift 2.0](/releases/swift/) — developer preview, GA summer 2026
+- [Weaver 5.x](/releases/weaver/) — in development; positioning and roadmap principles
+- [Swift 3.x](/releases/swift/) — developer preview, GA summer 2026
 - [Kea 1.5](/releases/kea/) — current stable release
 - [Release lifecycle](/releases/lifecycle/) — how Fred versions work, branch model, support windows
 - [Roadmap](/docs/roadmap.html) — where Fred is headed

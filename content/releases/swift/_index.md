@@ -1,22 +1,22 @@
 ---
-title: "Swift 2.0"
+title: "Swift 3.x"
 description: "Swift is the next generation of Fred — a clean architectural upgrade arriving summer 2026."
-summary: "Fred Swift 2.0 replaces agentic-backend with fred-runtime and fred-sdk. Available as a developer preview on PyPI today."
+summary: "Fred Swift 3.x replaces agentic-backend with fred-runtime and fred-sdk. Available as a developer preview on PyPI today."
 date: 2026-05-02T00:00:00+02:00
 lastmod: 2026-05-02T00:00:00+02:00
 draft: false
 weight: 20
 toc: true
 seo:
-  title: "Swift 2.0 — Fred"
-  description: "Fred Swift 2.0: the next generation runtime. Available as a developer preview on PyPI. GA summer 2026."
+  title: "Swift 3.x — Fred"
+  description: "Fred Swift 3.x: the next generation runtime. Available as a developer preview on PyPI. GA summer 2026."
 ---
 
-{{< bird-card image="/images/swift_vintage_optimized.webp" name="Swift" version="2.0.x" status="Developer preview · GA summer 2026" hint="Speed is nothing without direction." >}}
+{{< bird-card image="/images/swift_vintage_optimized.webp" name="Swift" version="3.x" status="Developer preview · GA summer 2026" hint="Speed is nothing without direction." >}}
 
 ## Status
 
-**Swift 2.0 is a developer preview.** The PyPI packages are published and stable enough to build against. The GA release is targeted for summer 2026.
+**Swift 3.x is a developer preview.** The PyPI packages are published and stable enough to build against. The GA release is targeted for summer 2026.
 
 Kea 1.5 remains the production release until then.
 

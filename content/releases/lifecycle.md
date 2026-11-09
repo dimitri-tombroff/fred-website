@@ -50,7 +50,8 @@ Fred releases carry bird codenames:
 | Codename | Version | Status |
 |---|---|---|
 | **Kea** | 1.5.x | Production — current |
-| **Swift** | 2.0.x | Developer preview — GA summer 2026 |
+| **Swift** | 3.x | Developer preview — GA summer 2026 |
+| **[Weaver](/releases/weaver/)** | 5.x | In development — release compass and roadmap |
 
 The name is chosen to reflect a character of the release, not just a label.
 

@@ -13,7 +13,7 @@ seo:
   description: "Fred Kea 1.5: the current stable production release. Features, release notes, and support status."
 ---
 
-{{< legacy-banner release="Swift 2.0" url="/releases/swift/" >}}
+{{< legacy-banner release="Swift 3.x" url="/releases/swift/" >}}
 
 {{< bird-card image="/images/kea_vintage_optimized.webp" name="Kea" version="1.5.x" status="Production — stable" hint="Understanding begins with curiosity." >}}
 
@@ -43,4 +43,4 @@ Current patch: **1.5.x** — see the in-app release notes for the latest changel
 
 When Swift GA arrives, a step-by-step migration guide will walk through every Helm and configuration change required. No changes are needed today.
 
-See the [Swift 2.0 page](/releases/swift/) if you want to explore the new architecture ahead of the migration.
+See the [Swift 3.x page](/releases/swift/) if you want to explore the new architecture ahead of the migration.

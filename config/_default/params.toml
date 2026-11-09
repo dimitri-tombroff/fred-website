@@ -5,7 +5,7 @@ images = ["cover.png"]
 
 # Release configuration — change this single line when the next bird ships
 current_release = "swift"
-current_release_label = "Swift 2.0"
+current_release_label = "Swift 3.x"
 legacy_release = "kea"
 legacy_release_label = "Kea 1.5"
 
