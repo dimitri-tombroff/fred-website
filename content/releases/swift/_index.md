@@ -1,24 +1,24 @@
 ---
 title: "Swift 3.x"
-description: "Swift is the next generation of Fred — a clean architectural upgrade arriving summer 2026."
-summary: "Fred Swift 3.x replaces agentic-backend with fred-runtime and fred-sdk. Available as a developer preview on PyPI today."
+description: "Swift 3.x is the current production release of Fred."
+summary: "Fred Swift 3.x replaces agentic-backend with fred-runtime and fred-sdk. It is the current production release."
 date: 2026-05-02T00:00:00+02:00
-lastmod: 2026-05-02T00:00:00+02:00
+lastmod: 2026-11-09T00:00:00+01:00
 draft: false
 weight: 20
 toc: true
 seo:
   title: "Swift 3.x — Fred"
-  description: "Fred Swift 3.x: the next generation runtime. Available as a developer preview on PyPI. GA summer 2026."
+  description: "Fred Swift 3.x: the current production release, built on fred-runtime and fred-sdk."
 ---
 
-{{< bird-card image="/images/swift_vintage_optimized.webp" name="Swift" version="3.x" status="Developer preview · GA summer 2026" hint="Speed is nothing without direction." >}}
+{{< bird-card image="/images/swift_vintage_optimized.webp" name="Swift" version="3.x" status="Production — stable" hint="Speed is nothing without direction." >}}
 
 ## Status
 
-**Swift 3.x is a developer preview.** The PyPI packages are published and stable enough to build against. The GA release is targeted for summer 2026.
+**Swift 3.x is the current production release.** It supersedes Kea 1.5.
 
-Kea 1.5 remains the production release until then.
+[Weaver 5.x](/releases/weaver/) is available as an incomplete developer preview.
 
 ## What changes in Swift
 
@@ -48,13 +48,11 @@ Use the CLI to run and test agents locally:
 fred-agents-cli --help
 ```
 
-Agents written against `fred-sdk` today will work on a Swift deployment on day one.
+Use `fred-sdk` to build agents for Swift deployments.
 
 ## What Swift means for operators
 
-- A Helm migration guide will be published before GA
-- The migration is a controlled upgrade, not a rebuild
-- Kea deployments are supported through the full migration window
+Swift is the version to use for production deployments. Moving from Kea replaces `agentic-backend` with `fred-runtime` and `fred-sdk`; the component changes are summarized above.
 
 ## What Swift means for end users
 

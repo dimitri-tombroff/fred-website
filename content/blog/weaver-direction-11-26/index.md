@@ -1,11 +1,11 @@
 ---
-title: "Where Fred Is Heading: Governed Business Workflows"
+title: "Governed Agentic Systems: Fred Weaver in Context"
 slug: "fred-weaver-direction"
-description: "Weaver consolidates Fred's approach to governed business work. A comparison with OpenAI, Anthropic, Microsoft and Salesforce shows where these trajectories converge and differ."
-summary: "Fred is exploring how teams combine data, tools and AI assistance in governed spaces. Weaver consolidates that trajectory alongside wider industry developments in skills, agents and business workflows."
+description: "An architectural comparison of Fred Weaver, OpenAI, Anthropic, Microsoft and Salesforce: governed spaces, reusable skills, agent execution and business processes."
+summary: "An analysis of governed spaces, reusable expertise and the separation between agent execution and business processes in Fred Weaver and four major platforms."
 date: 2026-11-08T10:00:00+01:00
 lastmod: 2026-11-09T10:00:00+01:00
-draft: false
+draft: true
 weight: 50
 categories: [platform, architecture]
 tags: [weaver, agents, skills, governance]
@@ -14,91 +14,108 @@ contributors:
 pinned: false
 homepage: false
 seo:
-  title: "Where Fred Is Heading: Governed Business Workflows"
-  description: "Fred's position in the agent ecosystem: governed business workflows with clear roles for prompts, skills, capabilities and agents."
+  title: "Governed Agentic Systems: Fred Weaver in Context"
+  description: "Fred Weaver in architectural context: spaces, skills, agents and explicit business processes, illustrated with diagrams from its architecture documentation."
 ---
 
-**Fred is exploring how teams can bring data, tools and AI assistance together in governed business workflows. Weaver consolidates that direction.** The starting point is practical: people need to work with documents, use services, share results and make decisions without carrying the whole process in their heads.
+Fred is an open-source environment for combining data, tools and AI assistance within governed business activities. The Weaver release consolidates this architecture around shared spaces, reusable resources and distinct responsibilities for governance, knowledge processing and agent execution.
 
-Fred's foundation is an **open-source environment deployed on enterprise infrastructure**, with documents, assistants and reusable resources organized in governed spaces. Capabilities and business applications provide the extension path for domain-specific tools and experiences. The work ahead is to make that composition more useful while keeping responsibilities clear.
+This article examines that architecture alongside selected mechanisms from OpenAI, Anthropic, Microsoft and Salesforce. The comparison concerns architectural responsibilities, rather than feature coverage or measured performance. It identifies convergent design choices and the questions Fred is investigating.
 
-Across the industry, major platforms are addressing many of the same questions: how to combine reusable expertise, agent execution, explicit business processes and human decisions. **These converging trajectories help us assess Fred's choices and identify what to explore next.** They do not establish feature parity, but they place the questions driving Weaver within a broader architectural evolution.
+## Spaces as the collaboration boundary
 
-## A shared set of questions, different starting points
+In Fred, organizations, teams and projects define where resources belong and who may use them. A common space model also covers personal resources. Access to a collective space does not expose another person's conversations, and roles do not automatically propagate to child spaces.
 
-The following comparison looks at selected mechanisms from four actors. It is an architectural perspective, not an exhaustive comparison of their products. Each highlights a different part of the problem Fred is working on.
+{{< mermaiddiagram >}}
+flowchart TB
+    subgraph organization["Organization"]
+        direction TB
+        common["Common knowledge<br/>Assistants and resources"]
 
-### OpenAI (Agents SDK): The Agent Lifecycle as the Execution Engine
+        subgraph team["Team"]
+            direction TB
+            shared["Team knowledge<br/>Assistants and resources"]
 
-OpenAI approaches the problem by focusing on the agent's internal execution machinery. In their Agents SDK, emphasis is placed on the primitives that allow an agent to loop, decide, and interact with its immediate environment:
+            subgraph project["Project"]
+                focused["Resources for<br/>a shared objective"]
+            end
+        end
 
-- **Tool execution:** The SDK encapsulates the execution loop, managing local function calls and integration with remote servers via MCP (Model Context Protocol).
-- **Handoffs:** Transfer of control to a specialist, with conversation context. Calling an agent as a tool offers another pattern, where the caller retains control.
-- **Conversation continuity:** Context and memory persistence are structured directly around the agent's session and message thread.
-- **Resumable approval pauses:** Human-in-the-loop validation operates at a micro level: the agent loop pauses before executing a sensitive tool, serializes its state, and waits for explicit approval to resume.
+        common -->|"According to access rights"| shared
+        shared -->|"According to access rights"| focused
+    end
 
-**Where Fred converges and differs:** Fred also needs reliable tool execution and continuity across agent interactions. Its starting point is the shared working environment: the space, its resources and the people authorized to use them. Weaver explores how several independent executions can contribute to a business process whose progress and decisions remain meaningful beyond any one agent run.
+    classDef neutral fill:#F1F5F9,stroke:#64748B,color:#0F172A
+    class common,shared,focused,organization,team,project neutral
+{{< /mermaiddiagram >}}
 
-### Anthropic (Agent Skills): Reusable Expertise
+*Figure 1. Collective spaces and access to resources. Reproduced from the Weaver [architecture introduction](https://github.com/ThalesGroup/fred/blob/weaver/docs/architecture/00-introduction.md#organizations-teams-and-projects).*
 
-Anthropic's work on Agent Skills addresses how knowledge and operational procedures can be packaged and delivered to an assistant:
+This model gives Fred a starting point for collective work that is independent of any particular agent or conversation.
 
-- **Modular Agent Skills:** Instead of multiplying autonomous agents for every new sub-task, Anthropic packages domain expertise, guidelines, and supporting resources (including scripts) into modular, reusable **Skills**.
-- **Just-in-time procedural loading:** The assistant inspects available skills and loads the precise procedural knowledge it needs at runtime, keeping the main system prompt clean and focused.
-- **Knowledge encapsulation:** Operational expertise is decoupled from agent code, turning procedures into versionable, portable units of domain knowledge.
+## Architectural comparison
 
-**Where Fred converges and differs:** Reusable expertise fits Fred's direction of letting teams extend a common foundation with their own resources and capabilities. Agent Skills provides a shared format for that expertise. Weaver's concern is also collective: where those resources belong, who may maintain and use them, and how they work with tools governed independently of their instructions.
+### OpenAI: execution and continuation
 
-### Microsoft (Copilot Studio): Hybrid Workflows and Process Determinism
+The Agents SDK provides tool execution, specialist handoffs, conversation continuity and resumable approval interruptions. Specialists can take over execution through handoffs or contribute as tools while a coordinating agent retains control.
 
-Microsoft approaches agentic systems by bridging explicit enterprise processes with adaptive AI reasoning. In Copilot Studio, generative agents operate alongside structured business flows:
+Fred addresses these execution concerns within a wider scope: several people and agent runs may contribute to the same business activity. Persisting an agent run provides execution continuity; the application's shared progress and decisions require their own representation.
 
-- **Hybrid flow architecture:** Combines deterministic, rule-based workflows (for strict business logic and compliance) with generative orchestration (for open-ended reasoning and intent handling).
-- **Explicit process handoffs:** Agents can call structured workflows, and flows can include agent calls and human approvals. This provides a way to keep selected business steps under explicit process control.
-- **Governed integration layer:** Integration with Dataverse, connectors and identity services connects these operations to the organization's data and configured access controls.
+### Anthropic: reusable procedural knowledge
 
-**Where Fred converges and differs:** Fred shares this separation between predictable process structure and adaptive assistance. The application owns business rules and decisions; an agent contributes where reasoning is useful. Fred's extension model aims to support that separation with the customer's existing services or a dedicated business application, while keeping the common platform focused.
+Agent Skills packages instructions, scripts and supporting resources that an assistant can discover and load as needed. This separates reusable expertise from the implementation of a particular agent. Anthropic's guidance on effective agents also distinguishes predefined workflows from model-directed execution.
 
-### Salesforce (Agentforce): Service Action Binding and Platform Delegation
+This approach is consistent with Fred's use of reusable resources and capabilities. Weaver's additional concern is their placement and governance: which space owns a resource, who may maintain it, and which tools the executing agent is authorized to use. A skill's instructions do not themselves confer access rights.
 
-Salesforce approaches agentic systems by anchoring execution directly into the enterprise system of record and existing platform workflows. In Agentforce, agent decisions map directly onto structured enterprise services:
+### Microsoft: explicit flows and generative orchestration
 
-- **Action and flow binding:** Agents can invoke defined actions backed by Salesforce Flow, Apex logic and connected services.
-- **Asynchronous service execution:** Asynchronous integration patterns let an agent dispatch work to a downstream service that takes responsibility for execution independently of the agent session.
-- **Platform-level trust and permissioning:** Access depends on the execution identity, object and field permissions, and sharing rules. The invoked actions must preserve the relevant security checks.
+Copilot Studio supports rule-based flows alongside generative orchestration. Agents can select tools and invoke flows; flows can include agent calls and human approvals. A predictable control structure can therefore contain tasks whose outputs remain probabilistic.
 
-**Where Fred converges and differs:** Fred likewise treats capabilities as access to operations owned by services. Its ambition is to connect those services within governed spaces, while letting the systems of record retain their business responsibilities. The contribution we are pursuing is a coherent working environment across those boundaries.
+Fred adopts the same separation of responsibilities as a design principle for business applications: process rules belong to the application, while agents assist with selected tasks. Those applications may integrate existing customer services or supply domain-specific extensions.
 
----
+### Salesforce: business actions and service ownership
 
-## What Weaver is consolidating
+Agentforce connects agents to actions implemented through Flow, Apex and connected services. Asynchronous integration patterns allow downstream services to own execution independently of an agent session. Access depends on the running identity and configured permissions; custom actions must preserve the relevant checks.
 
-For Fred, **composition and governance are the organizing choices**: connect people, data and services in a usable environment, and make each responsibility explicit. The industry comparison reinforces the relevance of this direction while leaving concrete questions for Weaver to resolve.
+Fred similarly exposes service operations through capabilities. Its architectural objective is to connect those services within governed spaces while retaining their ownership of business transactions and records.
 
-The vocabulary should make this composition understandable:
+## Separation of responsibilities in Fred
 
-- A **prompt** expresses instructions.
-- A **skill** packages a reusable procedure with supporting resources, potentially including scripts, as described by the [Agent Skills specification](https://agentskills.io/specification).
-- A **capability** exposes an operation through tools.
-- An **agent** uses instructions and tools to carry out a task.
-- The **business application** owns the process rules, shared progress, and decisions.
+The Weaver architecture assigns access decisions and resource placement to the **Control Plane**, assistant execution and capability libraries to **Agent Pods**, and document processing and retrieval to **Knowledge Flow**. The following diagram shows the Agent Pod execution path; it is a responsibility view, not a complete deployment topology.
 
-This separation lets a team change how a task is performed while preserving the rules and continuity of its business process.
+{{< mermaiddiagram >}}
+flowchart TB
+    ui["Frontend<br/>Work in a selected space"]
+    cp["Control Plane<br/>Rights, placement and lifecycle"]
+    pod["Agent Pod<br/>Agents and capability libraries"]
+    kf["Knowledge Flow<br/>Document processing and retrieval"]
+    ui -->|"Manage resources"| cp
+    ui <-->|"Chat"| pod
+    pod -->|"Resolve authorized context"| cp
+    pod -->|"Search authorized documents"| kf
+    cp -.->|"Processing via Temporal"| kf
 
-### Approval of a Tool Call ≠ Approval of a Business Milestone
+    classDef fred fill:#DBEAFE,stroke:#2563EB,color:#172554
+    class ui,cp,pod,kf fred
+{{< /mermaiddiagram >}}
 
-Consider a bid team as a concrete example:
+*Figure 2. Components serving a space. Reproduced from the Weaver [system overview](https://github.com/ThalesGroup/fred/blob/weaver/docs/architecture/01-system-overview.md#11-components-serving-the-space). Blue denotes Fred components.*
 
-- Agents might review requirements or help prepare a cost analysis.
-- The application records which gate has been approved and which deliverables are ready.
+These component boundaries support a corresponding distinction in business applications:
 
-Approving a tool call (an interruption inside an agent run) and approving a bid milestone (a business decision) are fundamentally different decisions. A **durable shared dossier** is a Weaver direction we are exploring; it is a persistent, governed state owned by the workspace rather than buried inside an agent session.
+| Concept | Responsibility |
+| --- | --- |
+| Prompt | Express instructions. |
+| Skill | Package a reusable procedure and supporting resources. |
+| Capability | Expose operations through tools. |
+| Agent | Use instructions and tools to perform a task. |
+| Business application | Maintain process rules, shared progress and decisions. |
 
-### Determinism Where Possible, AI Where Valuable
+For a bid team, agents may review requirements or prepare a cost analysis while the application records approved gates and accepted deliverables. Approval of a tool call concerns an execution; approval of a gate concerns the collective business process.
 
-Skills and code execution expand how work can be performed. They do not replace access controls, tested business services, or explicit validation. Where a fixed workflow suffices, it should remain fixed. Model-driven planning earns its place where it adds enough value to justify its cost and variability.
+A **durable shared dossier** is a Weaver direction under investigation. It would retain current progress, references to contributions and human decisions independently of individual conversations. This extends Fred's existing space model; it is not presented here as a completed workflow feature.
 
-[Weaver](/releases/weaver/) continues Fred's exploration of this combination: a shared working environment, governed access to data and services, and business applications that can use AI without depending on it for every step. Its value will be demonstrated by how reliably and simply teams can carry out their work.
+The comparison places Fred within a broader convergence toward reusable expertise, explicit processes and governed execution. Fred's contribution lies in their composition within an open-source working environment. The remaining design question is how little additional machinery is needed to support collective business progress reliably. [Weaver's release compass](/releases/weaver/) records that direction.
 
 ## References & Further Reading
 

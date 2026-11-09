@@ -3,7 +3,7 @@ title: "Release Lifecycle"
 description: "How Fred versions work — branch model, release cadence, and support windows."
 summary: "One production version at a time. Two branches. Hotfixes from main. This page makes the model explicit for contributors, operators, and the core team."
 date: 2026-05-02T00:00:00+02:00
-lastmod: 2026-05-02T00:00:00+02:00
+lastmod: 2026-11-09T00:00:00+01:00
 draft: false
 weight: 30
 toc: true
@@ -16,7 +16,7 @@ seo:
 
 **Fred releases one production version at a time.**
 
-There is no long-running parallel maintenance of multiple major versions. When Swift ships, Kea enters a support window and is eventually retired. Before that window closes, every operator will have had a clear migration path and enough time to use it.
+There is no long-running parallel maintenance of multiple major versions. Swift 3.x is the current production release. Kea 1.5 is obsolete; Weaver 5.x is available to developers but remains incomplete.
 
 ## Branch model
 
@@ -49,9 +49,9 @@ Fred releases carry bird codenames:
 
 | Codename | Version | Status |
 |---|---|---|
-| **Kea** | 1.5.x | Production — current |
-| **Swift** | 3.x | Developer preview — GA summer 2026 |
-| **[Weaver](/releases/weaver/)** | 5.x | In development — release compass and roadmap |
+| **[Kea](/releases/kea/)** | 1.5.x | Obsolete |
+| **[Swift](/releases/swift/)** | 3.x | Production — stable |
+| **[Weaver](/releases/weaver/)** | 5.x | Developer preview — incomplete |
 
 The name is chosen to reflect a character of the release, not just a label.
 
@@ -63,7 +63,7 @@ The name is chosen to reflect a character of the release, not just a label.
 | Support window | Hotfixes and security patches only |
 | End of window | No further patches; operators should have migrated |
 
-The minimum support window for Kea after Swift GA is **six months**.
+See the [release overview](/releases/) for the current status of each generation.
 
 ## For contributors
 

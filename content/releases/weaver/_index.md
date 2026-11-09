@@ -1,18 +1,20 @@
 ---
 title: "Weaver 5.x"
-description: "An open-source environment for teams to work with data, tools and AI-assisted business workflows."
-summary: "Bring people, data and services together in governed spaces, with ready-to-use capabilities and business applications."
+description: "Weaver 5.x is available to developers as an incomplete preview. Explore its release compass and governed business workflows."
+summary: "An incomplete developer preview bringing people, data and services together in governed spaces."
 date: 2026-11-08T00:00:00+01:00
-lastmod: 2026-11-08T00:00:00+01:00
+lastmod: 2026-11-09T00:00:00+01:00
 draft: false
 weight: 25
 toc: false
 seo:
   title: "Weaver 5.x — Fred's release compass"
-  description: "An open-source environment for teams to work with data, tools and AI-assisted business workflows."
+  description: "Weaver 5.x is available to developers as an incomplete preview. Explore its release compass and governed business workflows."
 ---
 
-{{< bird-card image="/images/weaver_vintage_optimized.webp" name="Weaver" version="5.x" status="In development · Roadmap" >}}
+{{< bird-card image="/images/weaver_vintage_optimized.webp" name="Weaver" version="5.x" status="Developer preview — incomplete" >}}
+
+**Weaver 5.x is available to developers and remains incomplete.** The [Weaver branch](https://github.com/ThalesGroup/fred/tree/weaver) provides the current implementation and [architecture documentation](https://github.com/ThalesGroup/fred/blob/weaver/docs/architecture/README.md). [Swift 3.x](/releases/swift/) remains the production release.
 
 **Fred provides an open-source, collaborative and governed environment to work with data, use tools and carry out AI-assisted business workflows.**
 

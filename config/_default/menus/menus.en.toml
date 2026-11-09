@@ -32,9 +32,14 @@
   weight = 25
 
 [[main]]
+  name = "Roadmap"
+  url = "/docs/roadmap.html"
+  weight = 26
+
+[[main]]
   name = "Showcase"
   url = "/showcase/"
-  weight = 26
+  weight = 27
 
 [[main]]
   name = "Blog"

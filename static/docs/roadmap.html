@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fred — Roadmap</title>
-  <meta name="description" content="Fred is evolving from a collection of powerful components into a coherent open-source platform for building, evaluating, deploying, and operating agentic applications.">
+  <meta name="description" content="Fred roadmap: governed spaces, reusable skills, business applications and reliable execution. Swift is in production; Weaver is an incomplete developer preview.">
   <script src="assets/theme-sync.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -47,7 +47,7 @@
         --border: #374151;
     }
 
-    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--fred-header-h, 0px) + 2rem); }
 
     body {
       font-family: var(--font);
@@ -156,7 +156,12 @@
       margin-bottom: 0.85rem;
       max-width: 680px;
     }
-    p.muted { color: var(--muted); }
+    main a { color: var(--c); text-underline-offset: 0.16em; }
+    main a:hover { text-decoration-thickness: 2px; }
+    code { font-family: var(--mono); font-size: 0.9em; }
+    @media (max-width: 640px) {
+      main { padding: 2rem 1.25rem 3rem; }
+    }
 
     /* ─── Callout ─────────────────────────────────────────── */
     .callout {
@@ -196,46 +201,6 @@
     }
     .ov-body { color: var(--muted); line-height: 1.55; }
 
-    /* ─── Lifecycle strip ─────────────────────────────────── */
-    .lifecycle {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 1.3rem 0 0.4rem;
-      font-family: var(--mono);
-      font-size: 0.78rem;
-    }
-    .lifecycle span.step {
-      padding: 0.32rem 0.7rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--bg2);
-      color: var(--text);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .lifecycle span.arrow { color: var(--muted); }
-
-    /* ─── Tag list (primitives) ───────────────────────────── */
-    .tag-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin: 0.7rem 0 1.1rem;
-    }
-    .tag {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 3px;
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-weight: 600;
-    }
-
     /* ─── Related documents ───────────────────────────────── */
     .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; }
     @media (max-width: 540px) { .ref-grid { grid-template-columns: 1fr; } }
@@ -260,163 +225,137 @@
 
 
 <!-- ─── Sidebar navigation ─────────────────────────────────── -->
-<nav>
+<nav aria-label="Roadmap sections">
   <ul>
-    <li class="nav-section">Platform</li>
-    <li><a href="#today">Fred today</a></li>
-
-    <li class="nav-section">Next three months</li>
-    <li><a href="#journey">Developer journey</a></li>
-    <li><a href="#extensible">Extensible applications</a></li>
-    <li><a href="#distributed">Distributed execution</a></li>
-    <li><a href="#platform-guidance">Platform-wide guidance</a></li>
-
-    <li class="nav-section">Direction</li>
-    <li><a href="/releases/weaver/">Weaver 5.x compass</a></li>
+    <li class="nav-section">Context</li>
+    <li><a href="#today">Current releases</a></li>
     <li><a href="#direction">Architecture</a></li>
-    <li><a href="#success">What success looks like</a></li>
+
+    <li class="nav-section">Weaver priorities</li>
+    <li><a href="#spaces">Governed spaces</a></li>
+    <li><a href="#resources">Prompts and skills</a></li>
+    <li><a href="#extensible">Business applications</a></li>
+    <li><a href="#execution">Reliable execution</a></li>
+
+    <li class="nav-section">Further work</li>
+    <li><a href="#collective">Shared business progress</a></li>
+    <li><a href="#journey">Developer integration</a></li>
+    <li><a href="#success">Evaluation criteria</a></li>
     <li><a href="#related">Related documents</a></li>
+    <li><a href="#contribute">Contribute</a></li>
   </ul>
 </nav>
 
-<!-- ─── Main ────────────────────────────────────────────────── -->
 <main>
-
   <div class="hd">
-    <div class="hd-eyebrow">docs / ROADMAP</div>
+    <div class="hd-eyebrow">docs / ROADMAP · Updated November 9, 2026</div>
     <h1>Fred Roadmap</h1>
-    <div class="hd-lead">Fred is evolving from a collection of powerful components into a coherent open-source platform for building, evaluating, deploying, and operating agentic applications in the enterprise.</div>
-  </div>
-
-  <!-- ── Fred today ────────────────────────────────────────── -->
-  <div class="callout info">
-    <strong>Weaver 5.x has its own release compass.</strong>
-    <a href="/releases/weaver/">Read the agreed direction for Weaver</a>: bringing people, data and tools together for AI-assisted business workflows in governed spaces. The technical roadmap below remains context; its items are not automatically Weaver commitments.
+    <div class="hd-lead">Fred provides an open-source, collaborative and governed environment to work with data, use tools and carry out AI-assisted business workflows.</div>
   </div>
 
   <section id="today">
-    <h2>Fred today</h2>
-    <p>Fred already covers most of what it takes to bring an agentic system into production. You can build ReAct agents, graph-based agents, and coordinated teams of agents, each backed by a typed SDK and a runtime that handles execution, memory, and streaming. Individual capabilities — tools, models, and agent templates — are independently governed per team, with a full audit trail of every access decision. Deployment is cloud-native by default, evaluation is a first-class citizen rather than an afterthought, and the interface can be extended without touching Fred's core.</p>
+    <h2>Current releases</h2>
+    <p><a href="/releases/swift/">Swift 3.x</a> is the production release. <a href="/releases/weaver/">Weaver 5.x</a> is available to developers and remains incomplete. <a href="/releases/kea/">Kea 1.5</a> is obsolete.</p>
+    <p>Swift provides the runtime and SDK, document ingestion and retrieval, governed capabilities, evaluation and deployment tooling. Weaver consolidates these foundations around a common space model and clearer component responsibilities.</p>
+    <div class="callout info"><strong>Scope.</strong> The priorities below describe the work guiding Weaver. They are not a delivery calendar or an inventory of completed features.</div>
+  </section>
 
+  <section id="direction">
+    <h2>Architectural boundaries</h2>
+    <p>Fred connects users, data and services within governed spaces. Domain services retain responsibility for business rules and records; applications provide the interfaces and process logic needed for a particular activity.</p>
     <div class="overview-grid">
       <div class="overview-card">
-        <div class="ov-title">Agents &amp; teams</div>
-        <div class="ov-body">ReAct agents, graph-based agents, and coordinated teams of agents, authored against a typed SDK and executed by a runtime that handles memory and streaming.</div>
+        <div class="ov-title">Governance</div>
+        <div class="ov-body">The Control Plane governs resource placement, lifecycle and access.</div>
       </div>
       <div class="overview-card">
-        <div class="ov-title">Governed capabilities</div>
-        <div class="ov-body">Tools, models, and agent templates are enabled and controlled per team, so what a team can do with Fred is explicit and independently managed.</div>
+        <div class="ov-title">Knowledge processing</div>
+        <div class="ov-body">Dedicated services process documents and retrieve authorized content.</div>
       </div>
       <div class="overview-card">
-        <div class="ov-title">Security &amp; audit</div>
-        <div class="ov-body">Relationship-based access control, identity managed through Keycloak, and a complete audit trail of every authorization decision.</div>
+        <div class="ov-title">Agent execution</div>
+        <div class="ov-body">Agents use instructions and authorized tools to perform bounded tasks.</div>
       </div>
       <div class="overview-card">
-        <div class="ov-title">Cloud-native deployment</div>
-        <div class="ov-body">Kubernetes-native, with Helm charts and GitOps workflows for reproducible, auditable deployments.</div>
-      </div>
-      <div class="overview-card">
-        <div class="ov-title">Evaluation platform</div>
-        <div class="ov-body">Recurring evaluation campaigns against real agents in production, not just one-off tests at launch.</div>
-      </div>
-      <div class="overview-card">
-        <div class="ov-title">Durable workflows</div>
-        <div class="ov-body">Long-running, Temporal-backed execution already runs in several parts of the stack, built to survive restarts and recover cleanly.</div>
-      </div>
-      <div class="overview-card">
-        <div class="ov-title">UI contributions</div>
-        <div class="ov-body">Typed contribution points — side panels, chat controls, upload slots — let a capability extend the interface without forking it.</div>
-      </div>
-      <div class="overview-card">
-        <div class="ov-title">Apache 2.0</div>
-        <div class="ov-body">The full stack — runtime, SDK, and every capability described here — stays open source, top to bottom.</div>
+        <div class="ov-title">Business orchestration</div>
+        <div class="ov-body">Applications and domain services own process state, transitions and human decisions.</div>
       </div>
     </div>
-
-    <p class="muted">Individually, none of this is new. What Fred needs next is to make these pieces work together as one coherent story:</p>
-    <div class="lifecycle">
-      <span class="step">Build</span><span class="arrow">→</span>
-      <span class="step">Test</span><span class="arrow">→</span>
-      <span class="step">Evaluate</span><span class="arrow">→</span>
-      <span class="step">Deploy</span><span class="arrow">→</span>
-      <span class="step">Operate</span>
-    </div>
+    <p>Approval of an agent's tool call and approval of a business milestone are separate operations, with distinct responsibilities and records.</p>
   </section>
 
-  <!-- ── Vision ────────────────────────────────────────────── -->
   <section id="vision">
-    <h2>Our vision for the next three months</h2>
-    <div class="callout info">
-      <strong>A direction, not a delivery calendar.</strong> What follows sets out where we're putting our attention next — not a list of dated commitments.
-    </div>
+    <h2>Weaver priorities</h2>
 
-    <h3 id="journey">A coherent developer journey</h3>
-    <p>Much of what a developer needs already exists across Fred and its companion projects for evaluation and deployment. Today, using all of it together takes more effort than it should. Our priority is to make the path from a local build to an evaluated, deployed, operated agentic application coherent and well-documented end to end — with reference examples that actually run, consistent versioning, and documentation that reflects what's genuinely production-ready rather than lagging behind it. This is largely about connecting and clarifying what's already there, not inventing new layers.</p>
+    <h3 id="spaces">Governed spaces</h3>
+    <p>Consolidate ownership, access and resource lifecycle across organization, team, project and personal spaces. Documents, reusable instructions and assistant configurations need consistent rules for placement and use. A shared space does not make every conversation shared.</p>
 
-    <h3 id="extensible">Extensible agentic applications</h3>
-    <p>Third-party teams should be able to extend Fred without modifying the platform itself. Agents already work this way: an external team can author one against the SDK and register it with a running Fred deployment. We're extending that same model to processors — the components that transform and ingest data, such as turning a spreadsheet into a knowledge graph. A processor should be a self-contained, independently deliverable unit, the same way an agent already is, rather than code that has to live inside Fred's core ingestion pipeline.</p>
-    <p class="muted">The underlying idea is composability, not a growing list of new frameworks-within-the-framework. A team assembles an agentic application from independent, well-governed building blocks — agents, tools, models, processors, and UI contributions — rather than being handed a single, one-size-fits-all structure to fill in.</p>
-    <p>That same principle now extends one level further: a team can host an entire independently built product surface — its own UI, and optionally its own API — inside Fred's shell, without forking Fred or rebuilding it alongside their own release cycle. It's governed the same way everything else is, through the platform's existing team and capability model, rather than a separate plugin system bolted on top.</p>
-    <div class="callout warn">
-      <strong>Early, and deliberately gated.</strong> This exists in code today but stays off by default while the design for how a hosted application's own API gets authorized is still being worked out — the goal is to get that right before it's on by default, not to ship it first and tighten it later.
-    </div>
+    <h3 id="resources">Prompts and skills</h3>
+    <p>Build skill management on the Control Plane's space model, alongside prompts. Migrate the default skills out of <code>fred-agents</code> and align their packaging with the <a href="https://agentskills.io/specification">Agent Skills specification</a>. Prompts express instructions; skills package procedures and supporting resources; capabilities expose executable operations. Skill instructions do not grant access rights. A skills marketplace can build on this foundation later.</p>
 
-    <h3 id="distributed">Distributed and durable execution</h3>
-    <p>Fred already pairs a fast synchronous API with Temporal-backed durable workflows for ingestion and evaluation — see <a href="durable-execution.html">Durable execution</a>. The next step is extending that same pattern to agents themselves: letting a graph of agents and teams of agents cross runtime boundaries, with one agent invoking another that's deployed independently, elsewhere.</p>
-    <p>Two different needs sit behind that, and we're treating them as distinct rather than collapsing them into one mechanism. Some agent-to-agent interactions are conversational — one agent needs an answer from another within the same exchange, and that call should be fast and direct. Others are delegations of longer-running work, where the calling agent hands off a task that may take minutes or hours and needs to survive a restart, be retried, and be tracked to completion. For that second case, we're extending Fred's durable execution model so it becomes a standard option for agents, not just for ingestion and evaluation. The result is a platform where independently deployed components can genuinely collaborate as one system, whichever kind of interaction the task calls for.</p>
+    <h3 id="extensible">Business applications</h3>
+    <p>Provide practical capabilities for tasks such as working with complex spreadsheets and preparing presentations. Allow domain applications to combine these capabilities with their own interfaces and services, under the same access model. Users should be able to follow a business activity without managing its documents, instructions and progress across separate chats.</p>
 
-    <h3 id="platform-guidance">Platform-wide guidance, without breaking the platform</h3>
-    <p>Today, the only thing that sits above every agent's own instructions is a fixed, non-editable output contract. An operator running a Fred deployment has no way to add deployment-wide guidance — tone, organizational context, a standing disclaimer — without editing every agent individually. We're building a platform-wide instruction layer that renders ahead of every agent's own system prompt, paired with a second, fixed layer of baseline behavior an admin cannot accidentally break. The split is deliberate: personality and organizational context stay editable; the guarantees the platform depends on for reliable behavior do not.</p>
-    <p class="muted">Alongside this, we're working through how much of what gets sent to a model on every single call is duplicated or redundant — tool descriptions repeated across overlapping specifications, formatting instructions restated where a shorter contract would do — and cutting it down, since every token in a system prompt is paid for on every turn, not just the first.</p>
+    <h3 id="execution">Reliable, resource-conscious execution</h3>
+    <p>Use explicit workflows for predictable process rules and durable execution where work must survive interruptions. Introduce model reasoning where its contribution justifies its latency, cost and variability. Code execution is an optional capability subject to isolation, permissions and resource limits.</p>
+    <p>The same criteria apply to enterprise collaboration and smaller operational deployments: a clear interface, controlled resource use and traceable outcomes.</p>
   </section>
 
-  <!-- ── Architectural direction ──────────────────────────────── -->
-  <section id="direction">
-    <h2>Our architectural direction</h2>
-    <p>Fred is built on composable building blocks, each independently discoverable, deployable, and governed:</p>
-    <div class="tag-list">
-      <span class="tag">agent</span>
-      <span class="tag">tool</span>
-      <span class="tag">model</span>
-      <span class="tag">processor</span>
-    </div>
-    <p>This is a deliberate choice: rather than defining a single, opinionated application structure that every team must fit into, Fred lets teams compose their own applications from primitives the platform already knows how to secure, observe, and operate.</p>
-    <p class="muted">This keeps Fred open at the edges. A team's application can be as simple as one agent with a couple of tools, or as involved as a graph of agents, several processors, and a custom panel in the interface — with no lock-in to a single application shape, and no growing core just to accommodate what teams want to build on top of it.</p>
+  <section id="collective">
+    <h2>Under investigation: shared business progress</h2>
+    <p>The working hypothesis is that collective work needs a small, explicit business state and a shared place to consolidate results. This state would record the current phase, references to accepted documents, decisions and transition history, independently of individual conversations.</p>
+    <p>For a bid team, several people and agents could prepare contributions in parallel. An authorized person would approve a gate against the consolidated deliverables; the application would record that decision and advance the process.</p>
+    <p>The design must address concurrent contributions, document revisions and approval authority. Where this state belongs, and which minimal contracts Fred should provide, remain open. This is not yet a completed Weaver feature.</p>
   </section>
 
-  <!-- ── What success looks like ──────────────────────────────── -->
+  <section id="journey">
+    <h2>Developer integration</h2>
+    <p>Maintain a documented path from a local extension to evaluation, deployment and operation. Agents, tools, document processors and application interfaces should integrate through explicit contracts, with examples that demonstrate access boundaries as well as successful execution.</p>
+
+    <h3 id="distributed">Distributed execution</h3>
+    <p>Keep direct agent calls distinct from durable task delegation. Select the execution mechanism according to duration, recovery and tracking requirements. Distribution should serve a concrete integration need.</p>
+
+    <h3 id="platform-guidance">Platform guidance</h3>
+    <p>Separate operator-editable guidance from platform-owned instructions, and reduce redundant model context. Authorization and business invariants must be enforced by services; prompt wording alone cannot guarantee them.</p>
+  </section>
+
   <section id="success">
-    <h2>What success looks like</h2>
-    <p>Success is an external developer who can pick up Fred, build an agent or a small team of agents against the SDK, add a processor to handle their own data source, evaluate the result against real scenarios, deploy it through the standard pipeline, and operate it with the same visibility the platform gives every other team — all without forking Fred or waiting on its core team. Fred stops being a framework you run agents on, and becomes the platform a team builds, ships, and operates its own agentic application with.</p>
-
-    <div class="callout ok">
-      <strong>This roadmap is shaped by the teams building on Fred.</strong> Fred stays Apache 2.0, top to bottom. If you're evaluating it, extending it, or see this direction differently, the conversation is open on <a href="https://github.com/ThalesGroup/fred" target="_blank" rel="noopener">GitHub</a>.
-    </div>
+    <h2>Evaluation criteria</h2>
+    <p>Assess each addition against a concrete business activity: task completion and output quality, clarity of shared progress, correct access enforcement, recovery after interruption, latency and resource consumption. Extensions should integrate without modifying Fred's core.</p>
+    <p>Fred remains an open-source foundation for business assistance, consuming and connecting domain services. A general-purpose ERP and a universal business workflow engine are outside its scope.</p>
   </section>
 
-  <!-- ── Related ────────────────────────────────────────── -->
   <section id="related">
     <h2>Related documents</h2>
     <div class="ref-grid">
+      <a class="ref-card" href="/releases/weaver/">
+        <div class="ref-topic">Weaver release compass →</div>
+        <div class="ref-path">Intent and current release status</div>
+      </a>
+      <a class="ref-card" href="https://github.com/ThalesGroup/fred/blob/weaver/docs/architecture/README.md">
+        <div class="ref-topic">Weaver architecture →</div>
+        <div class="ref-path">Spaces, resources and component responsibilities</div>
+      </a>
       <a class="ref-card" href="durable-execution.html">
         <div class="ref-topic">Durable execution →</div>
-        <div class="ref-path">the Temporal-backed pattern this roadmap extends</div>
-      </a>
-      <a class="ref-card" href="architecture.html">
-        <div class="ref-topic">Platform Architecture →</div>
-        <div class="ref-path">where the runtime and workers fit today</div>
+        <div class="ref-path">Existing Temporal-backed execution patterns</div>
       </a>
       <a class="ref-card" href="what-is-fred.html">
         <div class="ref-topic">What is Fred? →</div>
-        <div class="ref-path">the non-technical overview</div>
+        <div class="ref-path">Platform overview</div>
       </a>
     </div>
+  </section>
+
+  <section id="contribute">
+    <h2>An invitation to contribute</h2>
+    <p>We welcome contributions from researchers, students and industrial teams. Exploring use cases on an open-source foundation, with real data and systems already in production, offers a rich setting for connecting research questions with operational experience.</p>
+    <p>Bring a use case, develop a capability, share an evaluation or document what worked and what did not. These contributions help shape both Fred and our understanding of AI-assisted work. <a href="https://github.com/ThalesGroup/fred">Join us on GitHub</a> to start the conversation.</p>
   </section>
 
   <footer>
     Fred — Apache 2.0. <a href="https://github.com/ThalesGroup/fred" target="_blank" rel="noopener">github.com/ThalesGroup/fred</a>
   </footer>
-
 </main>
 </body>
 </html>
