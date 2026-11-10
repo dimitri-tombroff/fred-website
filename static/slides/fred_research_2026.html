@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Bilan R&D 2026 de Fred : cinq axes d'expérimentation pour les applications agentiques en production, et les perspectives Weaver pour 2027.">
+  <title>Fred — Bilan R&amp;D 2026</title>
+  <link rel="stylesheet" href="assets/research-2026.css">
+  <script src="assets/research-2026.js" defer></script>
+</head>
+<body>
+<div id="progress" aria-hidden="true"></div>
+<button id="prevzone" class="navbtn" aria-label="Diapositive précédente"></button>
+<button id="nextzone" class="navbtn" aria-label="Diapositive suivante"></button>
+
+<section class="slide cover active" aria-label="1. Bilan R&D 2026">
+  <p class="kicker"><span>Travaux de recherche et développement</span><span class="theme-detail">12 novembre 2026</span></p>
+  <div class="rule" aria-hidden="true"></div>
+  <h1>Fred<br>Bilan R&amp;D 2026</h1>
+  <p class="sub">Mettre les applications agentiques<br>à l’épreuve des usages réels.</p>
+  <p class="context">Un socle open source pour expérimenter ensemble<br>les données, les outils, les droits et les parcours métier.</p>
+  <p class="release">Swift · travaux 2026 &nbsp; / &nbsp; Weaver · perspectives 2027</p>
+  <aside class="speaker-notes" hidden>
+    <h2>1 · Objet des travaux — 20 secondes</h2>
+    <p>Fred est un socle open source pour développer et exploiter des applications assistées par l’IA. Notre terrain de recherche est leur fonctionnement dans des usages réels : avec les documents, les droits et les contraintes du métier. Je présente cinq axes étudiés en 2026, puis les questions qui orientent la prochaine version, Weaver.</p>
+    <h3>Repères</h3>
+    <p><a href="https://site.fredlab.dev/releases/swift/">Swift : version en production</a> · <a href="https://site.fredlab.dev/releases/weaver/">Weaver : version en cours de développement</a>. Les perspectives 2027 ne sont pas présentées comme des résultats acquis en 2026.</p>
+  </aside>
+</section>
+
+<section class="slide data-context" aria-label="2. Données complexes : préserver le contexte">
+  <p class="kicker"><span>01 · Données complexes</span><span class="theme-detail">Le problème</span></p>
+  <h2>Un montant dépend de son contexte</h2>
+  <p class="sub">« Quel montant correspond au scénario retenu, et d’où vient-il ? »</p>
+  <div class="context-diagram">
+    <figure class="workbook-example">
+      <div class="workbook-paper">
+        <p>Budget prévisionnel <span>en M€</span></p>
+        <table aria-label="Budget fictif illustrant une valeur reliée à un scénario, une année et une unité">
+          <thead><tr><th>Scénario</th><th>2025</th><th>2026</th></tr></thead>
+          <tbody><tr><th>Initial</th><td>0,9</td><td>1,0</td></tr><tr><th>Retenu</th><td>1,0</td><td class="selected-value">1,2</td></tr></tbody>
+        </table>
+        <div class="sheet-name">Budget.xlsx · Prévisions</div>
+      </div>
+      <figcaption>Exemple illustratif.</figcaption>
+    </figure>
+    <span class="arrow context-arrow" aria-hidden="true">→</span>
+    <div class="context-value">
+      <div class="amount">1,2 <span>M€</span></div>
+      <dl><div><dt>Période</dt><dd>2026</dd></div><div><dt>Scénario</dt><dd>Retenu</dd></div><div><dt>Origine</dt><dd>Classeur · feuille · cellule</dd></div></dl>
+    </div>
+  </div>
+  <p class="punch">Préserver les relations et l’origine des données.</p>
+  <aside class="speaker-notes" hidden>
+    <h2>2 · Problème et verrou — 20 secondes</h2>
+    <p>Un analyste veut retrouver un montant dans un dossier financier et vérifier son origine. Ce montant ne prend sens qu’avec sa période, son unité et son scénario. Le problème commence avant la génération : comment transmettre ces relations à l’agent sans les perdre lors de l’extraction ?</p>
+    <h3>Contexte et sources</h3>
+    <p>Le dossier financier est une situation illustrative, pas le compte rendu d’une campagne utilisateur. Les difficultés de structure, de provenance et de représentation sont décrites dans <a href="https://site.fredlab.dev/blog/excel-but-agent-ready-how-fred-turns-spreadsheets-into-queryable-knowledge/">Excel, but Agent-Ready</a> et <a href="https://site.fredlab.dev/blog/rich-mode-extending-rag-with-direct-visual-evidence/">Rich Mode: Extending RAG with Direct Visual Evidence</a>.</p>
+  </aside>
+</section>
+
+<section class="slide data-results" aria-label="3. Données complexes : réalisations et résultats">
+  <p class="kicker"><span>01 · Données complexes</span><span class="theme-detail">Réalisations et résultats</span></p>
+  <h2>Exploiter les tables et les preuves visuelles</h2>
+  <div class="data-paths">
+    <div class="path"><div class="path-item"><b>Classeurs Excel</b></div><span class="arrow" aria-hidden="true">→</span><div class="path-item"><b>Tables + requêtes SQL</b></div><span class="arrow" aria-hidden="true">→</span><div class="path-item"><b>Références aux cellules</b></div></div>
+    <div class="path"><div class="path-item"><b>PDF et figures</b></div><span class="arrow" aria-hidden="true">→</span><div class="path-item"><b>Images dans le contexte</b></div><span class="arrow" aria-hidden="true">→</span><div class="path-item"><b>Réponses étayées</b></div></div>
+  </div>
+  <figure class="grounding-results">
+    <figcaption>Ancrage des réponses dans l’image <span>Score moyen / 2</span></figcaption>
+    <div class="score-row"><span>Images originales</span><div class="score-track"><div class="score-bar direct-score"></div></div><strong>1,93</strong></div>
+    <div class="score-row"><span>Descriptions seules</span><div class="score-track"><div class="score-bar caption-score"></div></div><strong>1,47</strong></div>
+  </figure>
+  <p class="note score-scope">Essai interne · 10 images · 30 questions par méthode · évaluation manuelle.</p>
+  <div class="research-positioning"><p class="label">Positionnement dans l’état de l’art</p><p>Tables structurées et preuves visuelles : deux voies pour enrichir la recherche documentaire.</p><p class="references">Repères : <a href="https://arxiv.org/abs/2506.10380" target="_blank" rel="noopener noreferrer">TableRAG — EMNLP 2025</a> · <a href="https://arxiv.org/abs/2407.01449" target="_blank" rel="noopener noreferrer">ColPali — ICLR 2025</a></p></div>
+  <aside class="speaker-notes" hidden>
+    <h2>3 · Travaux et enseignements — 30 secondes</h2>
+    <p>Fred reconstruit les tables pour les interroger en SQL et conserve les références aux cellules. Pour les documents visuels, il peut fournir directement les images à l’agent. L’essai interne montre un meilleur ancrage des réponses dans l’image : 1,93 contre 1,47 sur deux, sur trente questions par méthode. La recherche explore aussi ces deux voies, illustrées par TableRAG et ColPali. Leurs méthodes et leurs benchmarks restent distincts de ceux de Fred.</p>
+    <h3>Sources et portée</h3>
+    <ul>
+      <li><a href="https://site.fredlab.dev/blog/excel-but-agent-ready-how-fred-turns-spreadsheets-into-queryable-knowledge/">Excel, but Agent-Ready</a> : reconstruction, couverture, résidus, provenance et limites. Les valeurs sont conservées, mais pas la logique des formules ni les macros. L’article ne suffit pas à établir une robustesse générale sur les classeurs métier.</li>
+      <li><a href="https://site.fredlab.dev/blog/rich-mode-extending-rag-with-direct-visual-evidence/">Rich Mode: Extending RAG with Direct Visual Evidence</a> : 10 images, 30 questions par méthode, 60 réponses évaluées manuellement. Ce petit échantillon ne démontre pas une supériorité générale.</li>
+      <li>Repère scientifique : <a href="https://arxiv.org/abs/2407.01449">ColPali</a>, sur la recherche documentaire visuelle. Fred n’est pas ici évalué contre ColPali.</li>
+    </ul>
+    <h3>Positionnement et lecture du graphique</h3>
+    <p>Les barres reprennent le score moyen « Grounding » de l’essai interne : 1,93 pour les images originales et 1,47 pour les descriptions, sur une échelle de 0 à 2. Elles ne représentent ni des pourcentages de réussite ni une comparaison avec les publications citées.</p>
+    <p><a href="https://arxiv.org/abs/2506.10380">TableRAG — Yu, Jian et Chen, EMNLP 2025</a> combine recherche textuelle et manipulations SQL pour des documents hétérogènes. <a href="https://arxiv.org/abs/2407.01449">ColPali — ICLR 2025</a> apprend des représentations d’images de pages pour la recherche documentaire. Ces travaux situent deux enjeux communs à Fred ; Fred n’implémente pas ces méthodes et n’a pas été comparé à elles ici.</p>
+  </aside>
+</section>
+
+<section class="slide frugality-problem" aria-label="4. Frugalité : quels contenus interpréter ?">
+  <p class="kicker"><span>02 · Frugalité</span><span class="theme-detail">Le problème</span></p>
+  <h2>Quelles images faut-il faire interpréter ?</h2>
+  <p class="sub">Un même PDF contient des informations de nature différente.</p>
+  <div class="document-examples">
+    <figure>
+      <div class="document-sample">
+        <svg viewBox="0 0 320 210" role="img" aria-label="Exemple schématique de texte scanné : une procédure de contrôle en deux étapes.">
+          <rect x="27" y="15" width="266" height="180" rx="3" fill="#f0eee8"/>
+          <g fill="#344253" font-family="Segoe UI,system-ui,sans-serif">
+            <text x="48" y="48" font-size="12" letter-spacing="2">PROCÉDURE</text>
+            <text x="48" y="78" font-size="18" font-weight="650">Contrôle du capteur</text>
+            <text x="48" y="115" font-size="15">1. Relever la tension.</text>
+            <text x="48" y="144" font-size="15">2. Comparer au seuil.</text>
+          </g>
+          <path d="M48 91H268 M48 169H232 M48 176H251" stroke="#b8bdbf" stroke-width="2"/>
+        </svg>
+      </div>
+      <figcaption>Texte scanné</figcaption>
+    </figure>
+    <figure>
+      <div class="document-sample">
+        <svg viewBox="0 0 320 210" role="img" aria-label="Exemple schématique d’un même logo répété sur trois pages.">
+          <g fill="#f0eee8" stroke="#c5c9cc" stroke-width="1.5">
+            <rect x="70" y="15" width="213" height="140" rx="3"/>
+            <rect x="51" y="35" width="213" height="140" rx="3"/>
+            <rect x="32" y="55" width="213" height="140" rx="3"/>
+          </g>
+          <g fill="#667c99" font-family="Segoe UI,system-ui,sans-serif" font-size="14" font-weight="650">
+            <path d="M247 23l11 6v12l-11 6-11-6V29Z M228 43l11 6v12l-11 6-11-6V49Z M60 78l15 9v17l-15 9-15-9V87Z"/>
+            <text x="87" y="101" letter-spacing="3">LOGO</text>
+          </g>
+          <path d="M49 135H218 M49 146H198 M49 157H211 M49 168H179" stroke="#c0c5c8" stroke-width="3"/>
+        </svg>
+      </div>
+      <figcaption>Logo répété</figcaption>
+    </figure>
+    <figure>
+      <div class="document-sample">
+        <svg viewBox="0 0 320 210" role="img" aria-label="Exemple schématique de relations entre un capteur, un traitement et deux sorties : mesure et alerte.">
+          <defs><marker id="sample-flow-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#526b84"/></marker></defs>
+          <rect x="15" y="15" width="290" height="180" rx="3" fill="#f0eee8"/>
+          <g fill="none" stroke="#526b84" stroke-width="2" marker-end="url(#sample-flow-arrow)">
+            <path d="M105 71H133"/><path d="M190 89V116H91V139"/><path d="M190 89V116H238V139"/>
+          </g>
+          <g fill="#e0e7eb" stroke="#8297a8" stroke-width="1.5">
+            <rect x="31" y="51" width="74" height="39" rx="4"/><rect x="135" y="51" width="113" height="39" rx="4"/>
+            <rect x="52" y="141" width="78" height="33" rx="4"/><rect x="202" y="141" width="72" height="33" rx="4"/>
+          </g>
+          <g fill="#344253" font-family="Segoe UI,system-ui,sans-serif" font-size="14" text-anchor="middle">
+            <text x="68" y="76">Capteur</text><text x="191" y="76">Traitement</text><text x="91" y="163">Mesure</text><text x="238" y="163">Alerte</text>
+          </g>
+        </svg>
+      </div>
+      <figcaption>Schéma technique</figcaption>
+    </figure>
+  </div>
+  <p class="note example-disclosure">Exemples schématiques.</p>
+  <p class="punch">Réduire les appels au modèle sans écarter une information essentielle.</p>
+  <aside class="speaker-notes" hidden>
+    <h2>4 · Frugalité : le problème — 20 secondes</h2>
+    <p>Ces trois images ne demandent pas le même traitement. Le texte peut être lu par reconnaissance de caractères ; un logo peut se répéter sur des dizaines de pages ; un schéma peut porter des relations essentielles. Nous cherchons à sélectionner les contenus qui nécessitent une interprétation, sans perdre une information utile.</p>
+    <h3>Contexte et source</h3>
+    <p>Les trois visuels sont des illustrations schématiques, pas des extraits du corpus évalué. <a href="https://site.fredlab.dev/blog/ingestion-shouldnt-be-a-choice/">Ingestion Shouldn’t Be a Choice</a> décrit les coûts du traitement PDF et les choix d’extraction, de reconnaissance de caractères et de sélection des images. Le filtrage doit être évalué dans le contexte des tâches métier ; une catégorie de contenu n’est pas universellement dispensable.</p>
+  </aside>
+</section>
+
+<section class="slide frugality-results" aria-label="5. Frugalité : réalisations, résultats et état de l’art">
+  <p class="kicker"><span>02 · Frugalité</span><span class="theme-detail">Réalisations et résultats</span></p>
+  <h2>Réduire le recours aux modèles dans l’analyse documentaire</h2>
+  <p class="sub">Une chaîne de traitement PDF intégrée à Fred.</p>
+  <div class="path">
+    <div class="path-item"><b>Extraction / OCR</b><span>Lire le contenu accessible</span></div>
+    <span class="arrow" aria-hidden="true">→</span>
+    <div class="path-item"><b>Sélection par règles</b><span>Retenir les images à interpréter</span></div>
+    <span class="arrow" aria-hidden="true">→</span>
+    <div class="path-item"><b>Modèle si nécessaire</b><span>Interpréter les cas retenus</span></div>
+  </div>
+  <div class="metrics">
+    <div class="metric">
+      <div class="value">≈ ×10</div>
+      <p>Extraction plus rapide</p>
+      <span>Sur les PDF les plus lourds étudiés</span>
+    </div>
+    <div class="metric">
+      <div class="value">&gt; 90 %</div>
+      <p>D’appels au modèle de vision évités</p>
+      <span>Souvent, sur les documents riches en images</span>
+    </div>
+  </div>
+  <p class="note">Comparaison interne avec l’ancien traitement PDF ; gains variables selon les documents.</p>
+  <div class="research-positioning">
+    <p class="label">Positionnement dans l’état de l’art</p>
+    <p>Routage sélectif et cascades de traitements, appliqués ici à l’ingestion documentaire.</p>
+    <p class="references">Repères : <a href="https://arxiv.org/abs/2305.05176" target="_blank" rel="noopener noreferrer">FrugalGPT (2023)</a> · <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener noreferrer">Anthropic — Routing (2024)</a></p>
+  </div>
+  <aside class="speaker-notes" hidden>
+    <h2>5 · Frugalité : réalisations et résultats — 30 secondes</h2>
+    <p>Fred combine extraction, reconnaissance de caractères et sélection par règles pour réserver le modèle aux cas retenus. La comparaison interne rapporte une accélération d’environ dix sur les PDF les plus lourds et souvent plus de quatre-vingt-dix pour cent d’appels vision évités sur les documents riches en images. Ces travaux partagent les principes de routage et de cascade explorés dans la recherche et les architectures agentiques. Notre réalisation les concrétise dans une chaîne documentaire intégrée.</p>
+    <h3>Résultats : source et portée</h3>
+    <p><a href="https://site.fredlab.dev/blog/ingestion-shouldnt-be-a-choice/">Ingestion Shouldn’t Be a Choice</a>. Comparaison interne entre ancien et nouveau traitement PDF sur un échantillon décrit comme représentatif. L’article donne des ordres de grandeur, sans protocole complet ni taille du corpus. Les gains d’exécution sont documentés ; le maintien de la qualité doit être évalué conjointement. Ces chiffres ne mesurent ni un gain global de Fred ni une baisse équivalente de la consommation énergétique.</p>
+    <h3>Positionnement : principes communs, réalisations distinctes</h3>
+    <ul>
+      <li><a href="https://arxiv.org/abs/2305.05176">FrugalGPT — Chen, Zaharia et Zou (2023)</a> étudie notamment des cascades apprises de modèles de langage pour arbitrer coût et qualité. Fred combine ici OCR, règles et modèle de vision ; il ne reproduit pas cette méthode.</li>
+      <li><a href="https://www.anthropic.com/research/building-effective-agents">Building Effective Agents — Anthropic (2024), section Routing</a> décrit le routage des entrées vers des traitements spécialisés, avec une classification pouvant être traditionnelle ou fondée sur un modèle.</li>
+    </ul>
+    <p>Le bandeau indique une convergence de principes architecturaux. Il ne revendique ni filiation historique, ni équivalence de qualité, ni supériorité de performances. Les résultats de Fred ne proviennent pas d’un benchmark commun avec ces travaux.</p>
+  </aside>
+</section>
+
+<section class="slide access-results" aria-label="6. Droits d'accès : réalisation et positionnement">
+  <p class="kicker">03 · Accès aux données et délégation</p>
+  <h2>Conserver les droits au fil de l’exécution</h2>
+  <p class="sub">Un agent agit pour une personne, dans son périmètre d’accès.</p>
+  <div class="path">
+    <div class="path-item"><b>Identité et droits</b><span>Contrôlés par les services</span></div>
+    <span class="arrow" aria-hidden="true">→</span>
+    <div class="path-item"><b>Données autorisées</b><span>Seules tables accessibles</span></div>
+    <span class="arrow" aria-hidden="true">→</span>
+    <div class="path-item"><b>Requête de l’agent</b><span>SQL contrôlé, en lecture seule</span></div>
+  </div>
+  <div class="delivered-pair">
+    <div><span class="label">Réalisé · données</span><h3>Filtrer avant de charger</h3><p>Les droits déterminent les tables de la session SQL.</p></div>
+    <div><span class="label">Réalisé · délégation</span><h3>Contrôler chaque appel</h3><p>L’agent travaille au nom de l’utilisateur.</p></div>
+  </div>
+  <div class="research-positioning"><p class="label">Positionnement dans l’état de l’art</p><p>Des autorisations fines appliquées aux ressources et aux appels des agents.</p><p class="references">Repères : <a href="https://research.google/pubs/zanzibar-googles-consistent-global-authorization-system/" target="_blank" rel="noopener noreferrer">Google — Zanzibar (2019)</a> · <a href="https://openfga.dev/docs/modeling/agents/overview" target="_blank" rel="noopener noreferrer">OpenFGA — Authorization for Agents (2026)</a></p></div>
+  <aside class="speaker-notes" hidden>
+    <h2>6 · Gouvernance — 50 secondes</h2>
+    <p>Le troisième axe concerne les droits. Dès qu’un agent consulte des données et appelle plusieurs services, il faut préserver le périmètre de la personne pour laquelle il agit. Pour les tableurs, Fred vérifie les autorisations avant de charger les fichiers dans une session SQL isolée. Les requêtes sont limitées à la lecture des relations autorisées. L’application Synthia explore un autre cas : elle lance un agent au nom de l’utilisateur, sans détenir ses identifiants dans son interface ; les services continuent de contrôler les appels. Le sujet ouvert est la composition de ces garanties à travers plusieurs outils et délégations. Cela ne constitue pas une protection générale contre les instructions malveillantes contenues dans les documents.</p>
+    <h3>Sources et portée</h3>
+    <ul>
+      <li><a href="https://site.fredlab.dev/blog/tabular-data-in-fred-rebac-scoped-parquet-s3-and-duckdb/">Tabular Data in Fred: ReBAC-Scoped Parquet, S3 and DuckDB</a> : autorisation avant montage, validation des requêtes et isolation.</li>
+      <li><a href="https://site.fredlab.dev/blog/quiz-app/">Synthia Quiz</a> : délégation et contrôles au fil des appels.</li>
+      <li>Repère scientifique : <a href="https://arxiv.org/abs/2406.13352">AgentDojo</a> étudie les injections d’instructions via les outils. Ce risque est distinct du contrôle d’accès. Aucun résultat de Fred sur ce banc d’essai n’est revendiqué.</li>
+    </ul>
+    <h3>Positionnement</h3>
+    <p><a href="https://research.google/pubs/zanzibar-googles-consistent-global-authorization-system/">Zanzibar</a> est une référence pour les systèmes d’autorisation par relations. Fred utilise OpenFGA. La documentation <a href="https://openfga.dev/docs/modeling/agents/overview">Authorization for Agents</a>, mise à jour en septembre 2026, traite du périmètre des agents, du RAG et des outils. Ce rapprochement porte sur l’autorisation appliquée par les services ; il ne prouve ni une sécurité générale ni l’implémentation dans Fred de toutes les variantes documentées par OpenFGA.</p>
+  </aside>
+</section>
+
+<section class="slide evaluation-results" aria-label="7. Évaluation continue : réalisation et positionnement">
+  <p class="kicker">04 · Évaluation continue</p>
+  <h2>Rendre la qualité observable dans la durée</h2>
+  <p class="sub">Des campagnes intégrées à Fred pour suivre les agents au fil des évolutions.</p>
+  <div class="evaluation-evidence">
+    <div class="evaluation-steps">
+      <div><span>01</span><div><h3>Rejouer</h3><p>Des campagnes planifiées</p></div></div>
+      <div><span>02</span><div><h3>Mesurer</h3><p>Des critères propres au métier</p></div></div>
+      <div><span>03</span><div><h3>Examiner</h3><p>Des résultats expliqués par cas</p></div></div>
+    </div>
+    <figure><img src="assets/research-2026-evaluation.webp" alt="Campagne Fred : scores par critère, dont un critère métier, et accès aux cas évalués." width="2178" height="1177"><figcaption>Exemple sur deux cas ; ces scores ne mesurent pas la performance globale de Fred.</figcaption></figure>
+  </div>
+  <div class="research-positioning"><p class="label">Positionnement dans l’état de l’art</p><p>Évaluation des réponses documentaires et fiabilité des tâches agentiques.</p><p class="references">Repères : <a href="https://arxiv.org/abs/2309.15217" target="_blank" rel="noopener noreferrer">Ragas (2023)</a> · <a href="https://arxiv.org/abs/2406.12045" target="_blank" rel="noopener noreferrer">τ-bench (2024)</a></p></div>
+  <aside class="speaker-notes" hidden>
+    <h2>7 · Évaluation — 50 secondes</h2>
+    <p>Le quatrième axe est l’évaluation dans la durée. Une démonstration réussie renseigne peu sur le comportement après un changement de modèle, de prompt ou de documentation. Fred permet de rejouer et de planifier des campagnes, avec des critères génériques et des critères métier décrits en langage naturel. L’objectif est de rendre les écarts visibles et de pouvoir examiner chaque cas. La capture illustre le dispositif, pas une performance globale : elle ne porte que sur deux exemples. L’incertitude porte aussi sur la mesure elle-même. Lorsque le juge est un modèle, il faut étudier sa stabilité et son accord avec l’évaluation humaine, puis mesurer la répétabilité des tâches.</p>
+    <h3>Sources et portée</h3>
+    <ul>
+      <li><a href="https://site.fredlab.dev/blog/continuous-evaluation-made-visible-fred-agent-evaluator-in-action/">Continuous Evaluation, Made Visible</a> : campagnes, critères personnalisés et inspection des résultats. Capture reproduite depuis l’article.</li>
+      <li>Repère scientifique : <a href="https://arxiv.org/abs/2406.12045">τ-bench</a>, qui évalue des interactions avec outils et règles métier, et leur fiabilité sur plusieurs exécutions. Le deck ne revendique pas de résultat Fred sur ce benchmark.</li>
+    </ul>
+    <h3>Positionnement</h3>
+    <p><a href="https://arxiv.org/abs/2309.15217">Ragas</a> traite de l’évaluation de la recherche et de la génération, notamment de la fidélité au contexte. <a href="https://arxiv.org/abs/2406.12045">τ-bench</a> évalue des interactions avec outils et règles métier ainsi que leur répétabilité. Fred fournit ici une instrumentation et des campagnes intégrées ; le deck ne prétend pas que Fred exécute ces benchmarks ou reproduit leurs protocoles.</p>
+  </aside>
+</section>
+
+<section class="slide business-results" aria-label="8. Applications métier : réalisation et positionnement">
+  <p class="kicker">05 · Agents et applications métier</p>
+  <h2>L’agent rédige, l’application contrôle</h2>
+  <p class="sub">Synthia Quiz : les documents d’une équipe deviennent des questionnaires.</p>
+  <div class="path">
+    <div class="path-item"><b>Agent</b><span>Rédige et révise les questions</span></div>
+    <span class="arrow" aria-hidden="true">→</span>
+    <div class="path-item"><b>Règles de l’API</b><span>Vérifient format et quantité</span></div>
+    <span class="arrow" aria-hidden="true">→</span>
+    <div class="path-item"><b>Application</b><span>Conserve et présente les quiz</span></div>
+  </div>
+  <div class="business-evidence">
+    <div class="initial-incident"><p class="label">Incident de départ</p><div>30 <span>→</span> 54</div><p>Questions demandées / produites<br>par un agent antérieur</p></div>
+    <div class="implemented-rules"><p class="label">Désormais dans l’application</p><p><span aria-hidden="true">✓</span> Dépassement du nombre demandé refusé</p><p><span aria-hidden="true">✓</span> Réponse correcte présente dans les choix</p><p><span aria-hidden="true">✓</span> Suppression confirmée par une personne</p></div>
+  </div>
+  <div class="research-positioning"><p class="label">Positionnement dans l’état de l’art</p><p>Des règles métier explicites autour du raisonnement et de la génération.</p><p class="references">Repères : <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener noreferrer">Anthropic — Workflows &amp; agents (2024)</a> · <a href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/generative-orchestration" target="_blank" rel="noopener noreferrer">Microsoft — Copilot Studio</a></p></div>
+  <aside class="speaker-notes" hidden>
+    <h2>8 · Applications métier — 50 secondes</h2>
+    <p>Le cinquième axe est la frontière entre l’agent et l’application métier. Synthia produit des questionnaires à partir des documents d’une équipe. Un agent antérieur, auquel on demandait trente questions par un prompt, en avait produit cinquante-quatre. Dans l’application, les paramètres deviennent des données explicites et l’API contrôle les invariants : pas plus de questions que demandé, et la bonne réponse doit appartenir aux choix proposés. L’agent rédige et révise ; l’application conserve les résultats et ses règles. La suppression nécessite une confirmation humaine. Cette séparation rend le comportement plus maîtrisable. Une limite importante demeure : citer un passage ne prouve pas encore automatiquement qu’il justifie la réponse.</p>
+    <h3>Source et portée</h3>
+    <p><a href="https://site.fredlab.dev/blog/quiz-app/">Synthia: Turning a Team’s Documents into Knowledge, Starting with Quizzes</a>. Le cas 30 → 54 est un incident rapporté, pas un taux d’erreur mesuré. Les réponses des participants et leurs tableaux de bord restent à développer dans l’état décrit par l’article. La confirmation d’une suppression n’est pas assimilée à un processus métier complet de validation.</p>
+    <h3>Positionnement</h3>
+    <p><a href="https://www.anthropic.com/research/building-effective-agents">Anthropic</a> distingue les workflows définis par du code des agents qui dirigent dynamiquement leur exécution. <a href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/generative-orchestration">Microsoft Copilot Studio</a> distingue les couches déterministe, hybride et générative. Fred concrétise cette séparation dans Synthia : l’API porte les invariants, l’agent rédige et la personne confirme les suppressions. Cela ne constitue pas une comparaison fonctionnelle complète de plateformes.</p>
+  </aside>
+</section>
+
+<section class="slide weaver-outlook" aria-label="9. Perspectives Weaver 2027">
+  <p class="kicker"><span>Perspectives 2027 · Weaver</span><span class="theme-detail">En développement</span></p>
+  <h2>Passer au dossier métier partagé</h2>
+  <p class="sub">Prolonger le socle Swift en production par un travail collectif durable.</p>
+  <div class="horizon">
+    <article><p class="label">Gouvernance</p><h3>Espaces</h3><p>Organisations<br>Équipes · projets</p></article>
+    <article><p class="label">Réutilisation</p><h3>Skills et outils</h3><p>Procédures partagées<br>Capacités autorisées</p></article>
+    <article><p class="label">Collaboration</p><h3>Dossiers durables</h3><p>Contributions réunies<br>Décisions conservées</p></article>
+  </div>
+  <div class="bid-journey"><span>Équipe bid</span><span aria-hidden="true">→</span><span>Dossier partagé</span><span aria-hidden="true">→</span><span>Gates validées</span></div>
+  <p class="note">Parcours à explorer ; la version Weaver reste incomplète.</p>
+  <p class="punch">Un terrain ouvert aux partenaires académiques et industriels.</p>
+  <aside class="speaker-notes" hidden>
+    <h2>9 · Perspectives — 30 secondes</h2>
+    <p>Swift constitue notre socle en production pour les travaux de 2026. Weaver, en développement, prépare la suite : des droits cohérents dans les espaces de travail, des procédures réutilisables, et des dossiers métier qui durent au-delà des conversations. Pour une équipe bid, l’hypothèse est qu’un état métier explicite et des points de validation suffisent à organiser les contributions parallèles, sans confier le processus entier à un agent. C’est ce terrain d’expérimentation sur des usages et des données réels que nous ouvrons aux partenaires académiques et industriels.</p>
+    <h3>Sources et statut</h3>
+    <p><a href="https://site.fredlab.dev/blog/fred-weaver-direction/">Fred Weaver : orientations architecturales</a> · <a href="https://site.fredlab.dev/docs/roadmap.html">Roadmap</a> · <a href="https://agentskills.io/specification">Agent Skills : spécification</a>. Les espaces et skills font l’objet de travaux en cours ; le dossier métier partagé est une hypothèse à éprouver, pas une fonctionnalité annoncée comme livrée. La standardisation des skills ne définit pas à elle seule les permissions ni l’orchestration métier.</p>
+  </aside>
+</section>
+
+<div id="navhint">← → naviguer &nbsp; · &nbsp; F plein écran</div>
+<div id="counter" aria-live="polite">1 / 9</div>
+<button id="notes-toggle" aria-haspopup="dialog" aria-controls="notes">N · Notes et sources</button>
+<dialog id="notes" aria-label="Notes orales et sources">
+  <button id="close-notes" autofocus>Fermer · Échap</button>
+  <div id="notes-content"></div>
+</dialog>
+</body>
+</html>

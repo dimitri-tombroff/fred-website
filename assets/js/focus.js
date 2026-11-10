@@ -1,0 +1,118 @@
+// Diagram focus controls.
+let focusedMermaidWrapper = null;
+const MERMAID_FOCUS_LABEL = '🔍 Focus';
+const MERMAID_CLOSE_LABEL = '✕ Close';
+
+function setMermaidButtonState(wrapper, isFocused) {
+  const button = wrapper.querySelector('.mermaid-focus-toggle');
+  if (!button) return;
+  button.textContent = isFocused ? MERMAID_CLOSE_LABEL : MERMAID_FOCUS_LABEL;
+  button.setAttribute('aria-expanded', isFocused ? 'true' : 'false');
+}
+
+function applyMermaidFocusStyles(wrapper) {
+  if (!wrapper.dataset.baseStyle) wrapper.dataset.baseStyle = wrapper.getAttribute('style') || '';
+  const baseStyle = wrapper.dataset.baseStyle.trim();
+  const basePrefix = baseStyle ? `${baseStyle}; ` : '';
+  wrapper.classList.add('focused');
+  wrapper.style.cssText = `${basePrefix}position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: white; z-index: 2000; padding: 2rem; overflow: auto; display: flex; align-items: center; justify-content: center;`;
+}
+
+function clearMermaidFocusStyles(wrapper) {
+  wrapper.classList.remove('focused');
+  wrapper.setAttribute('style', wrapper.dataset.baseStyle || '');
+}
+
+function openMermaidDiagram(wrapper) {
+  const body = document.body;
+  const diagram = wrapper.querySelector('.mermaid');
+  focusedMermaidWrapper = wrapper;
+  applyMermaidFocusStyles(wrapper);
+  setMermaidButtonState(wrapper, true);
+  body.style.overflow = 'hidden';
+  if (diagram) {
+    diagram.style.width = '100%';
+    diagram.style.height = 'auto';
+    diagram.style.maxWidth = '1200px';
+  }
+  const nextState = Object.assign({}, history.state || {}, { mermaidFocus: true });
+  history.pushState(nextState, '', window.location.href);
+}
+
+function closeMermaidDiagram(wrapper, options = {}) {
+  if (!wrapper) return;
+  clearMermaidFocusStyles(wrapper);
+  setMermaidButtonState(wrapper, false);
+  document.body.style.overflow = '';
+  if (wrapper.querySelector('.mermaid')) wrapper.querySelector('.mermaid').removeAttribute('style');
+  focusedMermaidWrapper = null;
+  if (options.popHistory && history.state && history.state.mermaidFocus) history.back();
+}
+
+function toggleFullDiagram(event) {
+  const target = event && event.target ? event.target : document.activeElement;
+  const wrapper = target ? target.closest('.mermaid-wrapper') : null;
+  if (!wrapper) return;
+  if (!wrapper.classList.contains('focused')) openMermaidDiagram(wrapper);
+  else closeMermaidDiagram(wrapper, { popHistory: true });
+}
+
+// Image focus controls.
+let focusedImageElement = null;
+
+function openImageFullscreen(event) {
+  const target = event.currentTarget;
+  focusedImageElement = target;
+
+  if (!target.dataset.baseStyle) target.dataset.baseStyle = target.getAttribute('style') || '';
+
+  target.classList.add('focused');
+  target.style.cssText = `position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(255,255,255,0.98); z-index: 2000; padding: 2rem; display: flex; align-items: center; justify-content: center; overflow: auto;`;
+
+  document.body.style.overflow = 'hidden';
+
+  const btn = target.querySelector('.focus-toggle');
+  if (btn) btn.textContent = '✕ Close';
+
+  history.pushState(Object.assign({}, history.state || {}, { imageFocus: true }), '', window.location.href);
+}
+
+function closeImageFullscreen(options = {}) {
+  if (!focusedImageElement) return;
+
+  focusedImageElement.classList.remove('focused');
+  focusedImageElement.setAttribute('style', focusedImageElement.dataset.baseStyle || '');
+
+  const btn = focusedImageElement.querySelector('.focus-toggle');
+  if (btn) btn.textContent = '🔍 Focus';
+
+  document.body.style.overflow = '';
+  focusedImageElement = null;
+
+  if (options.popHistory && history.state && history.state.imageFocus) history.back();
+}
+
+// Restore the page when leaving focus mode.
+window.addEventListener('popstate', () => {
+  if (focusedMermaidWrapper) closeMermaidDiagram(focusedMermaidWrapper, { popHistory: false });
+  if (focusedImageElement) closeImageFullscreen({ popHistory: false });
+});
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    if (focusedMermaidWrapper) closeMermaidDiagram(focusedMermaidWrapper, { popHistory: true });
+    if (focusedImageElement) closeImageFullscreen({ popHistory: true });
+  }
+});
+
+// Bind controls from a same-origin script; inline handlers are blocked by CSP.
+document.querySelectorAll('.mermaid-focus-toggle').forEach((button) => {
+  button.addEventListener('click', toggleFullDiagram);
+});
+
+document.querySelectorAll('.image-focus-wrapper').forEach((wrapper) => {
+  wrapper.addEventListener('click', (event) => {
+    if (focusedImageElement === wrapper) closeImageFullscreen({ popHistory: true });
+    else openImageFullscreen(event);
+  });
+});

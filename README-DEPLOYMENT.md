@@ -137,6 +137,14 @@ boilerplate instead of each reinventing its own design tokens.
 pages need inline `<style>` to render at all. If those pages ever move to
 external stylesheets, this could be tightened back to `style-src 'self'`.
 
+Mermaid is installed through npm and bundled by Hugo into a same-origin script,
+loaded only on pages using the `mermaiddiagram` shortcode. The diagram and image
+focus controls also use an external script and registered event listeners.
+Keep these scripts local: the production CSP blocks CDN imports, unapproved
+inline scripts and inline event handlers, although `hugo server` alone does not
+reproduce those restrictions. Validate rendering and Focus with a minified build
+served with the headers from `netlify.toml`.
+
 ## The old pipeline (fredlab.dev via GitLab CI → GCS) — broken, not fixed
 
 `.gitlab-ci.yml` still builds and tries to `gcloud storage rsync` to

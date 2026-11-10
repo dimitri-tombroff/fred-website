@@ -1,9 +1,4 @@
-<!-- Custom head -->
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: "neutral"  // or "neutral"
-  });
-</script>
+{{/* Serve Mermaid from this site so it works with script-src 'self'. */}}
+{{- if .HasShortcode "mermaiddiagram" -}}
+  {{- partial "footer/esbuild" (dict "src" "js/mermaid.js" "load" "defer") -}}
+{{- end -}}
