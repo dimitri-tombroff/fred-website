@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Bilan R&D 2026 de Fred : cinq axes d'expérimentation pour les applications agentiques en production, et les perspectives Weaver pour 2027.">
+  <meta name="description" content="Bilan R&D 2026 de Fred : gouvernance, capacités métier, évaluation et applications, puis perspectives 2027.">
   <title>Fred — Bilan R&amp;D 2026</title>
   <link rel="stylesheet" href="assets/research-2026.css">
   <script src="assets/research-2026.js" defer></script>
@@ -17,291 +17,309 @@
   <p class="kicker"><span>Travaux de recherche et développement</span><span class="theme-detail">12 novembre 2026</span></p>
   <div class="rule" aria-hidden="true"></div>
   <h1>Fred<br>Bilan R&amp;D 2026</h1>
-  <p class="sub">Mettre les applications agentiques<br>à l’épreuve des usages réels.</p>
-  <p class="context">Un socle open source pour expérimenter ensemble<br>les données, les outils, les droits et les parcours métier.</p>
-  <p class="release">Swift · travaux 2026 &nbsp; / &nbsp; Weaver · perspectives 2027</p>
+  <p class="sub">Les fondations de production<br>des applications IA métier.</p>
+  <p class="context">Un socle open source au service des équipes<br>et des offres pour nos clients.</p>
+  <p class="release">Swift en production &nbsp; / &nbsp; Weaver : travaux engagés fin 2026</p>
   <aside class="speaker-notes" hidden>
-    <h2>1 · Objet des travaux — 20 secondes</h2>
-    <p>Fred est un socle open source pour développer et exploiter des applications assistées par l’IA. Notre terrain de recherche est leur fonctionnement dans des usages réels : avec les documents, les droits et les contraintes du métier. Je présente cinq axes étudiés en 2026, puis les questions qui orientent la prochaine version, Weaver.</p>
+    <h2>1 · Objet des travaux</h2>
+    <p class="oral-timing">Durée cible : 20 s · Repère cumulé : 0:20</p>
+    <p>Claire vient de présenter les déploiements. Je vais revenir sur le travail qui les rend possibles : la gouvernance, les capacités métier, l’évaluation et le support des applications. Puis nous ouvrirons les questions de recherche 2027, au service des futures offres pour nos clients.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
     <h3>Repères</h3>
     <p><a href="https://site.fredlab.dev/releases/swift/">Swift : version en production</a> · <a href="https://site.fredlab.dev/releases/weaver/">Weaver : version en cours de développement</a>. Les perspectives 2027 ne sont pas présentées comme des résultats acquis en 2026.</p>
+    </details>
   </aside>
 </section>
 
-<section class="slide data-context" aria-label="2. Données complexes : préserver le contexte">
-  <p class="kicker"><span>01 · Données complexes</span><span class="theme-detail">Le problème</span></p>
-  <h2>Un montant dépend de son contexte</h2>
-  <p class="sub">« Quel montant correspond au scénario retenu, et d’où vient-il ? »</p>
-  <div class="context-diagram">
-    <figure class="workbook-example">
-      <div class="workbook-paper">
-        <p>Budget prévisionnel <span>en M€</span></p>
-        <table aria-label="Budget fictif illustrant une valeur reliée à un scénario, une année et une unité">
-          <thead><tr><th>Scénario</th><th>2025</th><th>2026</th></tr></thead>
-          <tbody><tr><th>Initial</th><td>0,9</td><td>1,0</td></tr><tr><th>Retenu</th><td>1,0</td><td class="selected-value">1,2</td></tr></tbody>
-        </table>
-        <div class="sheet-name">Budget.xlsx · Prévisions</div>
-      </div>
-      <figcaption>Exemple illustratif.</figcaption>
-    </figure>
-    <span class="arrow context-arrow" aria-hidden="true">→</span>
-    <div class="context-value">
-      <div class="amount">1,2 <span>M€</span></div>
-      <dl><div><dt>Période</dt><dd>2026</dd></div><div><dt>Scénario</dt><dd>Retenu</dd></div><div><dt>Origine</dt><dd>Classeur · feuille · cellule</dd></div></dl>
+<section class="slide governance-scenario" aria-label="2. Des agents métier, des responsabilités humaines">
+  <p class="kicker"><span>01 · Gouverner les usages de l’IA</span><span class="theme-detail">L’enjeu</span></p>
+  <h2>Des agents métier, des responsabilités humaines</h2>
+  <p class="sub">Bid et Engineering utilisent le même Fred, avec leurs propres périmètres.</p>
+  <figure class="business-access" aria-label="Exemples illustratifs. L’équipe Bid utilise un agent d’offre pour rechercher dans les appels d’offres et les références autorisées. L’équipe Engineering utilise un agent technique pour consulter la documentation et les résultats d’essais autorisés. Les agents, services et accès aux données s’appuient sur la même plateforme Fred.">
+    <div class="fred-common"><span>Une plateforme Fred commune</span></div>
+    <div class="access-headings"><span>Équipes</span><span>Agents</span><span>Services</span><span>Données autorisées</span></div>
+    <div class="access-story bid-story">
+      <div class="story-team"><h3>Équipe Bid</h3><p>Préparer une offre</p></div>
+      <div class="story-step"><span class="story-arrow" aria-hidden="true">→</span><h3>Agent d’offre</h3></div>
+      <div class="story-step"><span class="story-arrow" aria-hidden="true">→</span><p>Rechercher<br>des références</p></div>
+      <div class="story-step"><span class="story-arrow" aria-hidden="true">→</span><p>Appels d’offres<br>Références commerciales</p></div>
     </div>
-  </div>
-  <p class="punch">Préserver les relations et l’origine des données.</p>
-  <aside class="speaker-notes" hidden>
-    <h2>2 · Problème et verrou — 20 secondes</h2>
-    <p>Un analyste veut retrouver un montant dans un dossier financier et vérifier son origine. Ce montant ne prend sens qu’avec sa période, son unité et son scénario. Le problème commence avant la génération : comment transmettre ces relations à l’agent sans les perdre lors de l’extraction ?</p>
-    <h3>Contexte et sources</h3>
-    <p>Le dossier financier est une situation illustrative, pas le compte rendu d’une campagne utilisateur. Les difficultés de structure, de provenance et de représentation sont décrites dans <a href="https://site.fredlab.dev/blog/excel-but-agent-ready-how-fred-turns-spreadsheets-into-queryable-knowledge/">Excel, but Agent-Ready</a> et <a href="https://site.fredlab.dev/blog/rich-mode-extending-rag-with-direct-visual-evidence/">Rich Mode: Extending RAG with Direct Visual Evidence</a>.</p>
-  </aside>
-</section>
-
-<section class="slide data-results" aria-label="3. Données complexes : réalisations et résultats">
-  <p class="kicker"><span>01 · Données complexes</span><span class="theme-detail">Réalisations et résultats</span></p>
-  <h2>Exploiter les tables et les preuves visuelles</h2>
-  <div class="data-paths">
-    <div class="path"><div class="path-item"><b>Classeurs Excel</b></div><span class="arrow" aria-hidden="true">→</span><div class="path-item"><b>Tables + requêtes SQL</b></div><span class="arrow" aria-hidden="true">→</span><div class="path-item"><b>Références aux cellules</b></div></div>
-    <div class="path"><div class="path-item"><b>PDF et figures</b></div><span class="arrow" aria-hidden="true">→</span><div class="path-item"><b>Images dans le contexte</b></div><span class="arrow" aria-hidden="true">→</span><div class="path-item"><b>Réponses étayées</b></div></div>
-  </div>
-  <figure class="grounding-results">
-    <figcaption>Ancrage des réponses dans l’image <span>Score moyen / 2</span></figcaption>
-    <div class="score-row"><span>Images originales</span><div class="score-track"><div class="score-bar direct-score"></div></div><strong>1,93</strong></div>
-    <div class="score-row"><span>Descriptions seules</span><div class="score-track"><div class="score-bar caption-score"></div></div><strong>1,47</strong></div>
+    <div class="access-story engineering-story">
+      <div class="story-team"><h3>Équipe Engineering</h3><p>Analyser un incident</p></div>
+      <div class="story-step"><span class="story-arrow" aria-hidden="true">→</span><h3>Agent technique</h3></div>
+      <div class="story-step"><span class="story-arrow" aria-hidden="true">→</span><p>Consulter<br>les essais</p></div>
+      <div class="story-step"><span class="story-arrow" aria-hidden="true">→</span><p>Documentation technique<br>Résultats d’essais</p></div>
+    </div>
+    <figcaption>Exemples de parcours métier.</figcaption>
   </figure>
-  <p class="note score-scope">Essai interne · 10 images · 30 questions par méthode · évaluation manuelle.</p>
-  <div class="research-positioning"><p class="label">Positionnement dans l’état de l’art</p><p>Tables structurées et preuves visuelles : deux voies pour enrichir la recherche documentaire.</p><p class="references">Repères : <a href="https://arxiv.org/abs/2506.10380" target="_blank" rel="noopener noreferrer">TableRAG — EMNLP 2025</a> · <a href="https://arxiv.org/abs/2407.01449" target="_blank" rel="noopener noreferrer">ColPali — ICLR 2025</a></p></div>
+  <p class="punch">L’agent ne doit jamais élargir les droits de la personne qui l’utilise.</p>
   <aside class="speaker-notes" hidden>
-    <h2>3 · Travaux et enseignements — 30 secondes</h2>
-    <p>Fred reconstruit les tables pour les interroger en SQL et conserve les références aux cellules. Pour les documents visuels, il peut fournir directement les images à l’agent. L’essai interne montre un meilleur ancrage des réponses dans l’image : 1,93 contre 1,47 sur deux, sur trente questions par méthode. La recherche explore aussi ces deux voies, illustrées par TableRAG et ColPali. Leurs méthodes et leurs benchmarks restent distincts de ceux de Fred.</p>
-    <h3>Sources et portée</h3>
-    <ul>
-      <li><a href="https://site.fredlab.dev/blog/excel-but-agent-ready-how-fred-turns-spreadsheets-into-queryable-knowledge/">Excel, but Agent-Ready</a> : reconstruction, couverture, résidus, provenance et limites. Les valeurs sont conservées, mais pas la logique des formules ni les macros. L’article ne suffit pas à établir une robustesse générale sur les classeurs métier.</li>
-      <li><a href="https://site.fredlab.dev/blog/rich-mode-extending-rag-with-direct-visual-evidence/">Rich Mode: Extending RAG with Direct Visual Evidence</a> : 10 images, 30 questions par méthode, 60 réponses évaluées manuellement. Ce petit échantillon ne démontre pas une supériorité générale.</li>
-      <li>Repère scientifique : <a href="https://arxiv.org/abs/2407.01449">ColPali</a>, sur la recherche documentaire visuelle. Fred n’est pas ici évalué contre ColPali.</li>
-    </ul>
-    <h3>Positionnement et lecture du graphique</h3>
-    <p>Les barres reprennent le score moyen « Grounding » de l’essai interne : 1,93 pour les images originales et 1,47 pour les descriptions, sur une échelle de 0 à 2. Elles ne représentent ni des pourcentages de réussite ni une comparaison avec les publications citées.</p>
-    <p><a href="https://arxiv.org/abs/2506.10380">TableRAG — Yu, Jian et Chen, EMNLP 2025</a> combine recherche textuelle et manipulations SQL pour des documents hétérogènes. <a href="https://arxiv.org/abs/2407.01449">ColPali — ICLR 2025</a> apprend des représentations d’images de pages pour la recherche documentaire. Ces travaux situent deux enjeux communs à Fred ; Fred n’implémente pas ces méthodes et n’a pas été comparé à elles ici.</p>
+    <h2>2 · L’enjeu métier</h2>
+    <p class="oral-timing">Durée cible : 40 s · Repère cumulé : 1:00</p>
+    <p>Prenons deux équipes. Bid prépare une offre et recherche des références commerciales. Engineering analyse un incident à partir de documents techniques et d’essais. Leurs agents utilisent la même plateforme Fred.</p>
+    <p>À chaque étape, il faut préserver les droits de la personne pour laquelle l’agent agit, jusque dans les services et les données consultées. L’équipe doit aussi pouvoir décider qui configure les agents, alimente les corpus et observe les usages. C’est cette gouvernance en production que nous avons construite en 2026.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
+    <h3>Portée du schéma</h3>
+    <p>Les équipes Bid et Engineering et leurs parcours sont illustratifs, pas des déploiements clients revendiqués. Les lignes représentent des périmètres d’accès, pas des infrastructures séparées. Des données peuvent être partagées lorsque les droits l’autorisent. Les flèches représentent l’accès aux services et aux données, pas un transfert de propriété.</p>
+    </details>
   </aside>
 </section>
 
-<section class="slide frugality-problem" aria-label="4. Frugalité : quels contenus interpréter ?">
-  <p class="kicker"><span>02 · Frugalité</span><span class="theme-detail">Le problème</span></p>
-  <h2>Quelles images faut-il faire interpréter ?</h2>
-  <p class="sub">Un même PDF contient des informations de nature différente.</p>
-  <div class="document-examples">
-    <figure>
-      <div class="document-sample">
-        <svg viewBox="0 0 320 210" role="img" aria-label="Exemple schématique de texte scanné : une procédure de contrôle en deux étapes.">
-          <rect x="27" y="15" width="266" height="180" rx="3" fill="#f0eee8"/>
-          <g fill="#344253" font-family="Segoe UI,system-ui,sans-serif">
-            <text x="48" y="48" font-size="12" letter-spacing="2">PROCÉDURE</text>
-            <text x="48" y="78" font-size="18" font-weight="650">Contrôle du capteur</text>
-            <text x="48" y="115" font-size="15">1. Relever la tension.</text>
-            <text x="48" y="144" font-size="15">2. Comparer au seuil.</text>
-          </g>
-          <path d="M48 91H268 M48 169H232 M48 176H251" stroke="#b8bdbf" stroke-width="2"/>
-        </svg>
-      </div>
-      <figcaption>Texte scanné</figcaption>
-    </figure>
-    <figure>
-      <div class="document-sample">
-        <svg viewBox="0 0 320 210" role="img" aria-label="Exemple schématique d’un même logo répété sur trois pages.">
-          <g fill="#f0eee8" stroke="#c5c9cc" stroke-width="1.5">
-            <rect x="70" y="15" width="213" height="140" rx="3"/>
-            <rect x="51" y="35" width="213" height="140" rx="3"/>
-            <rect x="32" y="55" width="213" height="140" rx="3"/>
-          </g>
-          <g fill="#667c99" font-family="Segoe UI,system-ui,sans-serif" font-size="14" font-weight="650">
-            <path d="M247 23l11 6v12l-11 6-11-6V29Z M228 43l11 6v12l-11 6-11-6V49Z M60 78l15 9v17l-15 9-15-9V87Z"/>
-            <text x="87" y="101" letter-spacing="3">LOGO</text>
-          </g>
-          <path d="M49 135H218 M49 146H198 M49 157H211 M49 168H179" stroke="#c0c5c8" stroke-width="3"/>
-        </svg>
-      </div>
-      <figcaption>Logo répété</figcaption>
-    </figure>
-    <figure>
-      <div class="document-sample">
-        <svg viewBox="0 0 320 210" role="img" aria-label="Exemple schématique de relations entre un capteur, un traitement et deux sorties : mesure et alerte.">
-          <defs><marker id="sample-flow-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7Z" fill="#526b84"/></marker></defs>
-          <rect x="15" y="15" width="290" height="180" rx="3" fill="#f0eee8"/>
-          <g fill="none" stroke="#526b84" stroke-width="2" marker-end="url(#sample-flow-arrow)">
-            <path d="M105 71H133"/><path d="M190 89V116H91V139"/><path d="M190 89V116H238V139"/>
-          </g>
-          <g fill="#e0e7eb" stroke="#8297a8" stroke-width="1.5">
-            <rect x="31" y="51" width="74" height="39" rx="4"/><rect x="135" y="51" width="113" height="39" rx="4"/>
-            <rect x="52" y="141" width="78" height="33" rx="4"/><rect x="202" y="141" width="72" height="33" rx="4"/>
-          </g>
-          <g fill="#344253" font-family="Segoe UI,system-ui,sans-serif" font-size="14" text-anchor="middle">
-            <text x="68" y="76">Capteur</text><text x="191" y="76">Traitement</text><text x="91" y="163">Mesure</text><text x="238" y="163">Alerte</text>
-          </g>
-        </svg>
-      </div>
-      <figcaption>Schéma technique</figcaption>
-    </figure>
-  </div>
-  <p class="note example-disclosure">Exemples schématiques.</p>
-  <p class="punch">Réduire les appels au modèle sans écarter une information essentielle.</p>
-  <aside class="speaker-notes" hidden>
-    <h2>4 · Frugalité : le problème — 20 secondes</h2>
-    <p>Ces trois images ne demandent pas le même traitement. Le texte peut être lu par reconnaissance de caractères ; un logo peut se répéter sur des dizaines de pages ; un schéma peut porter des relations essentielles. Nous cherchons à sélectionner les contenus qui nécessitent une interprétation, sans perdre une information utile.</p>
-    <h3>Contexte et source</h3>
-    <p>Les trois visuels sont des illustrations schématiques, pas des extraits du corpus évalué. <a href="https://site.fredlab.dev/blog/ingestion-shouldnt-be-a-choice/">Ingestion Shouldn’t Be a Choice</a> décrit les coûts du traitement PDF et les choix d’extraction, de reconnaissance de caractères et de sélection des images. Le filtrage doit être évalué dans le contexte des tâches métier ; une catégorie de contenu n’est pas universellement dispensable.</p>
-  </aside>
-</section>
-
-<section class="slide frugality-results" aria-label="5. Frugalité : réalisations, résultats et état de l’art">
-  <p class="kicker"><span>02 · Frugalité</span><span class="theme-detail">Réalisations et résultats</span></p>
-  <h2>Réduire le recours aux modèles dans l’analyse documentaire</h2>
-  <p class="sub">Une chaîne de traitement PDF intégrée à Fred.</p>
-  <div class="path">
-    <div class="path-item"><b>Extraction / OCR</b><span>Lire le contenu accessible</span></div>
-    <span class="arrow" aria-hidden="true">→</span>
-    <div class="path-item"><b>Sélection par règles</b><span>Retenir les images à interpréter</span></div>
-    <span class="arrow" aria-hidden="true">→</span>
-    <div class="path-item"><b>Modèle si nécessaire</b><span>Interpréter les cas retenus</span></div>
-  </div>
-  <div class="metrics">
-    <div class="metric">
-      <div class="value">≈ ×10</div>
-      <p>Extraction plus rapide</p>
-      <span>Sur les PDF les plus lourds étudiés</span>
+<section class="slide governance-work" aria-label="3. Les fondations d’une IA gouvernée en production">
+  <p class="kicker"><span>01 · Gouverner les usages de l’IA</span><span class="theme-detail">Travaux et prolongements</span></p>
+  <h2>2026 : les fondations d’une IA gouvernée en production</h2>
+  <div class="governance-columns">
+    <div class="governance-delivered">
+      <p class="work-column-label">De Kea à Swift : le travail réalisé</p>
+      <div class="governance-work-row"><h3>Isoler les accès sur un socle partagé</h3><p>Préserver le périmètre de chaque utilisateur et de ses agents dans une infrastructure commune.</p></div>
+      <div class="governance-work-row"><h3>Répartir les responsabilités</h3><p>Séparer administration technique et usages métier.<br>Quatre rôles : admin, member, éditeur, analyste.</p></div>
+      <div class="governance-work-row"><h3>Outiller la gouvernance</h3><p>CGU, avertissements à l’ingestion, suivi des usages.<br>Observer les usages sans exposer les contenus.</p></div>
     </div>
-    <div class="metric">
-      <div class="value">&gt; 90 %</div>
-      <p>D’appels au modèle de vision évités</p>
-      <span>Souvent, sur les documents riches en images</span>
+    <div class="governance-next">
+      <p class="work-column-label">Les prolongements</p>
+      <div><p class="next-date">Fin 2026 · Weaver</p><h3>Simplifier la gouvernance</h3><p>Mieux répartir les responsabilités entre rôles et composants.</p></div>
+      <div><p class="next-date">2027 · Perspective</p><h3>Assister les équipes</h3><p>Aider à repérer les contenus sensibles et les usages à risque.</p></div>
     </div>
   </div>
-  <p class="note">Comparaison interne avec l’ancien traitement PDF ; gains variables selon les documents.</p>
-  <div class="research-positioning">
-    <p class="label">Positionnement dans l’état de l’art</p>
-    <p>Routage sélectif et cascades de traitements, appliqués ici à l’ingestion documentaire.</p>
-    <p class="references">Repères : <a href="https://arxiv.org/abs/2305.05176" target="_blank" rel="noopener noreferrer">FrugalGPT (2023)</a> · <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener noreferrer">Anthropic — Routing (2024)</a></p>
-  </div>
+  <p class="punch">Une architecture construite et revue avec la CVSSI et la Design Authority.</p>
   <aside class="speaker-notes" hidden>
-    <h2>5 · Frugalité : réalisations et résultats — 30 secondes</h2>
-    <p>Fred combine extraction, reconnaissance de caractères et sélection par règles pour réserver le modèle aux cas retenus. La comparaison interne rapporte une accélération d’environ dix sur les PDF les plus lourds et souvent plus de quatre-vingt-dix pour cent d’appels vision évités sur les documents riches en images. Ces travaux partagent les principes de routage et de cascade explorés dans la recherche et les architectures agentiques. Notre réalisation les concrétise dans une chaîne documentaire intégrée.</p>
-    <h3>Résultats : source et portée</h3>
-    <p><a href="https://site.fredlab.dev/blog/ingestion-shouldnt-be-a-choice/">Ingestion Shouldn’t Be a Choice</a>. Comparaison interne entre ancien et nouveau traitement PDF sur un échantillon décrit comme représentatif. L’article donne des ordres de grandeur, sans protocole complet ni taille du corpus. Les gains d’exécution sont documentés ; le maintien de la qualité doit être évalué conjointement. Ces chiffres ne mesurent ni un gain global de Fred ni une baisse équivalente de la consommation énergétique.</p>
-    <h3>Positionnement : principes communs, réalisations distinctes</h3>
-    <ul>
-      <li><a href="https://arxiv.org/abs/2305.05176">FrugalGPT — Chen, Zaharia et Zou (2023)</a> étudie notamment des cascades apprises de modèles de langage pour arbitrer coût et qualité. Fred combine ici OCR, règles et modèle de vision ; il ne reproduit pas cette méthode.</li>
-      <li><a href="https://www.anthropic.com/research/building-effective-agents">Building Effective Agents — Anthropic (2024), section Routing</a> décrit le routage des entrées vers des traitements spécialisés, avec une classification pouvant être traditionnelle ou fondée sur un modèle.</li>
-    </ul>
-    <p>Le bandeau indique une convergence de principes architecturaux. Il ne revendique ni filiation historique, ni équivalence de qualité, ni supériorité de performances. Les résultats de Fred ne proviennent pas d’un benchmark commun avec ces travaux.</p>
+    <h2>3 · Les fondations de production</h2>
+    <p class="oral-timing">Durée cible : 1 min 05 · Repère cumulé : 2:05</p>
+    <p>Le passage de Kea à Swift a demandé un travail majeur pour isoler les accès des utilisateurs et de leurs agents, tout en partageant l’infrastructure. La difficulté descend jusqu’à l’organisation des données et à la continuité de l’identité pendant les traitements.</p>
+    <p>Les revues CVSSI et le travail avec la Design Authority ont aussi fait émerger quatre rôles explicites : admin, member, éditeur et analyste. Nous avons séparé les responsabilités techniques et métier, et ajouté les moyens de gouverner les usages : CGU, avertissements à l’ingestion, analytics et observabilité sans exposition des contenus.</p>
+    <p>Swift constitue un socle robuste. Weaver, engagé en fin d’année, approfondit et simplifie cette architecture. La suite sera de mieux assister les équipes, par exemple lorsqu’un document du mauvais niveau de classification est introduit.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
+    <h3>Profondeur technique du travail 2026</h3>
+    <p>Le travail d’isolation descend jusqu’à la gestion des métadonnées d’un index OpenSearch commun et à l’organisation des données brutes dans S3. La gestion et le renouvellement des jetons JWT ont demandé un effort majeur et restent un chantier actif. La protection des données concerne aussi les logs et les métriques Prometheus. Ces mécanismes sont les choix d’implémentation qui rendent possible le principe montré sur la slide précédente.</p>
+    <h3>Contexte et maturité</h3>
+    <p>Éléments de bilan confirmés par Dimi le 12 novembre 2026 : accord CVSSI avec dérogation pour Castle, puis accord plus solide pour TP-S3NS et construction commune d’une roadmap sécurité. Claire présente les déploiements en introduction. Ces accords ne sont pas une certification générale. Le chiffrement et la détection de contenu sont des sujets travaillés avec la sécurité, sans revendiquer ici un état de livraison non précisé. L’aide à la détection des contenus sensibles et des usages à risque est une perspective, pas une capacité annoncée comme livrée.</p>
+    </details>
   </aside>
 </section>
 
-<section class="slide access-results" aria-label="6. Droits d'accès : réalisation et positionnement">
-  <p class="kicker">03 · Accès aux données et délégation</p>
-  <h2>Conserver les droits au fil de l’exécution</h2>
-  <p class="sub">Un agent agit pour une personne, dans son périmètre d’accès.</p>
-  <div class="path">
-    <div class="path-item"><b>Identité et droits</b><span>Contrôlés par les services</span></div>
-    <span class="arrow" aria-hidden="true">→</span>
-    <div class="path-item"><b>Données autorisées</b><span>Seules tables accessibles</span></div>
-    <span class="arrow" aria-hidden="true">→</span>
-    <div class="path-item"><b>Requête de l’agent</b><span>SQL contrôlé, en lecture seule</span></div>
-  </div>
-  <div class="delivered-pair">
-    <div><span class="label">Réalisé · données</span><h3>Filtrer avant de charger</h3><p>Les droits déterminent les tables de la session SQL.</p></div>
-    <div><span class="label">Réalisé · délégation</span><h3>Contrôler chaque appel</h3><p>L’agent travaille au nom de l’utilisateur.</p></div>
-  </div>
-  <div class="research-positioning"><p class="label">Positionnement dans l’état de l’art</p><p>Des autorisations fines appliquées aux ressources et aux appels des agents.</p><p class="references">Repères : <a href="https://research.google/pubs/zanzibar-googles-consistent-global-authorization-system/" target="_blank" rel="noopener noreferrer">Google — Zanzibar (2019)</a> · <a href="https://openfga.dev/docs/modeling/agents/overview" target="_blank" rel="noopener noreferrer">OpenFGA — Authorization for Agents (2026)</a></p></div>
+<section class="slide capabilities-story" aria-label="4. Des documents métier aux livrables">
+  <p class="kicker"><span>02 · Capacités métier</span><span class="theme-detail">L’enjeu</span></p>
+  <h2>Exploiter les documents, produire un livrable utile</h2>
+  <p class="sub">L’équipe Engineering prépare une revue à partir des essais et de la documentation technique.</p>
+  <figure class="capability-journey" aria-label="Parcours illustratif : classeurs Excel et documents avec figures, agent équipé de capacités métier, puis note Word et présentation PowerPoint.">
+    <div class="journey-stage"><p class="stage-label">Les sources de l’équipe</p><h3>Classeurs Excel</h3><p>Résultats d’essais</p><h3>Documents et figures</h3><p>Procédures et schémas techniques</p></div>
+    <span class="journey-arrow" aria-hidden="true">→</span>
+    <div class="journey-stage agent-stage"><p class="stage-label">L’agent équipé</p><h3>Agent d’analyse</h3><p>Exploiter les tableaux<br>Relier texte et figures</p></div>
+    <span class="journey-arrow" aria-hidden="true">→</span>
+    <div class="journey-stage"><p class="stage-label">Les livrables métier</p><h3>Une note Word</h3><p>L’analyse documentée</p><h3>Un PowerPoint</h3><p>Le support de revue</p></div>
+  </figure>
+  <p class="note scenario-disclosure">Parcours illustratif mobilisant les capacités développées en 2026.</p>
+  <p class="punch">Le défi : conserver le sens des informations jusqu’au livrable.</p>
   <aside class="speaker-notes" hidden>
-    <h2>6 · Gouvernance — 50 secondes</h2>
-    <p>Le troisième axe concerne les droits. Dès qu’un agent consulte des données et appelle plusieurs services, il faut préserver le périmètre de la personne pour laquelle il agit. Pour les tableurs, Fred vérifie les autorisations avant de charger les fichiers dans une session SQL isolée. Les requêtes sont limitées à la lecture des relations autorisées. L’application Synthia explore un autre cas : elle lance un agent au nom de l’utilisateur, sans détenir ses identifiants dans son interface ; les services continuent de contrôler les appels. Le sujet ouvert est la composition de ces garanties à travers plusieurs outils et délégations. Cela ne constitue pas une protection générale contre les instructions malveillantes contenues dans les documents.</p>
-    <h3>Sources et portée</h3>
-    <ul>
-      <li><a href="https://site.fredlab.dev/blog/tabular-data-in-fred-rebac-scoped-parquet-s3-and-duckdb/">Tabular Data in Fred: ReBAC-Scoped Parquet, S3 and DuckDB</a> : autorisation avant montage, validation des requêtes et isolation.</li>
-      <li><a href="https://site.fredlab.dev/blog/quiz-app/">Synthia Quiz</a> : délégation et contrôles au fil des appels.</li>
-      <li>Repère scientifique : <a href="https://arxiv.org/abs/2406.13352">AgentDojo</a> étudie les injections d’instructions via les outils. Ce risque est distinct du contrôle d’accès. Aucun résultat de Fred sur ce banc d’essai n’est revendiqué.</li>
-    </ul>
-    <h3>Positionnement</h3>
-    <p><a href="https://research.google/pubs/zanzibar-googles-consistent-global-authorization-system/">Zanzibar</a> est une référence pour les systèmes d’autorisation par relations. Fred utilise OpenFGA. La documentation <a href="https://openfga.dev/docs/modeling/agents/overview">Authorization for Agents</a>, mise à jour en septembre 2026, traite du périmètre des agents, du RAG et des outils. Ce rapprochement porte sur l’autorisation appliquée par les services ; il ne prouve ni une sécurité générale ni l’implémentation dans Fred de toutes les variantes documentées par OpenFGA.</p>
+    <h2>4 · Le besoin métier</h2>
+    <p class="oral-timing">Durée cible : 40 s · Repère cumulé : 2:45</p>
+    <p>L’équipe Engineering prépare une revue. Elle dispose de résultats d’essais dans Excel, de procédures et de schémas techniques. Elle veut exploiter cette information, puis produire une note Word ou un PowerPoint utilisable dans son travail.</p>
+    <p>Le défi commence avant la rédaction : un chiffre dépend de son contexte, et une figure peut porter une information absente du texte. Nous avons donc travaillé les capacités spécialisées qui permettent à l’agent d’exploiter ces sources et de produire des livrables.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
+    <h3>Portée</h3>
+    <p>Le parcours de revue est illustratif. Dimi a confirmé les travaux sur la capability tabulaire Excel, la génération de Word et PowerPoint et l’extraction de documents avec ou sans images. Le schéma réunit ces capacités pour expliquer leur finalité ; il ne revendique pas la validation d’un scénario complet de bout en bout ni la génération simultanée de tous les livrables.</p>
+    </details>
   </aside>
 </section>
 
-<section class="slide evaluation-results" aria-label="7. Évaluation continue : réalisation et positionnement">
-  <p class="kicker">04 · Évaluation continue</p>
-  <h2>Rendre la qualité observable dans la durée</h2>
-  <p class="sub">Des campagnes intégrées à Fred pour suivre les agents au fil des évolutions.</p>
-  <div class="evaluation-evidence">
-    <div class="evaluation-steps">
-      <div><span>01</span><div><h3>Rejouer</h3><p>Des campagnes planifiées</p></div></div>
-      <div><span>02</span><div><h3>Mesurer</h3><p>Des critères propres au métier</p></div></div>
-      <div><span>03</span><div><h3>Examiner</h3><p>Des résultats expliqués par cas</p></div></div>
-    </div>
-    <figure><img src="assets/research-2026-evaluation.webp" alt="Campagne Fred : scores par critère, dont un critère métier, et accès aux cas évalués." width="2178" height="1177"><figcaption>Exemple sur deux cas ; ces scores ne mesurent pas la performance globale de Fred.</figcaption></figure>
+<section class="slide capabilities-work" aria-label="5. Des capacités métier réutilisables et administrables">
+  <p class="kicker"><span>02 · Capacités métier</span><span class="theme-detail">Travaux 2026</span></p>
+  <h2>Des capacités métier réutilisables et administrables</h2>
+  <div class="work-triad">
+    <article><p class="stage-label">Exploiter les sources</p><h3>Tableaux, texte<br>et images</h3><p>Traitement tabulaire d’Excel.<br>Extraction des documents et de leur contenu visuel.</p><p class="work-challenge">Préserver le contexte d’un chiffre ou d’une figure.</p></article>
+    <article><p class="stage-label">Produire les livrables</p><h3>Word et<br>PowerPoint</h3><p>Des capacités de génération spécialisées, utilisables par les agents.</p><p class="work-challenge">Passer d’une réponse à un livrable structuré.</p></article>
+    <article><p class="stage-label">Étendre la plateforme</p><h3>Des capacités<br>extensibles</h3><p>SDK Python publié.<br>Activation et désactivation par l’administrateur.</p><p class="work-challenge">Partager une capacité entre plusieurs agents.</p></article>
   </div>
-  <div class="research-positioning"><p class="label">Positionnement dans l’état de l’art</p><p>Évaluation des réponses documentaires et fiabilité des tâches agentiques.</p><p class="references">Repères : <a href="https://arxiv.org/abs/2309.15217" target="_blank" rel="noopener noreferrer">Ragas (2023)</a> · <a href="https://arxiv.org/abs/2406.12045" target="_blank" rel="noopener noreferrer">τ-bench (2024)</a></p></div>
+  <p class="punch">Une capacité développée pour un besoin peut équiper d’autres agents.</p>
   <aside class="speaker-notes" hidden>
-    <h2>7 · Évaluation — 50 secondes</h2>
-    <p>Le quatrième axe est l’évaluation dans la durée. Une démonstration réussie renseigne peu sur le comportement après un changement de modèle, de prompt ou de documentation. Fred permet de rejouer et de planifier des campagnes, avec des critères génériques et des critères métier décrits en langage naturel. L’objectif est de rendre les écarts visibles et de pouvoir examiner chaque cas. La capture illustre le dispositif, pas une performance globale : elle ne porte que sur deux exemples. L’incertitude porte aussi sur la mesure elle-même. Lorsque le juge est un modèle, il faut étudier sa stabilité et son accord avec l’évaluation humaine, puis mesurer la répétabilité des tâches.</p>
-    <h3>Sources et portée</h3>
-    <ul>
-      <li><a href="https://site.fredlab.dev/blog/continuous-evaluation-made-visible-fred-agent-evaluator-in-action/">Continuous Evaluation, Made Visible</a> : campagnes, critères personnalisés et inspection des résultats. Capture reproduite depuis l’article.</li>
-      <li>Repère scientifique : <a href="https://arxiv.org/abs/2406.12045">τ-bench</a>, qui évalue des interactions avec outils et règles métier, et leur fiabilité sur plusieurs exécutions. Le deck ne revendique pas de résultat Fred sur ce benchmark.</li>
-    </ul>
-    <h3>Positionnement</h3>
-    <p><a href="https://arxiv.org/abs/2309.15217">Ragas</a> traite de l’évaluation de la recherche et de la génération, notamment de la fidélité au contexte. <a href="https://arxiv.org/abs/2406.12045">τ-bench</a> évalue des interactions avec outils et règles métier ainsi que leur répétabilité. Fred fournit ici une instrumentation et des campagnes intégrées ; le deck ne prétend pas que Fred exécute ces benchmarks ou reproduit leurs protocoles.</p>
-  </aside>
-</section>
-
-<section class="slide business-results" aria-label="8. Applications métier : réalisation et positionnement">
-  <p class="kicker">05 · Agents et applications métier</p>
-  <h2>L’agent rédige, l’application contrôle</h2>
-  <p class="sub">Synthia Quiz : les documents d’une équipe deviennent des questionnaires.</p>
-  <div class="path">
-    <div class="path-item"><b>Agent</b><span>Rédige et révise les questions</span></div>
-    <span class="arrow" aria-hidden="true">→</span>
-    <div class="path-item"><b>Règles de l’API</b><span>Vérifient format et quantité</span></div>
-    <span class="arrow" aria-hidden="true">→</span>
-    <div class="path-item"><b>Application</b><span>Conserve et présente les quiz</span></div>
-  </div>
-  <div class="business-evidence">
-    <div class="initial-incident"><p class="label">Incident de départ</p><div>30 <span>→</span> 54</div><p>Questions demandées / produites<br>par un agent antérieur</p></div>
-    <div class="implemented-rules"><p class="label">Désormais dans l’application</p><p><span aria-hidden="true">✓</span> Dépassement du nombre demandé refusé</p><p><span aria-hidden="true">✓</span> Réponse correcte présente dans les choix</p><p><span aria-hidden="true">✓</span> Suppression confirmée par une personne</p></div>
-  </div>
-  <div class="research-positioning"><p class="label">Positionnement dans l’état de l’art</p><p>Des règles métier explicites autour du raisonnement et de la génération.</p><p class="references">Repères : <a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noopener noreferrer">Anthropic — Workflows &amp; agents (2024)</a> · <a href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/generative-orchestration" target="_blank" rel="noopener noreferrer">Microsoft — Copilot Studio</a></p></div>
-  <aside class="speaker-notes" hidden>
-    <h2>8 · Applications métier — 50 secondes</h2>
-    <p>Le cinquième axe est la frontière entre l’agent et l’application métier. Synthia produit des questionnaires à partir des documents d’une équipe. Un agent antérieur, auquel on demandait trente questions par un prompt, en avait produit cinquante-quatre. Dans l’application, les paramètres deviennent des données explicites et l’API contrôle les invariants : pas plus de questions que demandé, et la bonne réponse doit appartenir aux choix proposés. L’agent rédige et révise ; l’application conserve les résultats et ses règles. La suppression nécessite une confirmation humaine. Cette séparation rend le comportement plus maîtrisable. Une limite importante demeure : citer un passage ne prouve pas encore automatiquement qu’il justifie la réponse.</p>
+    <h2>5 · Des capacités réutilisables</h2>
+    <p class="oral-timing">Durée cible : 1 min 00 · Repère cumulé : 3:45</p>
+    <p>Le travail porte d’abord sur le contenu : traitement tabulaire d’Excel et extraction des documents, avec ou sans images. Il faut rendre l’information exploitable sans perdre le contexte qui lui donne son sens.</p>
+    <p>Nous avons également développé des capacités pour générer du Word et du PowerPoint. L’enjeu est de produire un livrable structuré que l’utilisateur peut reprendre dans son activité.</p>
+    <p>Enfin, nous avons conçu le mécanisme qui rend ces fonctions réutilisables : le concept de capability, un SDK Python publié, et leur activation ou désactivation par l’administrateur. Une capacité développée pour un besoin peut ainsi équiper plusieurs agents.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
     <h3>Source et portée</h3>
-    <p><a href="https://site.fredlab.dev/blog/quiz-app/">Synthia: Turning a Team’s Documents into Knowledge, Starting with Quizzes</a>. Le cas 30 → 54 est un incident rapporté, pas un taux d’erreur mesuré. Les réponses des participants et leurs tableaux de bord restent à développer dans l’état décrit par l’article. La confirmation d’une suppression n’est pas assimilée à un processus métier complet de validation.</p>
-    <h3>Positionnement</h3>
-    <p><a href="https://www.anthropic.com/research/building-effective-agents">Anthropic</a> distingue les workflows définis par du code des agents qui dirigent dynamiquement leur exécution. <a href="https://learn.microsoft.com/en-us/microsoft-copilot-studio/guidance/generative-orchestration">Microsoft Copilot Studio</a> distingue les couches déterministe, hybride et générative. Fred concrétise cette séparation dans Synthia : l’API porte les invariants, l’agent rédige et la personne confirme les suppressions. Cela ne constitue pas une comparaison fonctionnelle complète de plateformes.</p>
+    <p>Bilan fourni par Dimi lors de la préparation du 12 novembre 2026. Aucun gain quantifié ni taux de réussite général n’est revendiqué sur cette slide. La fidélité de l’information et l’utilisabilité des livrables décrivent les verrous travaillés ; elles ne signifient pas que toutes les classes de documents sont parfaitement prises en charge.</p>
+    </details>
   </aside>
 </section>
 
-<section class="slide weaver-outlook" aria-label="9. Perspectives Weaver 2027">
-  <p class="kicker"><span>Perspectives 2027 · Weaver</span><span class="theme-detail">En développement</span></p>
-  <h2>Passer au dossier métier partagé</h2>
-  <p class="sub">Prolonger le socle Swift en production par un travail collectif durable.</p>
-  <div class="horizon">
-    <article><p class="label">Gouvernance</p><h3>Espaces</h3><p>Organisations<br>Équipes · projets</p></article>
-    <article><p class="label">Réutilisation</p><h3>Skills et outils</h3><p>Procédures partagées<br>Capacités autorisées</p></article>
-    <article><p class="label">Collaboration</p><h3>Dossiers durables</h3><p>Contributions réunies<br>Décisions conservées</p></article>
-  </div>
-  <div class="bid-journey"><span>Équipe bid</span><span aria-hidden="true">→</span><span>Dossier partagé</span><span aria-hidden="true">→</span><span>Gates validées</span></div>
-  <p class="note">Parcours à explorer ; la version Weaver reste incomplète.</p>
-  <p class="punch">Un terrain ouvert aux partenaires académiques et industriels.</p>
+<section class="slide evaluation-story" aria-label="6. Évaluer les agents sans perturber la production">
+  <p class="kicker"><span>03 · Évaluation des agents</span><span class="theme-detail">L’enjeu</span></p>
+  <h2>Évaluer les agents sans perturber la production</h2>
+  <p class="sub">Alice, dans l’équipe Bid, veut évaluer son agent cette nuit.</p>
+  <figure class="evaluation-journey" aria-label="Parcours illustratif : Alice demande une évaluation, une campagne différée interroge l’agent avec les droits appropriés, puis l’équipe consulte le rapport.">
+    <div><p class="stage-label">L’équipe</p><h3>Alice lance<br>une évaluation</h3><p>Des questions à tester</p></div>
+    <span class="journey-arrow" aria-hidden="true">→</span>
+    <div><p class="stage-label">Le traitement différé</p><h3>La campagne<br>interroge l’agent</h3><p>Au créneau prévu</p></div>
+    <span class="journey-arrow" aria-hidden="true">→</span>
+    <div><p class="stage-label">Le résultat</p><h3>L’équipe examine<br>le rapport</h3><p>Réponses et critères de qualité</p></div>
+  </figure>
+  <div class="evaluation-questions"><p><b>Qui est autorisé ?</b><span>Alice, puis le traitement qui agit plus tard.</span></p><p><b>Quand exécuter ?</b><span>Sans perturber les usages de production.</span></p><p><b>Que mesurer ?</b><span>La réponse et le contexte utilisé par l’agent.</span></p></div>
+  <p class="punch">L’évaluation est elle-même un usage exigeant de la plateforme.</p>
   <aside class="speaker-notes" hidden>
-    <h2>9 · Perspectives — 30 secondes</h2>
-    <p>Swift constitue notre socle en production pour les travaux de 2026. Weaver, en développement, prépare la suite : des droits cohérents dans les espaces de travail, des procédures réutilisables, et des dossiers métier qui durent au-delà des conversations. Pour une équipe bid, l’hypothèse est qu’un état métier explicite et des points de validation suffisent à organiser les contributions parallèles, sans confier le processus entier à un agent. C’est ce terrain d’expérimentation sur des usages et des données réels que nous ouvrons aux partenaires académiques et industriels.</p>
-    <h3>Sources et statut</h3>
-    <p><a href="https://site.fredlab.dev/blog/fred-weaver-direction/">Fred Weaver : orientations architecturales</a> · <a href="https://site.fredlab.dev/docs/roadmap.html">Roadmap</a> · <a href="https://agentskills.io/specification">Agent Skills : spécification</a>. Les espaces et skills font l’objet de travaux en cours ; le dossier métier partagé est une hypothèse à éprouver, pas une fonctionnalité annoncée comme livrée. La standardisation des skills ne définit pas à elle seule les permissions ni l’orchestration métier.</p>
+    <h2>6 · Les contraintes de l’évaluation</h2>
+    <p class="oral-timing">Durée cible : 45 s · Repère cumulé : 4:30</p>
+    <p>Alice veut évaluer son agent cette nuit. Cette demande semble simple, mais elle soulève trois difficultés. Alice a-t-elle le droit de lancer la campagne ? Avec quels droits le traitement interrogera-t-il l’agent plusieurs heures plus tard ? Et comment éviter qu’il consomme les ressources nécessaires aux autres utilisateurs ?</p>
+    <p>Il faut aussi transmettre davantage que la réponse finale : le contexte utilisé par l’agent est nécessaire pour calculer certains critères de qualité. L’évaluation devient elle-même un cas exigeant d’usage de Fred.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
+    <h3>Portée</h3>
+    <p>Alice, l’équipe Bid et le créneau nocturne sont un scénario illustratif des verrous décrits par Dimi. Le parcours montre le besoin d’intégration et les questions traitées, sans affirmer que chaque garantie d’exploitation est achevée.</p>
+    </details>
+  </aside>
+</section>
+
+<section class="slide evaluator-work" aria-label="7. Fred Agent Evaluator : des campagnes et des rapports">
+  <p class="kicker"><span>03 · Évaluation des agents</span><span class="theme-detail">Travaux 2026</span></p>
+  <h2>Fred Agent Evaluator : des campagnes et des rapports</h2>
+  <div class="evaluator-composition">
+    <div class="evaluator-contributions">
+      <div><h3>Une interface pour les équipes</h3><p>Lancer des campagnes et examiner leurs rapports dans Fred.</p></div>
+      <div><h3>La réponse et son contexte</h3><p>Transmettre la réponse et le contexte nécessaire au calcul des critères.</p></div>
+      <div><h3>La planification et les droits</h3><p>Articuler planification, ressources et droits du traitement.</p></div>
+    </div>
+    <figure><img src="assets/research-2026-evaluation.webp" alt="Interface de Fred Agent Evaluator présentant les résultats d’une campagne par critère et les cas évalués." width="2178" height="1177"><figcaption>Fred Agent Evaluator : exemple de rapport sur deux cas.<br>Ces scores ne mesurent pas la qualité globale de Fred.</figcaption><p class="evaluation-status">Évaluateur opérationnel.<br>Intégration complète dans Weaver en cours.</p></figure>
+  </div>
+  <p class="punch">L’évaluateur a aussi éprouvé le support des applications Fred.</p>
+  <aside class="speaker-notes" hidden>
+    <h2>7 · L’évaluateur et son intégration</h2>
+    <p class="oral-timing">Durée cible : 1 min 00 · Repère cumulé : 5:30</p>
+    <p>Fred Agent Evaluator apporte une interface pour lancer des campagnes et examiner les rapports. La capture montre un résultat sur deux cas, pas une performance globale de Fred.</p>
+    <p>Nous avons travaillé le dialogue entre l’agent et l’évaluateur pour transmettre la réponse et les éléments de contexte nécessaires aux critères. DeepEval est le moteur utilisé aujourd’hui.</p>
+    <p>Le chantier porte aussi sur la planification des traitements, leurs droits et les ressources consommées. L’évaluateur fonctionne ; son intégration complète dans Weaver reste en cours.</p>
+    <p>Il a enfin servi de bêta-testeur au support d’applications Fred : une interface métier, des traitements longs et des interactions avec les agents. C’est le lien avec le dernier thème.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
+    <h3>Sources et maturité</h3>
+    <p>Bilan de Dimi du 12 novembre 2026 et agenda partagé : l’évaluateur tourne, intégration complète dans Weaver à terminer. Capture déjà présente dans le support, issue de <a href="https://site.fredlab.dev/blog/continuous-evaluation-made-visible-fred-agent-evaluator-in-action/">Continuous Evaluation, Made Visible</a>. Elle illustre un rapport sur deux cas, sans démontrer une performance globale ni la résolution des contraintes de charge et d’autorisation.</p>
+    </details>
+  </aside>
+</section>
+
+<section class="slide applications-story" aria-label="8. Des applications métier construites sur Fred">
+  <p class="kicker"><span>04 · Applications métier</span><span class="theme-detail">Les usages</span></p>
+  <h2>Des applications métier construites sur Fred</h2>
+  <p class="sub">Les équipes assemblent les capacités de Fred autour de leurs propres parcours.</p>
+  <div class="flagship-apps">
+    <article><p class="stage-label">Migration cloud</p><h3>Rags</h3><p>Accompagner les travaux<br>de « move to cloud »</p></article>
+    <article><p class="stage-label">Suivi financier</p><h3>Thanos</h3><p>Analyser et suivre<br>les données financières</p></article>
+  </div>
+  <div class="other-apps"><span>SFRD i-test</span><span>Quiz</span><span>Fred Agent Evaluator</span></div>
+  <div class="application-foundations"><p class="stage-label">Les fondations communes</p><p><span>Agents et capacités métier</span><span>Connaissances</span><span>Espaces et sécurité</span></p></div>
+  <p class="punch">Le socle Fred devient une base de solutions pour les entités.</p>
+  <aside class="speaker-notes" hidden>
+    <h2>8 · Les applications métier</h2>
+    <p class="oral-timing">Durée cible : 40 s · Repère cumulé : 6:10</p>
+    <p>Rags accompagne le move to cloud. Thanos porte des usages d’analyse et de suivi financier. SFRD i-test, le quiz et l’évaluateur ont également contribué à éprouver le support applicatif.</p>
+    <p>Chaque application possède son parcours métier. Elle s’appuie sur les agents, les connaissances et la gouvernance de Fred. Pour les entités, cette réutilisation permet de concentrer le travail sur leur valeur métier et de construire des solutions destinées aux clients.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
+    <h3>Portée</h3>
+    <p>Applications et domaines cités par Dimi pendant la préparation du 12 novembre 2026. Cette liste témoigne des travaux d’intégration, sans affirmer que toutes ces applications ont le même niveau de maturité, sont déployées chez tous les clients ou ont déjà généré un chiffre d’affaires mesuré.</p>
+    </details>
+  </aside>
+</section>
+
+<section class="slide applications-work" aria-label="9. Intégrer les applications en préservant leur autonomie">
+  <p class="kicker"><span>04 · Applications métier</span><span class="theme-detail">Travaux 2026</span></p>
+  <h2>Des fondations communes, une architecture métier libre</h2>
+  <p class="sub">Des SDK d’intégration éprouvés au contact des applications.</p>
+  <figure class="application-assembly" aria-label="Exemple d’architecture : une application de gestion des connaissances conserve son interface, sa logique métier et son stockage. Elle s’intègre aux agents, connaissances, espaces et contrôles d’accès de Fred par les SDK, MCP et les capabilities, dans un environnement Kubernetes.">
+    <p class="assembly-label">L’application garde ses choix</p>
+    <div class="application-parts"><div><h3>Interface métier</h3><p>Combinée aux interfaces Fred</p></div><div><h3>Logique métier</h3><p>Parcours et règles propres</p></div><div><h3>Stockage propre</h3><p>Par exemple, une base graphe</p></div></div>
+    <div class="integration-line"><span aria-hidden="true">↕</span><p>Intégration aux agents et aux données <span>SDK, MCP et capabilities</span></p><span aria-hidden="true">↕</span></div>
+    <div class="fred-foundations"><h3>Fred</h3><p>Agents et connaissances</p><p>Espaces et contrôles d’accès</p></div>
+    <figcaption>Exemple : application de gestion des connaissances dans un écosystème Kubernetes.</figcaption>
+  </figure>
+  <p class="punch">Les équipes construisent leur métier sur des fondations de production.</p>
+  <aside class="speaker-notes" hidden>
+    <h2>9 · La liberté d’architecture</h2>
+    <p class="oral-timing">Durée cible : 1 min 00 · Repère cumulé : 7:10</p>
+    <p>Notre choix est de proposer des SDK d’intégration dans un écosystème Kubernetes. L’application conserve ses choix : son interface, ses règles et son stockage.</p>
+    <p>Une application de gestion des connaissances peut, par exemple, disposer de sa propre base graphe. Elle expose les données utiles aux agents via MCP ou les capabilities, et combine son interface métier avec celles de Fred.</p>
+    <p>Fred apporte les fondations communes, notamment les espaces et les mécanismes de sécurité. L’application conserve ses responsabilités sur ses données et ses traitements.</p>
+    <p>Ce travail permet aux autres équipes d’innovation de démontrer et de développer leurs applications sur des Fred en production. Il prépare directement les perspectives 2027.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
+    <h3>Source et portée</h3>
+    <p>Architecture et réalisations décrites par Dimi le 12 novembre 2026. La base graphe est un exemple de liberté d’architecture, sans revendiquer ici une application précise déjà déployée avec ce composant. La proposition est présentée pour sa valeur d’intégration, sans revendication d’unicité sur le marché.</p>
+    </details>
+  </aside>
+</section>
+
+<section class="slide research-2027" aria-label="10. Produire et partager des connaissances sous contrôle">
+  <p class="kicker"><span>Perspectives 2027</span><span class="theme-detail">Les questions de recherche</span></p>
+  <h2>Produire et partager des connaissances sous contrôle</h2>
+  <p class="sub">Un agent propose une mise à jour du wiki d’équipe. Un humain décide de sa publication.</p>
+  <figure class="knowledge-journey" aria-label="Scénario à explorer : l’agent propose une connaissance avec ses sources, une personne examine et valide la contribution, puis l’équipe réutilise la connaissance publiée.">
+    <div><p class="stage-label">Proposition</p><h3>L’agent rédige</h3><p>Une contribution<br>et ses sources</p></div>
+    <span class="journey-arrow" aria-hidden="true">→</span>
+    <div><p class="stage-label">Validation</p><h3>L’humain examine</h3><p>Accepter, corriger<br>ou refuser</p></div>
+    <span class="journey-arrow" aria-hidden="true">→</span>
+    <div><p class="stage-label">Publication</p><h3>L’équipe réutilise</h3><p>Une connaissance<br>partagée et suivie</p></div>
+  </figure>
+  <div class="research-questions">
+    <div><h3>Quels droits ?</h3><p>Que peut consulter l’agent ?<br>Qui peut voir sa contribution ?</p></div>
+    <div><h3>Quelle supervision ?</h3><p>Quand demander une validation ?<br>Avec quelles preuves pour décider ?</p></div>
+    <div><h3>Quelle continuité ?</h3><p>Comment reprendre le travail si les sources ou les droits ont changé ?</p></div>
+  </div>
+  <p class="punch">Comparer les approches et éprouver leurs limites sur des usages réels.</p>
+  <aside class="speaker-notes" hidden>
+    <h2>10 · Les questions de recherche 2027</h2>
+    <p class="oral-timing">Durée cible : 1 min 10 · Repère cumulé : 8:20</p>
+    <p>Prenons une connaissance proposée par un agent dans le wiki d’une équipe. Un humain l’examine, puis elle devient réutilisable. Ce parcours ouvre des questions : quelles sources l’agent peut-il consulter ? Qui peut voir sa contribution ? Qui valide, et avec quelles preuves ? Que faire si les droits ou les sources ont changé pendant l’attente ?</p>
+    <p>Ces questions rejoignent les travaux actuels d’Anthropic, OpenAI, Microsoft et Salesforce sur les permissions, la supervision et l’orchestration des agents.</p>
+    <p>Nous devons comparer les approches et éprouver leurs limites. Une validation humaine systématique ne constitue pas une réponse universelle : il faut mesurer la qualité des décisions, la charge de supervision et la fiabilité des traitements. C’est ce terrain de recherche que nous proposons d’explorer.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
+    <h3>Convergence avec les orientations publiques du secteur</h3>
+    <p>Sources officielles consultées le 12 novembre 2026. Elles établissent une convergence des problèmes étudiés, sans démontrer une équivalence de solutions ni une résolution générale de ces problèmes.</p>
+    <ul>
+      <li><a href="https://www.anthropic.com/research/how-we-contain-claude">Anthropic : How we contain Claude across products</a>. Frontières d’exécution, limitation des accès et limites de la supervision humaine trop fréquente.</li>
+      <li><a href="https://developers.openai.com/api/docs/guides/agents/guardrails-approvals">OpenAI : Guardrails and human review</a>. Contrôles automatiques, décisions d’approbation et reprise d’un état après interruption.</li>
+      <li><a href="https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/agent-identity">Microsoft Foundry : Agent identity concepts</a>. Identités d’agents, autorisations et contrôles lors des appels aux ressources.</li>
+      <li><a href="https://architect.salesforce.com/docs/architect/fundamentals/guide/agentic-patterns">Salesforce : Agentic Patterns and Implementation with Agentforce</a>. Orchestration, usages proactifs et collaboration entre humains et agents.</li>
+    </ul>
+    <h3>Statut</h3>
+    <p>Scénario de recherche retenu avec Dimi pour illustrer le programme 2027. Le wiki Swift arrive en bêta selon Dimi. Le parcours complet proposé ici n’est pas présenté comme une fonctionnalité déjà livrée ni comme une feuille de route détaillée.</p>
+    </details>
+  </aside>
+</section>
+
+<section class="slide research-partners" aria-label="11. Des recherches complémentaires au service des usages métier">
+  <p class="kicker"><span>Perspectives 2027</span><span class="theme-detail">La finalité industrielle</span></p>
+  <h2>Des recherches complémentaires au service des usages métier</h2>
+  <div class="research-responsibilities">
+    <div><p class="stage-label">Équipe Fred</p><h3>Les fondations agentiques</h3><p>Sécurité et gouvernance<br>Orchestration et supervision<br>Modes d’exécution et de déploiement</p><p class="research-mission">Comprendre les évolutions, au-delà de Fred.</p></div>
+    <div><p class="stage-label">Des équipes</p><h3>Des méthodes et des usages variés</h3><p>Connaissances et sémantique<br>Frugalité de l’IA<br>Usages opérationnels en temps réel</p><p class="research-mission">Explorer sur des fondations de production.</p></div>
+  </div>
+  <div class="research-exchange"><span aria-hidden="true">↔</span><p>Des expérimentations communes pour faire progresser les méthodes et les briques Fred.</p></div>
+  <div class="industrial-aim"><p class="stage-label">Ambition fin 2027</p><h3>Davantage d’applications métier déployées et utilisées</h3><p>Transformer les expérimentations en solutions exploitées chez nos clients, avec des applications comme Rags.</p></div>
+  <p class="punch">Un socle qui évolue avec l’état de l’art et permet aux équipes d’innover.</p>
+  <aside class="speaker-notes" hidden>
+    <h2>11 · La complémentarité et la finalité</h2>
+    <p class="oral-timing">Durée cible : 1 min 10 · Repère cumulé : 9:30</p>
+    <p>La gestion des connaissances est un thème majeur, parmi d’autres. Des équipes explorent aussi la frugalité de l’IA et les usages opérationnels sur des données en temps réel. Fred travaille les fondations : sécurité, gouvernance, orchestration, mais aussi modes d’exécution et de déploiement, notamment avec l’arrivée de Rust.</p>
+    <p>Nous devons comprendre ces évolutions indépendamment de Fred. Puis décider de ce qu’il faut adopter, remplacer ou simplifier pour que le socle reste à l’état de l’art et facilite leur innovation.</p>
+    <p>La finalité est industrielle : davantage d’applications métier déployées et utilisées chez nos clients, avec des applications comme Rags. Les déploiements présentés par Claire constituent un premier ancrage. Nous voulons multiplier ces débouchés.</p>
+    <details class="notes-references">
+      <summary>Sources et repères pour les questions</summary>
+    <h3>Responsabilités et limites</h3>
+    <p>Le partage des travaux et les domaines d’exploration ont été précisés par Dimi. Le Knowledge Management, dont les approches de type LLM Wiki, reste l’exemple de la slide précédente ; il ne résume pas l’ensemble des recherches. Rust illustre une évolution des moteurs d’exécution, sans gain de performance ni format de déploiement particulier revendiqué ici. Les champs de recherche sont des orientations, pas une attribution détaillée de chaque méthode à chaque équipe. L’ambition commerciale constitue une finalité, sans engagement chiffré ni résultat futur présenté comme acquis. L’application conserve ses responsabilités sur ses données, ses règles et son intégration à la sécurité commune.</p>
+    <h3>Repère externe sur la responsabilité partagée</h3>
+    <p><a href="https://help.salesforce.com/s/articleView?id=005315874&amp;language=en_US&amp;type=1">Salesforce : Agentforce Security and the Shared Responsibility Model</a>, publié le 25 février 2026, décrit la complémentarité entre un socle sécurisé et la configuration des accès et des contrôles par les responsables d’usage. Cette référence éclaire le partage des responsabilités, sans assimiler les architectures ni les offres.</p>
+    </details>
   </aside>
 </section>
 
 <div id="navhint">← → naviguer &nbsp; · &nbsp; F plein écran</div>
-<div id="counter" aria-live="polite">1 / 9</div>
+<div id="counter" aria-live="polite">1 / 11</div>
 <button id="notes-toggle" aria-haspopup="dialog" aria-controls="notes">N · Notes et sources</button>
 <dialog id="notes" aria-label="Notes orales et sources">
   <button id="close-notes" autofocus>Fermer · Échap</button>
