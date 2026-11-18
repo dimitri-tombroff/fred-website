@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fred — Roadmap</title>
-  <meta name="description" content="Fred roadmap: governed spaces, reusable skills, business applications and reliable execution. Swift is in production; Weaver is an incomplete developer preview.">
+  <meta name="description" content="Fred roadmap: governed spaces, reusable skills, business applications and reliable execution. Swift is in production; Weaver is feature complete and in validation.">
   <script src="assets/theme-sync.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -239,6 +239,7 @@
 
     <li class="nav-section">Further work</li>
     <li><a href="#collective">Shared business progress</a></li>
+    <li><a href="#knowledge">Governed knowledge</a></li>
     <li><a href="#journey">Developer integration</a></li>
     <li><a href="#success">Evaluation criteria</a></li>
     <li><a href="#related">Related documents</a></li>
@@ -248,14 +249,14 @@
 
 <main>
   <div class="hd">
-    <div class="hd-eyebrow">docs / ROADMAP · Updated November 9, 2026</div>
+    <div class="hd-eyebrow">docs / ROADMAP · Updated November 18, 2026</div>
     <h1>Fred Roadmap</h1>
     <div class="hd-lead">Fred provides an open-source, collaborative and governed environment to work with data, use tools and carry out AI-assisted business workflows.</div>
   </div>
 
   <section id="today">
     <h2>Current releases</h2>
-    <p><a href="/releases/swift/">Swift 3.x</a> is the production release. <a href="/releases/weaver/">Weaver 5.x</a> is available to developers and remains incomplete. <a href="/releases/kea/">Kea 1.5</a> is obsolete.</p>
+    <p><a href="/releases/swift/">Swift 3.x</a> is the production release. <a href="/releases/weaver/">Weaver 5.x</a> is feature complete and in validation. <a href="/releases/kea/">Kea 1.5</a> is obsolete.</p>
     <p>Swift provides the runtime and SDK, document ingestion and retrieval, governed capabilities, evaluation and deployment tooling. Weaver consolidates these foundations around a common space model and clearer component responsibilities.</p>
     <div class="callout info"><strong>Scope.</strong> The priorities below describe the work guiding Weaver. They are not a delivery calendar or an inventory of completed features.</div>
   </section>
@@ -306,6 +307,24 @@
     <p>The working hypothesis is that collective work needs a small, explicit business state and a shared place to consolidate results. This state would record the current phase, references to accepted documents, decisions and transition history, independently of individual conversations.</p>
     <p>For a bid team, several people and agents could prepare contributions in parallel. An authorized person would approve a gate against the consolidated deliverables; the application would record that decision and advance the process.</p>
     <p>The design must address concurrent contributions, document revisions and approval authority. Where this state belongs, and which minimal contracts Fred should provide, remain open. This is not yet a completed Weaver feature.</p>
+  </section>
+
+  <section id="knowledge">
+    <h2>Under investigation: from documents to governed knowledge</h2>
+    <p>Knowledge is often equated with documents. Increasingly, it takes forms suited to AI: Markdown text, tables, wiki pages and results produced by agents. Fred already converts documents into such forms; the original file becomes one source among others.</p>
+
+    <h3 id="collections">Collections as the governed unit</h3>
+    <p>The working hypothesis is that Fred governs <strong>collections</strong> owned by a space, such as a corpus, a wiki or a partition of a graph, together with their provenance. It does not govern each fact they contain: finer governance would be neither necessary nor efficient. Knowledge engines manage the content inside a collection.</p>
+
+    <h3 id="promotion">Promotion: from a conversation to the organization</h3>
+    <p>Knowledge produced with an agent starts private, in a conversation. It can then be promoted to a team, and from a team to the organization. Each promotion would copy an immutable snapshot, with its provenance, into a collection of the target space. A person with the appropriate role, or a policy defined for that space, decides the promotion.</p>
+    <p>An agent reuses only what has been promoted to the level where it works. This gives agents a governed way to collaborate through the data they produce, rather than only by exchanging messages. Promotion policies, and what happens to knowledge derived from content that is later withdrawn, remain open questions.</p>
+
+    <h3 id="engines">Knowledge engines built by others</h3>
+    <p>Fred supplies a default knowledge stack for document search and tabular queries. Other teams, in the open-source community or in proprietary products, should be able to provide richer engines, for example graph-based ones with their own storage, without Fred becoming the provider of every storage technology.</p>
+    <p>The SDK would let such an engine work within a space under a precise role, without implementing multi-tenancy, roles or security itself. It writes within an admitted mandate, answers on behalf of the person who asks, and exposes its tools to agents as capabilities. Its storage remains a projection of Fred's catalogue: purge hooks and periodic reconciliation remove withdrawn content, and a rights check at query time ensures that a missed purge never becomes an access leak.</p>
+    <p>A Rust SDK, and the ability to run the embedded Rust agent outside the Control Plane, are anticipated for lighter deployments.</p>
+    <div class="callout warn"><strong>Status.</strong> These are directions under investigation, not completed features. Approaches to knowledge management at enterprise scale, including wikis maintained by language models, are being explored; their results will shape these contracts.</div>
   </section>
 
   <section id="journey">

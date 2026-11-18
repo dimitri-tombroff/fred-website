@@ -3,7 +3,7 @@ title: "Release Lifecycle"
 description: "How Fred versions work — branch model, release cadence, and support windows."
 summary: "One production version at a time. Two branches. Hotfixes from main. This page makes the model explicit for contributors, operators, and the core team."
 date: 2026-05-02T00:00:00+02:00
-lastmod: 2026-11-09T00:00:00+01:00
+lastmod: 2026-11-18T00:00:00+01:00
 draft: false
 weight: 30
 toc: true
@@ -16,7 +16,7 @@ seo:
 
 **Fred releases one production version at a time.**
 
-There is no long-running parallel maintenance of multiple major versions. Swift 3.x is the current production release. Kea 1.5 is obsolete; Weaver 5.x is available to developers but remains incomplete.
+There is no long-running parallel maintenance of multiple major versions. Swift 3.x is the current production release. Kea 1.5 is obsolete; Weaver 5.x is feature complete and in validation.
 
 ## Branch model
 
@@ -51,7 +51,7 @@ Fred releases carry bird codenames:
 |---|---|---|
 | **[Kea](/releases/kea/)** | 1.5.x | Obsolete |
 | **[Swift](/releases/swift/)** | 3.x | Production — stable |
-| **[Weaver](/releases/weaver/)** | 5.x | Developer preview — incomplete |
+| **[Weaver](/releases/weaver/)** | 5.x | Feature complete — in validation |
 
 The name is chosen to reflect a character of the release, not just a label.
 

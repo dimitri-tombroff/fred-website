@@ -4,7 +4,7 @@ slug: "fred-weaver-direction"
 description: "An architectural comparison of Fred Weaver, OpenAI, Anthropic, Microsoft and Salesforce: governed spaces, reusable skills, agent execution and business processes."
 summary: "An analysis of governed spaces, reusable expertise and the separation between agent execution and business processes in Fred Weaver and four major platforms."
 date: 2026-11-08T10:00:00+01:00
-lastmod: 2026-11-09T10:00:00+01:00
+lastmod: 2026-11-18T07:00:00+01:00
 draft: false
 weight: 50
 categories: [platform, architecture]
@@ -17,6 +17,8 @@ seo:
   title: "Governed Agentic Systems: Fred Weaver in Context"
   description: "Fred Weaver in architectural context: spaces, skills, agents and explicit business processes, illustrated with diagrams from its architecture documentation."
 ---
+
+*Update, November 18, 2026: Weaver is now feature complete and in validation. See the [Weaver release page](/releases/weaver/) for its current status.*
 
 Fred is an open-source environment for combining data, tools and AI assistance within governed business activities. **Weaver is its next major release, currently under development and available as an incomplete developer preview.** It builds on Fred's existing foundations to support shared workspaces, reusable resources and a clear separation between access control, document processing and agent execution.
 

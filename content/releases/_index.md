@@ -1,9 +1,9 @@
 ---
 title: "Releases"
 description: "Fred release generations — what's stable, what's coming, and how to move between them."
-summary: "Kea 1.5 is obsolete, Swift 3.x is in production, and Weaver 5.x is an incomplete developer preview."
+summary: "Kea 1.5 is obsolete, Swift 3.x is in production, and Weaver 5.x is feature complete and in validation."
 date: 2026-05-02T00:00:00+02:00
-lastmod: 2026-11-09T00:00:00+01:00
+lastmod: 2026-11-18T00:00:00+01:00
 draft: false
 weight: 840
 layout: single
@@ -22,9 +22,9 @@ Fred releases one production version at a time. **Swift 3.x is the current produ
 |---|---|---|
 | [Kea 1.5](/releases/kea/) | Obsolete | Historical reference |
 | [Swift 3.x](/releases/swift/) | **Production — stable** | Production deployments |
-| [Weaver 5.x](/releases/weaver/) | Developer preview — **incomplete** | Development, experimentation and contributions |
+| [Weaver 5.x](/releases/weaver/) | Feature complete — **in validation** | Fresh installations, evaluation and contributions |
 
-**[Weaver's release compass](/releases/weaver/)** describes the direction under development: bringing people, data and tools together for AI-assisted business workflows in governed spaces. Its roadmap is not a list of completed features.
+**[Weaver 5.x](/releases/weaver/)** brings people, data and tools together for AI-assisted business workflows in governed spaces. Swift remains the production release until Weaver's validation is complete.
 
 - [Release lifecycle](/releases/lifecycle/) — versioning, branch model and support windows
 - [Roadmap](/docs/roadmap.html) — development priorities

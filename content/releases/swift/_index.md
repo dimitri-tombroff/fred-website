@@ -3,7 +3,7 @@ title: "Swift 3.x"
 description: "Swift 3.x is the current production release of Fred."
 summary: "Fred Swift 3.x replaces agentic-backend with fred-runtime and fred-sdk. It is the current production release."
 date: 2026-05-02T00:00:00+02:00
-lastmod: 2026-11-09T00:00:00+01:00
+lastmod: 2026-11-18T00:00:00+01:00
 draft: false
 weight: 20
 toc: true
@@ -18,7 +18,7 @@ seo:
 
 **Swift 3.x is the current production release.** It supersedes Kea 1.5.
 
-[Weaver 5.x](/releases/weaver/) is available as an incomplete developer preview.
+[Weaver 5.x](/releases/weaver/) is feature complete and in validation.
 
 ## What changes in Swift
 
