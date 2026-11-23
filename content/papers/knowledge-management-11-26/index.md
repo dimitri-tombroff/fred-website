@@ -13,10 +13,9 @@ weight: 50
 categories: [architecture, research]
 tags: [knowledge-management, governance, access-control, retrieval, provenance, okf, graphrag, llm-wiki]
 contributors:
-- Geoffrey Portelli
-- Thomas Dellavade
 - Maxime Daragon
 - Dimitri Tombroff
+- Fred Team
 pinned: false
 homepage: false
 seo:
