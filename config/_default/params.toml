@@ -138,7 +138,12 @@ mainSections = ["docs"]
     name = "Thulite" # Name of Organization or Person
     sameAs = [] # E.g. ["https://github.com/thuliteio/thulite", "https://fosstodon.org/@thulite"]
     images = ["cover.png"] # ["cover.png"] (default)
-    article = [] # Article sections
+    article = ["papers"] # Article sections
     newsArticle = [] # NewsArticle sections
     blogPosting = ["blog"] # BlogPosting sections
     product = [] # Product sections
+
+# Position papers (content/papers, layouts/papers/single.html)
+[paper]
+  sourceBase = "https://github.com/fred-agent/fred-website/blob/weaver/content/"
+  feedback = "https://github.com/fred-agent/fred-website/issues"

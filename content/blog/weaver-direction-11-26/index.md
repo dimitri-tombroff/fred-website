@@ -1,26 +1,26 @@
 ---
-title: "Governed Agentic Systems: Fred Weaver in Context"
+title: "Governed Agentic Systems: Fred v5 in Context"
 slug: "fred-weaver-direction"
-description: "An architectural comparison of Fred Weaver, OpenAI, Anthropic, Microsoft and Salesforce: governed spaces, reusable skills, agent execution and business processes."
-summary: "An analysis of governed spaces, reusable expertise and the separation between agent execution and business processes in Fred Weaver and four major platforms."
+description: "An architectural comparison of Fred v5, OpenAI, Anthropic, Microsoft and Salesforce: governed spaces, reusable skills, agent execution and business processes."
+summary: "An analysis of governed spaces, reusable expertise and the separation between agent execution and business processes in Fred v5 and four major platforms."
 date: 2026-11-08T10:00:00+01:00
 lastmod: 2026-11-18T07:00:00+01:00
 draft: false
 weight: 50
 categories: [platform, architecture]
-tags: [weaver, agents, skills, governance]
+tags: [fred-v5, agents, skills, governance]
 contributors:
 - Dimitri Tombroff
 pinned: false
 homepage: false
 seo:
-  title: "Governed Agentic Systems: Fred Weaver in Context"
-  description: "Fred Weaver in architectural context: spaces, skills, agents and explicit business processes, illustrated with diagrams from its architecture documentation."
+  title: "Governed Agentic Systems: Fred v5 in Context"
+  description: "Fred v5 in architectural context: spaces, skills, agents and explicit business processes, illustrated with diagrams from its architecture documentation."
 ---
 
-*Update, November 18, 2026: Weaver is now feature complete and in validation. See the [Weaver release page](/releases/weaver/) for its current status.*
+*Update, November 18, 2026: Fred v5 is now feature complete and in validation. See the [Fred v5 release page](/releases/weaver/) for its current status.*
 
-Fred is an open-source environment for combining data, tools and AI assistance within governed business activities. **Weaver is its next major release, currently under development and available as an incomplete developer preview.** It builds on Fred's existing foundations to support shared workspaces, reusable resources and a clear separation between access control, document processing and agent execution.
+Fred is an open-source environment for combining data, tools and AI assistance within governed business activities. **Fred v5 is its next major release, currently under development and available as an incomplete developer preview.** It builds on Fred's existing foundations to support shared workspaces, reusable resources and a clear separation between access control, document processing and agent execution.
 
 This article examines that architecture alongside selected mechanisms from OpenAI, Anthropic, Microsoft and Salesforce. The comparison concerns architectural responsibilities, rather than feature coverage or measured performance. It identifies convergent design choices and the questions Fred is investigating.
 
@@ -51,7 +51,7 @@ flowchart TB
     class common,shared,focused,organization,team,project neutral
 {{< /mermaiddiagram >}}
 
-*Figure 1. Collective spaces and access to resources. Reproduced from the Weaver [architecture introduction](https://github.com/ThalesGroup/fred/blob/weaver/docs/architecture/00-introduction.md#organizations-teams-and-projects).*
+*Figure 1. Collective spaces and access to resources. Reproduced from the Fred v5 [architecture introduction](https://github.com/ThalesGroup/fred/blob/weaver/docs/architecture/00-introduction.md#organizations-teams-and-projects).*
 
 This model gives Fred a starting point for collective work that is independent of any particular agent or conversation.
 
@@ -67,7 +67,7 @@ Fred addresses these execution concerns within a wider scope: several people and
 
 Agent Skills packages instructions, scripts and supporting resources that an assistant can discover and load as needed. This separates reusable expertise from the implementation of a particular agent. Anthropic's guidance on effective agents also distinguishes predefined workflows from model-directed execution.
 
-This approach is consistent with Fred's use of reusable resources and capabilities. Weaver's additional concern is their placement and governance: which space owns a resource, who may maintain it, and which tools the executing agent is authorized to use. A skill's instructions do not themselves confer access rights.
+This approach is consistent with Fred's use of reusable resources and capabilities. Fred v5's additional concern is their placement and governance: which space owns a resource, who may maintain it, and which tools the executing agent is authorized to use. A skill's instructions do not themselves confer access rights.
 
 ### Microsoft: explicit flows and generative orchestration
 
@@ -83,7 +83,7 @@ Fred similarly exposes service operations through capabilities. Its architectura
 
 ## Separation of responsibilities in Fred
 
-When someone asks an assistant to work with documents, Fred must check what that person may access, run the assistant with the appropriate tools, and retrieve relevant content. Weaver separates these responsibilities into three services:
+When someone asks an assistant to work with documents, Fred must check what that person may access, run the assistant with the appropriate tools, and retrieve relevant content. Fred v5 separates these responsibilities into three services:
 
 - **Access and resource management** (*Control Plane*): determines where documents, tools and other resources belong, and who may use them.
 - **Assistant execution** (*Agent Pods*): runs assistants and provides the tools they use.
@@ -107,7 +107,7 @@ flowchart TB
     class ui,cp,pod,kf fred
 {{< /mermaiddiagram >}}
 
-*Figure 2. Access control, assistant execution and document processing. Simplified from the Weaver [system overview](https://github.com/ThalesGroup/fred/blob/weaver/docs/architecture/01-system-overview.md#11-components-serving-the-space).*
+*Figure 2. Access control, assistant execution and document processing. Simplified from the Fred v5 [system overview](https://github.com/ThalesGroup/fred/blob/weaver/docs/architecture/01-system-overview.md#11-components-serving-the-space).*
 
 These component boundaries support a corresponding distinction in business applications:
 
@@ -121,9 +121,9 @@ These component boundaries support a corresponding distinction in business appli
 
 For a bid team, agents may review requirements or prepare a cost analysis while the application records approved gates and accepted deliverables. Approval of a tool call concerns an execution; approval of a gate concerns the collective business process.
 
-A **durable shared dossier** is a Weaver direction under investigation. It would retain current progress, references to contributions and human decisions independently of individual conversations. This extends Fred's existing space model; it is not presented here as a completed workflow feature.
+A **durable shared dossier** is a Fred v5 direction under investigation. It would retain current progress, references to contributions and human decisions independently of individual conversations. This extends Fred's existing space model; it is not presented here as a completed workflow feature.
 
-The comparison places Fred within a broader convergence toward reusable expertise, explicit processes and governed execution. Fred's contribution lies in their composition within an open-source working environment. The remaining design question is how little additional machinery is needed to support collective business progress reliably. [Weaver's release compass](/releases/weaver/) records that direction.
+The comparison places Fred within a broader convergence toward reusable expertise, explicit processes and governed execution. Fred's contribution lies in their composition within an open-source working environment. The remaining design question is how little additional machinery is needed to support collective business progress reliably. The [Fred v5 release compass](/releases/weaver/) records that direction.
 
 ## References & Further Reading
 

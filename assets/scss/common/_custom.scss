@@ -191,3 +191,117 @@
     }
   }
 }
+
+// Position papers (content/papers, layouts/papers/single.html).
+.paper {
+  .paper-kind {
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+  }
+
+  .paper-banner {
+    margin: 0 0 2rem;
+    padding: 0.75rem 1rem;
+    border: 1px dashed var(--bs-warning-border-subtle);
+    border-radius: 0.375rem;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+    font-size: 0.9rem;
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+    }
+  }
+
+  .paper-abstract {
+    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--bs-border-color);
+    background: var(--bs-tertiary-bg);
+
+    p {
+      margin: 0;
+      font-style: italic;
+    }
+  }
+
+  .paper-abstract-title,
+  .paper-toc-title {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+  }
+
+  .paper-body {
+    min-width: 0;
+
+    // Bibliography: unbulleted entries with a hanging indent.
+    #references + ul {
+      padding-left: 1.5rem;
+      list-style: none;
+      font-size: 0.9rem;
+
+      li {
+        margin-bottom: 0.5rem;
+        text-indent: -1.5rem;
+      }
+    }
+  }
+
+  .paper-toc {
+    font-size: 0.875rem;
+
+    ul {
+      padding-left: 1rem;
+      margin: 0;
+      list-style: none;
+    }
+
+    li {
+      margin: 0.25rem 0;
+    }
+
+    a {
+      color: var(--bs-secondary-color);
+      text-decoration: none;
+
+      &:hover {
+        color: var(--bs-link-color);
+      }
+    }
+  }
+
+  .paper-toc-side {
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    padding-left: 1rem;
+    border-left: 1px solid var(--bs-border-color);
+
+    > ul,
+    #TableOfContents > ul {
+      padding-left: 0;
+    }
+  }
+
+  .paper-toc-inline {
+    margin-bottom: 2rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.375rem;
+
+    summary {
+      font-weight: 600;
+      cursor: pointer;
+    }
+  }
+}

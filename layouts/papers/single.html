@@ -1,0 +1,115 @@
+{{/* Position paper: the Doks blog single with a working-draft banner, an abstract
+     and a table of contents. Optional front matter:
+       paper:
+         status: "Working draft"   # shown in the banner, default "Working draft"
+         version: "0.3"
+         feedback: "https://..."   # defaults to site.Params.paper.feedback
+*/}}
+{{ define "main" }}
+{{- $paper := .Params.paper | default dict -}}
+<article class="paper">
+<div class="row justify-content-center">
+  <div class="col-md-12 col-lg-10">
+    <div class="blog-header">
+      <p class="paper-kind">Position paper</p>
+      <h1>{{ .Title }}</h1>
+      {{ partial "main/blog-meta.html" . }}
+    </div>
+  </div>
+  {{ if site.Params.doks.imageSingle -}}
+    {{- $images := .Resources.ByType "image" -}}
+    {{- $featured := $images.GetMatch "*feature*" -}}
+    {{- if not $featured }}{{ $featured = $images.GetMatch "{*cover*,*thumbnail*}" }}{{ end -}}
+    {{- if $featured -}}
+      <div class="col-md-13">
+        {{ partial "picture" (dict
+        "page" .
+        "src" $featured
+        "alt" .Title
+        "class" "img-post-single rounded-0"
+        )}}
+      </div>
+    {{ end -}}
+  {{ end -}}
+  {{- $source := "" -}}
+  {{- with site.Params.paper.sourceBase }}{{ with $.File }}{{ $source = printf "%s%s" site.Params.paper.sourceBase .Path }}{{ end }}{{ end -}}
+  {{- $feedback := $paper.feedback | default site.Params.paper.feedback -}}
+  <div class="col-md-16 col-lg-14">
+    <div class="paper-banner" role="note">
+      <strong>{{ $paper.status | default "Working draft" }}</strong>
+      {{- with $paper.version }} · version {{ . }}{{ end }}
+      · updated {{ time.Format ":date_long" .Lastmod }}.
+      This text is work in progress and will change.
+      {{- with $feedback }} <a href="{{ . }}">Comments welcome</a>.{{ end }}
+      {{- with $source }} <a href="{{ . }}">Source on GitHub</a>.{{ end }}
+    </div>
+  </div>
+  <div class="col-md-16 col-lg-14">
+    <div class="row">
+      <div class="col-lg-11 paper-body">
+        {{ with .Params.summary -}}
+        <section class="paper-abstract" aria-label="Abstract">
+          <h2 class="paper-abstract-title">Abstract</h2>
+          <p>{{ . }}</p>
+        </section>
+        {{ end -}}
+        {{ if .TableOfContents -}}
+        <details class="paper-toc paper-toc-inline d-lg-none">
+          <summary>Contents</summary>
+          {{ .TableOfContents }}
+        </details>
+        {{ end -}}
+        {{ .Content }}
+        {{ if .Params.tags -}}
+        <div class="tag-list-single">
+          {{ range .Params.tags -}}
+            <a class="btn btn-light" href="{{ "/tags/" | relLangURL }}{{ . | urlize }}/" role="button">{{ . }}</a>
+          {{ end -}}
+        </div>
+        {{ end -}}
+      </div>
+      {{ if .TableOfContents -}}
+      <aside class="col-lg-5 d-none d-lg-block">
+        <nav class="paper-toc paper-toc-side" aria-label="Contents">
+          <p class="paper-toc-title">Contents</p>
+          {{ .TableOfContents }}
+        </nav>
+      </aside>
+      {{ end -}}
+    </div>
+  </div>
+</div>
+</article>
+{{ end }}
+
+{{ define "sidebar-footer" }}
+{{ if site.Params.doks.relatedPosts -}}
+  {{ $related := .Site.RegularPages.Related . | first 3 -}}
+  {{ with $related -}}
+  <div class="bg-light">
+    <section class="section section-related container">
+      <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-9">
+          <h2 class="section-title text-center">Related posts</h2>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          {{ range . -}}
+            <div class="card">
+              <div class="card-body">
+                <article>
+                  <h2 class="h3"><a class="stretched-link text-body" href="{{ .RelPermalink }}">{{ .Params.title }}</a></h2>
+                  <p>{{ .Params.summary | safeHTML }}</p>
+                  {{ partial "main/blog-meta.html" . -}}
+                </article>
+              </div>
+            </div>
+          {{ end -}}
+        </div>
+      </div>
+    </section>
+  </div>
+  {{ end -}}
+{{ end -}}
+{{ end }}
