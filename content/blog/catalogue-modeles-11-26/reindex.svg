@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 387" width="760" height="387" role="img" aria-labelledby="title desc">
+<title id="title">Où cherche Fred pendant la réindexation ?</title>
+<desc id="desc">Le premier index sert la recherche pendant la construction du second. Le second prend le relais à la bascule, puis le premier est supprimé.</desc>
+<rect width="760" height="387" rx="12" fill="#f6f8f8"/>
+<g font-family="Inter,Arial,sans-serif">
+<text x="24" y="38" font-size="26" font-weight="700" fill="#182b38">Où cherche Fred pendant la réindexation ?</text>
+<text x="24" y="64" font-size="16" font-weight="400" fill="#425966">Nombre de vecteurs par index · essai local du 20 novembre 2026</text>
+<text x="24" y="105" font-size="16" font-weight="600" fill="#425966">Temps écoulé</text>
+<text x="257" y="105" font-size="18" font-weight="700" fill="#182b38">Ancien index</text>
+<text x="512" y="105" font-size="18" font-weight="700" fill="#182b38">Nouvel index</text>
+<path d="M24 117 H736" stroke="#cbd5d9"/>
+<text x="24" y="149" font-size="21" font-weight="650" fill="#182b38">29 min 20 s</text>
+<text x="24" y="177" font-size="16" font-weight="400" fill="#425966">Reconstruction</text>
+<rect x="257" y="156" width="215" height="7" rx="3.5" fill="#dbe2e1"/>
+<rect x="257" y="156" width="215.00" height="7" rx="3.5" fill="#096959"/>
+<text x="257" y="149" font-size="22" font-weight="650" fill="#182b38">189 606</text>
+<text x="257" y="187" font-size="16" font-weight="400" fill="#096959">En service</text>
+<rect x="512" y="156" width="215" height="7" rx="3.5" fill="#dbe2e1"/>
+<rect x="512" y="156" width="111.22" height="7" rx="3.5" fill="#85500a"/>
+<text x="512" y="149" font-size="22" font-weight="650" fill="#182b38">98 086</text>
+<text x="512" y="187" font-size="16" font-weight="400" fill="#85500a">En construction</text>
+<path d="M24 202 H736" stroke="#cbd5d9"/>
+<text x="24" y="234" font-size="21" font-weight="650" fill="#182b38">56 min 55 s</text>
+<text x="24" y="262" font-size="16" font-weight="400" fill="#425966">Bascule</text>
+<rect x="257" y="241" width="215" height="7" rx="3.5" fill="#dbe2e1"/>
+<rect x="257" y="241" width="215.00" height="7" rx="3.5" fill="#5e6c73"/>
+<text x="257" y="234" font-size="22" font-weight="650" fill="#182b38">189 606</text>
+<text x="257" y="272" font-size="16" font-weight="400" fill="#5e6c73">En attente de retrait</text>
+<rect x="512" y="241" width="215" height="7" rx="3.5" fill="#dbe2e1"/>
+<rect x="512" y="241" width="215.00" height="7" rx="3.5" fill="#096959"/>
+<text x="512" y="234" font-size="22" font-weight="650" fill="#182b38">189 606</text>
+<text x="512" y="272" font-size="16" font-weight="400" fill="#096959">En service</text>
+<path d="M24 287 H736" stroke="#cbd5d9"/>
+<text x="24" y="319" font-size="21" font-weight="650" fill="#182b38">57 min 46 s</text>
+<text x="24" y="347" font-size="16" font-weight="400" fill="#425966">Fin du nettoyage</text>
+<rect x="257" y="326" width="215" height="7" rx="3.5" fill="#dbe2e1"/>
+<text x="257" y="319" font-size="22" font-weight="650" fill="#182b38">0</text>
+<text x="257" y="357" font-size="16" font-weight="400" fill="#5e6c73">Supprimé</text>
+<rect x="512" y="326" width="215" height="7" rx="3.5" fill="#dbe2e1"/>
+<rect x="512" y="326" width="215.00" height="7" rx="3.5" fill="#096959"/>
+<text x="512" y="319" font-size="22" font-weight="650" fill="#182b38">189 606</text>
+<text x="512" y="357" font-size="16" font-weight="400" fill="#096959">En service</text>
+</g></svg>
