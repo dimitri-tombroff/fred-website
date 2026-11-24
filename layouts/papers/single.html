@@ -1,9 +1,11 @@
-{{/* Position paper: the Doks blog single with a working-draft banner, an abstract
-     and a table of contents. Optional front matter:
+{{/* Paper: the Doks blog single with a compact status banner, an abstract and a
+     table of contents. Optional front matter:
        paper:
-         status: "Working draft"   # shown in the banner, default "Working draft"
+         kind: "Technical paper"        # label above the title, default "Position paper"
+         applies_to: "Fred 5.x Weaver"  # the Fred version the content describes
+         applies_to_url: "/releases/weaver/"
+         status: "Working draft"        # a status containing "draft" shows the Draft banner
          version: "0.3"
-         feedback: "https://..."   # defaults to site.Params.paper.feedback
 */}}
 {{ define "main" }}
 {{- $paper := .Params.paper | default dict -}}
@@ -11,7 +13,7 @@
 <div class="row justify-content-center">
   <div class="col-md-12 col-lg-10">
     <div class="blog-header">
-      <p class="paper-kind">Position paper</p>
+      <p class="paper-kind">{{ $paper.kind | default "Position paper" }}</p>
       <h1>{{ .Title }}</h1>
       {{ partial "main/blog-meta.html" . }}
     </div>
@@ -31,17 +33,14 @@
       </div>
     {{ end -}}
   {{ end -}}
-  {{- $source := "" -}}
-  {{- with site.Params.paper.sourceBase }}{{ with $.File }}{{ $source = printf "%s%s" site.Params.paper.sourceBase .Path }}{{ end }}{{ end -}}
-  {{- $feedback := $paper.feedback | default site.Params.paper.feedback -}}
+  {{- $status := $paper.status | default "Working draft" -}}
+  {{- $draft := or .Draft (findRE "(?i)draft" $status) -}}
   <div class="col-md-16 col-lg-14">
-    <div class="paper-banner" role="note">
-      <strong>{{ $paper.status | default "Working draft" }}</strong>
-      {{- with $paper.version }} · version {{ . }}{{ end }}
-      · updated {{ time.Format ":date_long" .Lastmod }}.
-      This text is work in progress and will change.
-      {{- with $feedback }} <a href="{{ . }}">Comments welcome</a>.{{ end }}
-      {{- with $source }} <a href="{{ . }}">Source on GitHub</a>.{{ end }}
+    <div class="paper-banner{{ if $draft }} paper-banner-draft{{ end }}" role="note">
+      {{- if $draft }}<span class="paper-draft-badge">Draft</span>{{ else }}<strong>{{ $status }}</strong>{{ end }}
+      {{- with $paper.applies_to }} · <strong>{{ with $paper.applies_to_url }}<a href="{{ . | relLangURL }}">{{ $paper.applies_to }}</a>{{ else }}{{ $paper.applies_to }}{{ end }}</strong>{{ end }}
+      {{- with $paper.version }} · v{{ . }}{{ end }}
+      · {{ time.Format ":date_medium" .Lastmod }}
     </div>
   </div>
   <div class="col-md-16 col-lg-14">

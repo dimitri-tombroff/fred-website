@@ -143,7 +143,3 @@ mainSections = ["docs"]
     blogPosting = ["blog"] # BlogPosting sections
     product = [] # Product sections
 
-# Position papers (content/papers, layouts/papers/single.html)
-[paper]
-  sourceBase = "https://github.com/fred-agent/fred-website/blob/weaver/content/"
-  feedback = "https://github.com/fred-agent/fred-website/issues"

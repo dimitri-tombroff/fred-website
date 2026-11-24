@@ -205,17 +205,32 @@
 
   .paper-banner {
     margin: 0 0 2rem;
-    padding: 0.75rem 1rem;
-    border: 1px dashed var(--bs-warning-border-subtle);
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--bs-border-color);
     border-radius: 0.375rem;
-    background: var(--bs-warning-bg-subtle);
-    color: var(--bs-warning-text-emphasis);
-    font-size: 0.9rem;
+    background: var(--bs-tertiary-bg);
+    font-size: 0.85rem;
 
     a {
       color: inherit;
       text-decoration: underline;
     }
+  }
+
+  .paper-banner-draft {
+    border: 1px dashed var(--bs-warning-border-subtle);
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+  }
+
+  .paper-draft-badge {
+    padding: 0.1rem 0.45rem;
+    border-radius: 0.25rem;
+    background: var(--bs-warning);
+    color: var(--bs-dark);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
 
   .paper-abstract {
